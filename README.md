@@ -34,7 +34,7 @@ Accounts and sync (Supabase), community (leaderboards, feed, Talk, friends), don
 - **Guest mode:** all progress lives in `localStorage` (`src/lib/store.ts`), shaped so it can be merged into Supabase on sign-up later.
 - **Spaced repetition:** [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) (`src/lib/srs.ts`). Recall right first time = Good, accepted with a typo = Hard, missed = Again.
 - **Audio:** uses the device’s Persian speech voice when one is installed (buttons are disabled otherwise). The spec’s pre-generated neural TTS replaces this once a provider is chosen.
-- **Fonts:** Vazirmatn (Farsi) and Fraunces (display), self-hosted via Fontsource.
+- **Fonts:** Yekan Bakh (Farsi, `src/fonts/`) and Fraunces (display, via Fontsource).
 
 ```
 src/

@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Yekan Bakh (FaNum variant: Persian digits). Variable axes: wght 1–1000,
+   DOTS 0–1 — dotted style for running text, plain for headings. */
+@font-face {
+  font-family: "Yekan Bakh";
+  src: url("../fonts/YekanBakhFaNum-VF.woff") format("woff-variations"), url("../fonts/YekanBakhFaNum-VF.woff") format("woff");
+  font-weight: 100 1000;
+  font-display: swap;
+}
+
 @theme {
   --color-paper: #fbf7f0;
   --color-card: #ffffff;
@@ -14,7 +23,7 @@
   --color-anar: #c2410c;
   --color-anar-soft: #fde9df;
   --font-display: "Fraunces Variable", Georgia, serif;
-  --font-fa: "Vazirmatn Variable", Tahoma, sans-serif;
+  --font-fa: "Yekan Bakh", Tahoma, sans-serif;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -33,6 +42,11 @@
   }
   [lang="fa"] {
     font-family: var(--font-fa);
+    font-variation-settings: "DOTS" 1;
+  }
+  :is(h1, h2, h3) [lang="fa"],
+  :is(h1, h2, h3)[lang="fa"] {
+    font-variation-settings: "DOTS" 0;
   }
 }
 
