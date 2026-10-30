@@ -24,7 +24,7 @@ export interface Settings {
   scriptOnly: boolean;
   showKeyboard: boolean;
   checklistHidden: boolean;
-  /** "system" follows the device setting. */
+  /** Dark by default; "system" follows the device setting. */
   theme: Theme;
 }
 
@@ -67,7 +67,7 @@ export const DEFAULT_STATE: ProgressState = {
     scriptOnly: false,
     showKeyboard: true,
     checklistHidden: false,
-    theme: "system",
+    theme: "dark",
   },
 };
 
