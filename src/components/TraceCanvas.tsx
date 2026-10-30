@@ -92,7 +92,7 @@ export function TraceCanvas({ text, onScore, passMark }: { text: string; onScore
       await document.fonts.load(`200px ${FONT}`, text);
     } catch {}
     const g = guideRef.current?.getContext("2d");
-    if (g) drawGlyph(g, text, SIZE, "#e7dfd0");
+    if (g) drawGlyph(g, text, SIZE, "#dcdcdc");
     inkRef.current?.getContext("2d")?.clearRect(0, 0, SIZE, SIZE);
     setHasInk(false);
     setResult(null);
@@ -109,7 +109,7 @@ export function TraceCanvas({ text, onScore, passMark }: { text: string; onScore
 
   const stroke = (from: { x: number; y: number }, to: { x: number; y: number }) => {
     const ctx = inkRef.current!.getContext("2d")!;
-    ctx.strokeStyle = "#0e7c74";
+    ctx.strokeStyle = "#12a594";
     ctx.lineWidth = 14;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -129,9 +129,11 @@ export function TraceCanvas({ text, onScore, passMark }: { text: string; onScore
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative rounded-2xl border border-line bg-[#fffdf9]" style={{ width: SIZE, height: SIZE, maxWidth: "100%" }}>
-        {/* writing guide lines */}
-        <div className="pointer-events-none absolute inset-x-4 top-1/2 border-t border-dashed border-line" aria-hidden />
+      <div className="card relative aspect-square overflow-hidden" style={{ width: SIZE, maxWidth: "100%" }}>
+        {/* writing guide lines, like ruled paper */}
+        <div className="pointer-events-none absolute inset-x-3 top-1/4 border-t border-line" aria-hidden />
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-dashed border-line" aria-hidden />
+        <div className="pointer-events-none absolute inset-x-3 top-3/4 border-t border-line" aria-hidden />
         <canvas ref={guideRef} className="absolute inset-0 size-full" aria-hidden />
         <canvas
           ref={inkRef}
@@ -162,20 +164,20 @@ export function TraceCanvas({ text, onScore, passMark }: { text: string; onScore
           }}
         />
       </div>
-      <div className="mt-3 flex items-center gap-2">
+      <div className="mt-4 flex items-center gap-3">
         <button type="button" className="btn-secondary" onClick={setup} disabled={!hasInk}>
-          <Eraser className="size-4" /> Clear
+          <Eraser className="size-4" strokeWidth={2.5} /> Clear
         </button>
         <button type="button" className="btn-primary" onClick={check} disabled={!hasInk}>
-          <Check className="size-4" /> Check
+          <Check className="size-4" strokeWidth={3} /> Check
         </button>
       </div>
       {result !== null && (
         <p
           role="status"
           className={cx(
-            "mt-3 rounded-full px-4 py-1.5 text-sm font-semibold",
-            result >= passMark ? "bg-firuze-soft text-firuze" : "bg-saffron-soft text-saffron",
+            "mt-4 animate-pop rounded-full px-4 py-2 text-center text-sm font-extrabold",
+            result >= passMark ? "bg-pista-soft text-pista-ink" : "bg-saffron-soft text-saffron-ink",
           )}
         >
           {result >= 85 ? `Beautiful! ${result}/100` : result >= passMark ? `Nice — passed with ${result}/100` : `${result}/100 — try to cover the whole letter and stay on it`}
