@@ -1,0 +1,11 @@
+{
+  "name": "Farsi Pen",
+  "short_name": "Farsi Pen",
+  "description": "Learn to read, write and speak Persian.",
+  "start_url": "./app/",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fbf7f0",
+  "theme_color": "#0e7c74",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
