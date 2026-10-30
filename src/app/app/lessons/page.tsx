@@ -56,11 +56,14 @@ export default function LessonsPage() {
               return (
                 <li key={l.id} className={cx(isCurrent && "pt-10")} style={{ transform: `translateX(${ZIGZAG[i % ZIGZAG.length]}px)` }}>
                   <Link href={`/app/lessons/${l.id}/`} aria-label={label} className="group flex w-40 flex-col items-center rounded-2xl text-center">
-                    <span className="relative">
+                    <span className="relative block size-[72px]">
                       {isCurrent && (
                         <>
-                          <Bubble className="absolute bottom-full left-1/2 mb-5 animate-bob whitespace-nowrap">{rec ? "Continue" : "Start"}</Bubble>
-                          <span className="absolute -inset-x-2.5 -top-[7px] -bottom-[13px] rounded-full border-[6px] border-firuze-soft" aria-hidden />
+                          {/* Positioned by a wrapper: Bubble's own `relative` would beat an `absolute` class and push the node down. */}
+                          <span className="absolute bottom-full left-1/2 mb-5 animate-bob whitespace-nowrap">
+                            <Bubble>{rec ? "Continue" : "Start"}</Bubble>
+                          </span>
+                          <span className="absolute -left-2.5 -top-[7px] size-[92px] rounded-full border-[6px] border-firuze-soft" aria-hidden />
                         </>
                       )}
                       <span
