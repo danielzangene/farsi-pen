@@ -10,8 +10,8 @@ import { Bubble, Fa, PageHeader } from "@/components/ui";
 const ZIGZAG = [0, 44, 66, 44, 0, -44, -66, -44];
 
 const NODE = {
-  done: "bg-saffron text-white shadow-[0_6px_0_var(--color-saffron-shadow)]",
-  current: "bg-firuze text-white shadow-[0_6px_0_var(--color-firuze-shadow)]",
+  done: "bg-saffron text-on-accent shadow-[0_6px_0_var(--color-saffron-shadow)]",
+  current: "bg-firuze text-on-accent shadow-[0_6px_0_var(--color-firuze-shadow)]",
   locked: "bg-line text-faint shadow-[0_6px_0_var(--color-line-strong)]",
 };
 
@@ -25,9 +25,9 @@ export default function LessonsPage() {
       <PageHeader title="Lessons" subtitle={`${done} of ${LESSONS.length} lessons complete`} />
       {LEVELS.map((level) => (
         <section key={level.id} aria-labelledby={`unit-${level.id}`}>
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-firuze p-5 text-white sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-firuze p-5 text-on-accent sm:p-6">
             <div className="min-w-0">
-              <p className="eyebrow inline-block rounded-full bg-firuze-shadow px-2.5 py-1 text-white">
+              <p className="eyebrow inline-block rounded-full bg-firuze-shadow px-2.5 py-1 text-on-accent">
                 Unit {level.id} · {level.cefr}
               </p>
               <h2 id={`unit-${level.id}`} className="mt-2 flex flex-wrap items-baseline gap-x-2 text-2xl font-extrabold">

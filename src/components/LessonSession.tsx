@@ -280,7 +280,7 @@ function Result({
     <>
       <SessionHeader exitHref={EXIT} progress={1} />
       <div className="flex flex-col items-center py-4 text-center">
-        <span className="grid size-24 animate-pop place-items-center rounded-full bg-saffron text-white">
+        <span className="grid size-24 animate-pop place-items-center rounded-full bg-saffron text-on-accent">
           <PartyPopper className="size-12" />
         </span>
         <h2 className="mt-5 text-3xl font-extrabold text-saffron-ink sm:text-4xl">Lesson complete!</h2>

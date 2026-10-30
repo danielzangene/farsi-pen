@@ -44,7 +44,7 @@ export default function BookmarksPage() {
     const good = Object.values(result.r.outcomes).filter((o) => o !== "again").length;
     return (
       <div className="mx-auto flex max-w-xl flex-col items-center pt-4 text-center sm:pt-10">
-        <span className="grid size-24 animate-pop place-items-center rounded-full bg-saffron text-white">
+        <span className="grid size-24 animate-pop place-items-center rounded-full bg-saffron text-on-accent">
           <Trophy className="size-12" />
         </span>
         <h1 className="mt-5 text-3xl font-extrabold text-saffron-ink sm:text-4xl">Bookmarks practised!</h1>

@@ -115,7 +115,7 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-5xl px-4 pb-20">
-        <div className="flex flex-col items-start justify-between gap-6 rounded-2xl bg-firuze p-8 text-white md:flex-row md:items-center">
+        <div className="flex flex-col items-start justify-between gap-6 rounded-2xl bg-firuze p-8 text-on-accent md:flex-row md:items-center">
           <div>
             <h2 className="text-2xl font-extrabold">Ready for your first word?</h2>
             <p className="mt-1 text-base font-bold">Progress is saved in your browser. Install it to your home screen to use it like an app.</p>

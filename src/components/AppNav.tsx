@@ -26,7 +26,7 @@ const EXTRA: NavItem[] = [
 export function Logo({ compact }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl text-2xl font-extrabold tracking-tight text-firuze-ink" aria-label="Farsi Pen home">
-      <span className="grid size-9 place-items-center rounded-xl bg-firuze text-white shadow-[0_3px_0_var(--color-firuze-shadow)]">
+      <span className="grid size-9 place-items-center rounded-xl bg-firuze text-on-accent shadow-[0_3px_0_var(--color-firuze-shadow)]">
         <PenLine className="size-5" strokeWidth={2.5} />
       </span>
       {!compact && <span>Farsi Pen</span>}

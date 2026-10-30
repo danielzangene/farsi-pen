@@ -12,6 +12,7 @@ import { gradeFor, isLearned, review, type StoredCard } from "./srs";
 
 export type Direction = "fa-en" | "en-fa";
 export type Outcome = "good" | "hard" | "again";
+export type Theme = "system" | "light" | "dark";
 
 export interface Settings {
   name: string;
@@ -23,6 +24,8 @@ export interface Settings {
   scriptOnly: boolean;
   showKeyboard: boolean;
   checklistHidden: boolean;
+  /** "system" follows the device setting. */
+  theme: Theme;
 }
 
 export interface ProgressState {
@@ -64,6 +67,7 @@ export const DEFAULT_STATE: ProgressState = {
     scriptOnly: false,
     showKeyboard: true,
     checklistHidden: false,
+    theme: "system",
   },
 };
 
@@ -84,12 +88,21 @@ function load(): ProgressState {
 
 function save(next: ProgressState) {
   state = next;
+  applyTheme(next.settings.theme);
   try {
     localStorage.setItem(KEY, JSON.stringify(next));
   } catch {
     // Private mode or storage full: progress stays in memory for this visit.
   }
   listeners.forEach((l) => l());
+}
+
+/** Set <html data-theme>; "system" removes it so the CSS media query decides. */
+export function applyTheme(theme: Theme) {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  if (theme === "system") delete root.dataset.theme;
+  else root.dataset.theme = theme;
 }
 
 function update(fn: (s: ProgressState) => ProgressState) {
