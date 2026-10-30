@@ -273,7 +273,7 @@ export function FeedbackSheet({
 export function StatCard({ label, value, tone = "saffron", icon }: { label: string; value: React.ReactNode; tone?: Tone; icon?: React.ReactNode }) {
   return (
     <div className={cx("animate-pop overflow-hidden rounded-2xl border-2", TONE[tone].border, TONE[tone].bg)}>
-      <p className="eyebrow py-1 text-center text-white">{label}</p>
+      <p className="eyebrow py-1 text-center text-on-accent">{label}</p>
       <div className={cx("m-0.5 mt-0 flex items-center justify-center gap-1.5 rounded-[0.8rem] bg-card px-3 py-3 text-xl font-extrabold", TONE[tone].ink)}>
         {icon}
         {value}
