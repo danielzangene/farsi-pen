@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, SearchX } from "lucide-react";
 import { LESSONS, LESSON_OF_WORD } from "@/content/lessons";
 import { WORDS } from "@/content/words";
 import { normalize } from "@/lib/answer";
@@ -34,18 +34,18 @@ export default function WordsPage() {
     });
   }, [q, topic, kind, status, s.cards]);
 
-  const select = "rounded-xl border border-line bg-card px-3 py-2 text-sm";
+  const select = "min-h-12 min-w-0 flex-1 cursor-pointer rounded-2xl border-2 border-line bg-paper px-3 text-sm font-bold text-ink transition-colors focus:border-sky focus:bg-card sm:flex-none";
 
   return (
     <div>
       <PageHeader title="Word Library" subtitle={`${WORDS.length} words and phrases`}>
         <CardControls showDirection={false} />
       </PageHeader>
-      <div className="mb-5 flex flex-wrap gap-2">
-        <label className="relative min-w-60 flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
+      <div className="mb-6 flex flex-wrap gap-2">
+        <label className="relative w-full sm:w-auto sm:min-w-60 sm:flex-1">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-5 -translate-y-1/2 text-faint" strokeWidth={2.5} />
           <input
-            className="input !py-2 !pl-9 !text-base"
+            className="input min-h-12 !py-2.5 !pl-11 !text-base"
             placeholder="Search English, Farsi or transliteration"
             value={q}
             onChange={(e) => {
@@ -77,7 +77,26 @@ export default function WordsPage() {
         </select>
       </div>
       {results.length === 0 ? (
-        <p className="card p-8 text-center text-muted">No words match. Try another search.</p>
+        <div className="card flex flex-col items-center px-6 py-10 text-center">
+          <span className="grid size-14 place-items-center rounded-full bg-paper text-faint">
+            <SearchX className="size-7" strokeWidth={2.5} />
+          </span>
+          <p className="mt-3 text-lg font-extrabold">No words match</p>
+          <p className="mt-1 font-semibold text-muted">Try another search or loosen the filters.</p>
+          <button
+            type="button"
+            className="btn-secondary btn-sm mt-4"
+            onClick={() => {
+              setQ("");
+              setTopic("all");
+              setKind("all");
+              setStatus("all");
+              setLimit(20);
+            }}
+          >
+            Clear filters
+          </button>
+        </div>
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -86,7 +105,7 @@ export default function WordsPage() {
             ))}
           </div>
           {results.length > limit && (
-            <div className="mt-5 flex justify-center gap-2">
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
               <button type="button" className="btn-secondary" onClick={() => setLimit(limit + 20)}>
                 Show 20 more
               </button>

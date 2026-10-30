@@ -12,7 +12,9 @@ export interface Lesson {
   wordIds: string[];
 }
 
-export const LEVELS = [{ id: 1, name: "Level 1 · First Steps", nameFa: "قدم\u200cهای اول", cefr: "A1" }];
+export const LEVELS = [{ id: 1, name: "Level 1 · First Steps", nameFa: "قدم\u200cهای اول", cefr: "A1",
+    description: "Greetings, courtesy, family, numbers and food: the words for your first conversations." },
+];
 
 export const LESSONS: Lesson[] = [
   {
