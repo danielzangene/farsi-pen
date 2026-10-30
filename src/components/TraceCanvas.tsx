@@ -6,7 +6,7 @@ import { cx } from "@/lib/util";
 const SIZE = 300; // CSS pixels
 const GRID = 60; // scoring resolution: 5px cells
 const REACH = 2; // cells of slack around strokes (~10px)
-const FONT = '"Vazirmatn Variable", Tahoma, sans-serif';
+const FONT = '"Yekan Bakh", Tahoma, sans-serif';
 
 function drawGlyph(ctx: CanvasRenderingContext2D, text: string, size: number, color: string) {
   ctx.clearRect(0, 0, size, size);

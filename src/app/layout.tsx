@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/vazirmatn";
 import "@fontsource-variable/fraunces";
 import "./globals.css";
 import { asset } from "@/lib/util";
