@@ -9,22 +9,65 @@
   font-display: swap;
 }
 
+/*
+ * Farsi Pen design tokens — see .claude/skills/farsi-pen-design-system.
+ * Style: flat, bright colours; every interactive colour has a darker
+ * "shadow" partner used for the 3D bottom edge; 2px borders; big radii;
+ * rounded, heavy type. Brand colours are Farsi Pen's own (firuze, saffron,
+ * anar), not another product's.
+ */
 @theme {
-  --color-paper: #fbf7f0;
+  /* Neutrals */
   --color-card: #ffffff;
-  --color-ink: #1c2433;
-  --color-muted: #6b6457;
-  --color-line: #e7dfd0;
-  --color-firuze: #0e7c74;
-  --color-firuze-dark: #0a5c56;
-  --color-firuze-soft: #e3f2ef;
-  --color-saffron: #d98a0b;
-  --color-saffron-soft: #fdf1dc;
-  --color-anar: #c2410c;
-  --color-anar-soft: #fde9df;
-  --font-display: "Fraunces Variable", Georgia, serif;
+  --color-paper: #f7f7f7;
+  --color-line: #e5e5e5;
+  --color-line-strong: #cecece;
+  --color-faint: #afafaf;
+  --color-muted: #737373;
+  --color-ink: #3c3c3c;
+
+  /* Brand: firuze (turquoise) — primary actions, current progress */
+  --color-firuze: #12a594;
+  --color-firuze-shadow: #0c7f72;
+  --color-firuze-soft: #ddf5f1;
+  --color-firuze-ink: #0b7a6e;
+
+  /* Correct / success */
+  --color-pista: #46a21c;
+  --color-pista-shadow: #36800f;
+  --color-pista-soft: #e3f6d5;
+  --color-pista-ink: #2e7a0c;
+
+  /* Incorrect / danger (anar = pomegranate) */
+  --color-anar: #e5484d;
+  --color-anar-shadow: #c0353a;
+  --color-anar-soft: #ffe5e5;
+  --color-anar-ink: #c0353a;
+
+  /* Rewards: XP, badges, done lessons (saffron) */
+  --color-saffron: #f5a623;
+  --color-saffron-shadow: #d38a0e;
+  --color-saffron-soft: #fff3d6;
+  --color-saffron-ink: #9a5b00;
+
+  /* Selection, audio, info */
+  --color-sky: #1e9be0;
+  --color-sky-shadow: #1679b2;
+  --color-sky-soft: #ddf1fc;
+  --color-sky-ink: #12669a;
+
+  /* Grammar accent */
+  --color-plum: #9b5de5;
+  --color-plum-shadow: #7a3fc2;
+  --color-plum-soft: #f1e8fc;
+  --color-plum-ink: #6d35b3;
+
+  --font-sans: "Nunito Variable", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  --font-display: "Nunito Variable", ui-rounded, system-ui, sans-serif;
   --font-fa: "Yekan Bakh", Tahoma, sans-serif;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-sheet: cubic-bezier(0.35, 1.5, 0.45, 0.9);
 }
 
 @layer base {
@@ -32,48 +75,304 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
-    background: var(--color-paper);
+    background: var(--color-card);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-weight: 500;
   }
   :focus-visible {
-    outline: 2px solid var(--color-firuze);
+    outline: 3px solid var(--color-sky);
     outline-offset: 2px;
   }
   [lang="fa"] {
     font-family: var(--font-fa);
     font-variation-settings: "DOTS" 1;
+    /* Letter-spacing breaks Persian letter joining; uppercase is meaningless. */
+    letter-spacing: 0;
+    text-transform: none;
   }
   :is(h1, h2, h3) [lang="fa"],
   :is(h1, h2, h3)[lang="fa"] {
     font-variation-settings: "DOTS" 0;
   }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
-@utility card {
-  @apply rounded-2xl border border-line bg-card;
-}
+/* ── Buttons ────────────────────────────────────────────────────────────
+   3D buttons: solid fill + a darker bottom edge (box-shadow) that the
+   button "sinks into" when pressed. Variants only set the colour vars. */
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  --btn-bg: var(--color-firuze);
+  --btn-shadow: var(--color-firuze-shadow);
+  --btn-fg: #fff;
+  --btn-border: transparent;
+  --btn-depth: 4px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border-radius: 1rem;
+  border: 2px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  box-shadow: 0 var(--btn-depth) 0 var(--btn-shadow);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transition:
+    transform 100ms ease-out,
+    box-shadow 100ms ease-out,
+    filter 150ms;
+  &:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+  &:active:not(:disabled) {
+    transform: translateY(var(--btn-depth));
+    box-shadow: 0 0 0 var(--btn-shadow);
+  }
+  &:disabled,
+  &[aria-disabled="true"] {
+    --btn-bg: var(--color-line);
+    --btn-shadow: var(--color-line);
+    --btn-fg: var(--color-faint);
+    --btn-border: transparent;
+    cursor: not-allowed;
+    filter: none;
+  }
 }
 @utility btn-primary {
-  @apply btn bg-firuze text-white hover:bg-firuze-dark;
+  @apply btn;
+}
+@utility btn-success {
+  @apply btn;
+  --btn-bg: var(--color-pista);
+  --btn-shadow: var(--color-pista-shadow);
+}
+@utility btn-danger {
+  @apply btn;
+  --btn-bg: var(--color-anar);
+  --btn-shadow: var(--color-anar-shadow);
+}
+@utility btn-sky {
+  @apply btn;
+  --btn-bg: var(--color-sky);
+  --btn-shadow: var(--color-sky-shadow);
+}
+@utility btn-plum {
+  @apply btn;
+  --btn-bg: var(--color-plum);
+  --btn-shadow: var(--color-plum-shadow);
 }
 @utility btn-secondary {
-  @apply btn border border-line bg-card text-ink hover:bg-paper;
+  @apply btn;
+  --btn-bg: var(--color-card);
+  --btn-border: var(--color-line);
+  --btn-shadow: var(--color-line);
+  --btn-fg: var(--color-firuze-ink);
+  &:hover:not(:disabled) {
+    filter: none;
+    --btn-bg: var(--color-paper);
+  }
 }
+/* Flat text button for low-emphasis actions (skip, back, icon actions). */
 @utility btn-ghost {
-  @apply btn text-muted hover:bg-line/50 hover:text-ink;
+  @apply btn;
+  --btn-bg: transparent;
+  --btn-shadow: transparent;
+  --btn-fg: var(--color-muted);
+  --btn-depth: 0px;
+  &:hover:not(:disabled) {
+    filter: none;
+    --btn-bg: var(--color-paper);
+    --btn-fg: var(--color-ink);
+  }
+  &:disabled {
+    --btn-bg: transparent;
+    --btn-fg: var(--color-line-strong);
+  }
 }
-@utility chip {
-  @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium;
+@utility btn-sm {
+  min-height: 2.25rem;
+  padding: 0 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  --btn-depth: 3px;
 }
-@utility input {
-  @apply w-full rounded-xl border border-line bg-card px-4 py-3 text-lg outline-none focus:border-firuze focus:ring-2 focus:ring-firuze/20;
+@utility btn-lg {
+  min-height: 3.5rem;
+  padding: 0 1.75rem;
+  font-size: 1rem;
+}
+/* Square icon-only button; pair with btn-ghost / btn-secondary. */
+@utility btn-icon {
+  min-height: 2.5rem;
+  width: 2.5rem;
+  padding: 0;
+  border-radius: 0.75rem;
+  letter-spacing: 0;
 }
 
-/* Faint tile pattern used behind hero areas. */
+/* ── Surfaces ───────────────────────────────────────────────────────── */
+/* Static container: 2px border, no depth. */
+@utility card {
+  border-radius: 1rem;
+  border: 2px solid var(--color-line);
+  background: var(--color-card);
+}
+/* Tappable surface with a thicker bottom edge (options, list rows, cards
+   that navigate). State via data-state: selected | correct | wrong. */
+@utility tile {
+  display: block;
+  border-radius: 1rem;
+  border: 2px solid var(--color-line);
+  border-bottom-width: 4px;
+  background: var(--color-card);
+  transition:
+    transform 100ms ease-out,
+    border-color 150ms,
+    background-color 150ms;
+  &:is(a, button):hover:not(:disabled) {
+    background: var(--color-paper);
+  }
+  &:is(a, button):active:not(:disabled) {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+    margin-bottom: 2px;
+  }
+  &[data-state="selected"] {
+    border-color: var(--color-sky);
+    background: var(--color-sky-soft);
+    color: var(--color-sky-ink);
+  }
+  &[data-state="correct"] {
+    border-color: var(--color-pista);
+    background: var(--color-pista-soft);
+    color: var(--color-pista-ink);
+  }
+  &[data-state="wrong"] {
+    border-color: var(--color-anar);
+    background: var(--color-anar-soft);
+    color: var(--color-anar-ink);
+  }
+  &[data-state="current"] {
+    border-color: var(--color-firuze);
+  }
+}
+
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+@utility input {
+  width: 100%;
+  border-radius: 1rem;
+  border: 2px solid var(--color-line);
+  background: var(--color-paper);
+  padding: 0.75rem 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 150ms;
+  &:focus {
+    border-color: var(--color-sky);
+    background: var(--color-card);
+  }
+  &::placeholder {
+    color: var(--color-faint);
+  }
+}
+
+/* Small heavy uppercase label used above sections and in stat cards. */
+@utility eyebrow {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Motion ─────────────────────────────────────────────────────────── */
+@keyframes pop-in {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -4px);
+  }
+}
+@utility animate-pop {
+  animation: pop-in 250ms var(--ease-spring) both;
+}
+@utility animate-slide-up {
+  animation: slide-up 220ms var(--ease-sheet) both;
+}
+@utility animate-shake {
+  animation: shake 350ms ease-in-out;
+}
+@utility animate-bob {
+  animation: bob 1.6s ease-in-out infinite;
+}
+
+/* Faint dot pattern used behind hero areas. */
 .tile-bg {
-  background-image: radial-gradient(circle at 1px 1px, rgb(14 124 116 / 0.12) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgb(18 165 148 / 0.14) 1px, transparent 0);
   background-size: 18px 18px;
+}
+
+/* Sessions (lessons, practice, exercises) hide the app chrome. */
+body[data-focus] .app-nav {
+  display: none;
 }

@@ -32,11 +32,11 @@ export default function AlphabetPage() {
         />
       </PageHeader>
 
-      <div className="mb-6 flex items-center gap-3 text-sm text-muted">
-        <span className="whitespace-nowrap">
+      <div className="mb-6 flex items-center gap-3">
+        <span className="eyebrow whitespace-nowrap text-muted">
           Traced {traced}/{LETTERS.length}
         </span>
-        <ProgressBar value={traced / LETTERS.length} className="flex-1" />
+        <ProgressBar value={traced / LETTERS.length} tone="pista" className="flex-1" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
@@ -46,6 +46,7 @@ export default function AlphabetPage() {
         <div className="grid grid-cols-4 gap-2 self-start sm:grid-cols-6 lg:order-1 lg:grid-cols-6" dir="rtl">
           {shown.map((l) => {
             const done = (s.traced[l.id] ?? 0) >= TRACE_PASS;
+            const on = selected.id === l.id;
             return (
               <button
                 key={l.id}
@@ -54,19 +55,21 @@ export default function AlphabetPage() {
                   setSelected(l);
                   if (window.innerWidth < 1024) detailRef.current?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className={cx(
-                  "card relative flex aspect-square flex-col items-center justify-center transition hover:border-firuze",
-                  selected.id === l.id && "!border-firuze !bg-firuze-soft",
-                )}
+                data-state={on ? "selected" : undefined}
+                className="tile relative flex aspect-square flex-col items-center justify-center"
                 aria-label={`${l.name}, sounds like ${l.sound}`}
-                aria-pressed={selected.id === l.id}
+                aria-pressed={on}
               >
                 <Fa className="text-3xl leading-none">{l.char}</Fa>
-                <span className="mt-1 text-[11px] text-muted" dir="ltr">
+                <span className={cx("mt-1.5 text-[11px] font-bold", on ? "text-sky-ink" : "text-muted")} dir="ltr">
                   {l.name}
                 </span>
-                {done && <Check className="absolute left-1.5 top-1.5 size-3.5 text-firuze" />}
-                {l.persianOnly && <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-saffron" title="Unique to Persian" />}
+                {done && (
+                  <span className="absolute left-1 top-1 grid size-4 place-items-center rounded-full bg-pista text-white">
+                    <Check className="size-3" strokeWidth={4} />
+                  </span>
+                )}
+                {l.persianOnly && <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-saffron" title="Unique to Persian" />}
               </button>
             );
           })}
@@ -84,16 +87,16 @@ function LetterDetail({ letter }: { letter: Letter }) {
   const best = s.traced[letter.id] ?? 0;
 
   return (
-    <div className="card p-5 lg:sticky lg:top-20">
+    <div className="card p-4 sm:p-5 lg:sticky lg:top-20">
       <div className="flex items-start gap-4">
-        <Fa className="grid size-20 shrink-0 place-items-center rounded-2xl bg-firuze-soft text-5xl text-firuze">{letter.char}</Fa>
-        <div>
-          <h2 className="font-display text-2xl font-semibold">{letter.name}</h2>
-          <p className="text-muted">
-            Sound: <strong className="text-ink">{letter.sound}</strong>
+        <Fa className="grid size-20 shrink-0 place-items-center rounded-2xl bg-firuze-soft text-5xl text-firuze-ink">{letter.char}</Fa>
+        <div className="min-w-0">
+          <h2 className="text-2xl font-extrabold">{letter.name}</h2>
+          <p className="font-semibold text-muted">
+            Sound: <strong className="font-extrabold text-ink">{letter.sound}</strong>
           </p>
-          <div className="mt-1 flex flex-wrap gap-1">
-            {letter.persianOnly && <span className="chip bg-saffron-soft text-saffron">Unique to Persian</span>}
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {letter.persianOnly && <span className="chip bg-saffron-soft text-saffron-ink">Unique to Persian</span>}
             {!letter.connects && <span className="chip bg-paper text-muted">Doesn’t join to the next letter</span>}
           </div>
         </div>
@@ -105,36 +108,37 @@ function LetterDetail({ letter }: { letter: Letter }) {
             key={f}
             type="button"
             onClick={() => setForm(f)}
-            className={cx("rounded-xl border p-2 text-center transition", form === f ? "border-firuze bg-firuze-soft" : "border-line hover:border-firuze")}
+            data-state={form === f ? "selected" : undefined}
+            className="tile px-1 py-2 text-center"
             aria-pressed={form === f}
           >
             <Fa className="block text-3xl leading-[1.6]">{forms[f]}</Fa>
-            <span className="text-[11px] text-muted">{FORM_LABELS[f]}</span>
+            <span className={cx("eyebrow text-[10px]", form === f ? "text-sky-ink" : "text-muted")}>{FORM_LABELS[f]}</span>
           </button>
         ))}
       </div>
 
-      <div className="mt-4 flex items-center justify-between rounded-xl bg-paper p-3">
-        <div>
+      <div className="mt-4 flex items-center justify-between gap-2 rounded-2xl bg-paper p-3">
+        <div className="min-w-0">
           <Fa className="text-2xl">{letter.example.fa}</Fa>
           <p className="text-sm">
-            <span className="font-semibold">{letter.example.tr}</span> <span className="text-muted">· {letter.example.en}</span>
+            <span className="font-extrabold">{letter.example.tr}</span> <span className="font-semibold text-muted">· {letter.example.en}</span>
           </p>
         </div>
         <AudioButtons text={letter.example.fa} compact />
       </div>
       {letter.note && (
-        <p className="mt-2 flex gap-1.5 text-xs text-muted">
+        <p className="mt-2 flex gap-1.5 text-xs font-semibold text-muted">
           <Info className="size-3.5 shrink-0" /> {letter.note}
         </p>
       )}
 
-      <div className="mt-5 border-t border-line pt-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-semibold">
-            Trace it <span className="text-sm font-normal text-muted">({FORM_LABELS[form].toLowerCase()} form)</span>
+      <div className="mt-5 border-t-2 border-line pt-4">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h3 className="font-extrabold">
+            Trace it <span className="text-sm font-semibold text-muted">({FORM_LABELS[form].toLowerCase()} form)</span>
           </h3>
-          {best > 0 && <span className={cx("chip", best >= TRACE_PASS ? "bg-firuze-soft text-firuze" : "bg-paper text-muted")}>Best {best}</span>}
+          {best > 0 && <span className={cx("chip", best >= TRACE_PASS ? "bg-pista-soft text-pista-ink" : "bg-paper text-muted")}>Best {best}</span>}
         </div>
         <TraceCanvas
           key={form}
@@ -145,8 +149,14 @@ function LetterDetail({ letter }: { letter: Letter }) {
             setXpMsg(xp ? `+${xp} XP` : null);
           }}
         />
-        {xpMsg && <p className="mt-2 text-center text-sm font-semibold text-saffron">{xpMsg}</p>}
-        <p className="mt-3 text-center text-xs text-muted">Write right to left, and don’t forget the dots. Stroke-order hints are coming next.</p>
+        {xpMsg && (
+          <p className="mt-2 text-center">
+            <span key={xpMsg} className="chip animate-pop bg-saffron-soft text-saffron-ink">
+              {xpMsg}
+            </span>
+          </p>
+        )}
+        <p className="mt-3 text-center text-xs font-semibold text-muted">Write right to left, and don’t forget the dots. Stroke-order hints are coming next.</p>
       </div>
     </div>
   );

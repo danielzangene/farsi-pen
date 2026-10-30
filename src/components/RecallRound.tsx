@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import { CheckCircle2, CircleAlert, EyeOff, Keyboard, RotateCcw } from "lucide-react";
+import { EyeOff, Keyboard, RotateCcw, X } from "lucide-react";
 import type { Word } from "@/content/words";
 import type { CheckResult } from "@/lib/answer";
 import { checkWord } from "@/lib/quiz";
@@ -8,13 +8,32 @@ import { toggleHidden, updateSettings, useProgress, type Outcome, type SessionSu
 import { cx } from "@/lib/util";
 import { PersianKeyboard } from "./PersianKeyboard";
 import { ReportButton } from "./ReportButton";
-import { AudioButtons, BookmarkButton, Fa, FaWord, ProgressBar } from "./ui";
+import { AudioButtons, BookmarkButton, Fa, FaWord, FeedbackSheet, FocusMode, ProgressBar, SessionHeader } from "./ui";
 
 /**
  * Typed recall used by lesson round 2, Daily Practice and bookmark practice.
  * Missed words go to the back of the queue until answered correctly.
  */
-export function RecallRound({ words, label, onDone }: { words: Word[]; label: string; onDone: (r: SessionSummary) => void }) {
+export function RecallRound({
+  words,
+  label,
+  onDone,
+  exitHref = "/app/",
+  onExit,
+  progressSpan = [0, 1],
+  toolbar,
+}: {
+  words: Word[];
+  label: string;
+  onDone: (r: SessionSummary) => void;
+  exitHref?: string;
+  /** Called by the X instead of navigating to exitHref (e.g. when exiting stays on the same route). */
+  onExit?: () => void;
+  /** Slice of the session-wide progress bar this round fills, e.g. [2/3, 1]. */
+  progressSpan?: [number, number];
+  /** Controls shown under the session header (e.g. CardControls). */
+  toolbar?: React.ReactNode;
+}) {
   const { settings } = useProgress();
   const [queue, setQueue] = useState(() => words.map((w) => w.id));
   const [outcomes, setOutcomes] = useState<Record<string, Outcome>>({});
@@ -81,37 +100,55 @@ export function RecallRound({ words, label, onDone }: { words: Word[]; label: st
 
   if (!word) return null;
   const retry = word.id in outcomes && !result;
+  const verdict = result?.verdict;
+  // The bar moves as soon as a word is answered right, not on Continue.
+  const done = doneCount + (verdict && verdict !== "wrong" ? 1 : 0);
+  const [spanFrom, spanTo] = progressSpan;
+  const answer = toFarsi ? (
+    <>
+      {word.tr} · <Fa className="text-base">{word.fa}</Fa>
+    </>
+  ) : (
+    word.en
+  );
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-3 text-sm text-muted">
-        <span className="whitespace-nowrap">{label}</span>
-        <ProgressBar value={doneCount / words.length} className="flex-1" />
-        <span>
-          {doneCount}/{words.length}
-        </span>
-      </div>
+      <RoundHeader
+        exitHref={exitHref}
+        onExit={onExit}
+        progress={spanFrom + ((spanTo - spanFrom) * done) / words.length}
+        right={
+          <span className="text-sm font-extrabold tabular-nums text-muted">
+            {done}/{words.length}
+          </span>
+        }
+      />
+      {toolbar && <div className="-mt-3 mb-5 flex justify-center">{toolbar}</div>}
 
-      <div className="card flex flex-col items-center gap-2 p-6 text-center sm:p-8">
+      <p className="eyebrow text-firuze-ink">{label}</p>
+      <h2 className="mt-1 text-2xl font-extrabold">{toFarsi ? "Write this in Farsi" : "Write this in English"}</h2>
+      {toFarsi && <p className="mt-1 text-sm font-semibold text-muted">Persian script or Latin letters both work.</p>}
+
+      <div className="card mt-5 flex flex-col items-center gap-3 p-6 text-center sm:p-8">
         {retry && (
-          <span className="chip bg-saffron-soft text-saffron">
+          <span className="chip bg-saffron-soft text-saffron-ink">
             <RotateCcw className="size-3" /> Let&apos;s try this one again
           </span>
         )}
-        <p className="text-sm text-muted">{toFarsi ? "Type it in Farsi (script or Latin letters)" : "Type the English meaning"}</p>
         {toFarsi ? (
-          <p className="font-display text-3xl font-semibold">{word.en}</p>
+          <p className="text-3xl font-extrabold">{word.en}</p>
         ) : (
           <>
             <FaWord word={word} settings={settings} size="xl" />
-            {!settings.scriptOnly && <p className="text-sm text-muted">sounds like “{word.soundsLike}”</p>}
-            <AudioButtons text={word.fa} />
+            {!settings.scriptOnly && <p className="font-semibold text-muted">sounds like “{word.soundsLike}”</p>}
+            <AudioButtons text={word.fa} big />
           </>
         )}
       </div>
 
       <form
-        className="mt-4 space-y-3"
+        className="mt-5 space-y-3"
         onSubmit={(e) => {
           e.preventDefault();
           if (result) next();
@@ -123,9 +160,9 @@ export function RecallRound({ words, label, onDone }: { words: Word[]; label: st
             ref={inputRef}
             className={cx(
               "input",
-              result?.verdict === "correct" && "!border-firuze",
-              result?.verdict === "almost" && "!border-saffron",
-              result?.verdict === "wrong" && "!border-anar",
+              verdict === "correct" && "!border-pista",
+              verdict === "almost" && "!border-saffron",
+              verdict === "wrong" && "animate-shake !border-anar",
             )}
             dir="auto"
             lang={toFarsi ? "fa" : "en"}
@@ -143,72 +180,85 @@ export function RecallRound({ words, label, onDone }: { words: Word[]; label: st
           {toFarsi && (
             <button
               type="button"
-              className={cx("btn-secondary !px-3", settings.showKeyboard && "!border-firuze !text-firuze")}
+              className={cx(settings.showKeyboard ? "btn-sky" : "btn-secondary", "btn-icon !size-14 shrink-0")}
               onClick={() => updateSettings({ showKeyboard: !settings.showKeyboard })}
               aria-pressed={settings.showKeyboard}
               aria-label="Toggle Persian keyboard"
             >
-              <Keyboard className="size-5" />
+              <Keyboard className="size-6" />
             </button>
           )}
         </div>
         {toFarsi && settings.showKeyboard && !result && <PersianKeyboard onKey={insert} onBackspace={backspace} />}
 
-        {result && <Feedback word={word} result={result} toFarsi={toFarsi} />}
+        {result && <Context word={word} />}
 
-        <div className="flex justify-end">
-          {result ? (
-            <button key="continue" type="submit" className="btn-primary" autoFocus>
-              {result.verdict === "wrong" ? "Got it, continue" : "Continue"}
-            </button>
-          ) : (
-            <button key="check" type="submit" className="btn-primary" disabled={!input.trim()}>
-              Check
-            </button>
-          )}
-        </div>
+        <FeedbackSheet
+          state={verdict ?? "idle"}
+          title={verdict === "correct" ? "Correct!" : verdict === "almost" ? "Almost — watch the spelling" : "Not quite"}
+          detail={
+            verdict === "almost" ? (
+              <>
+                Accepted spelling: <strong className="font-extrabold">{result?.closest}</strong>
+              </>
+            ) : verdict === "wrong" ? (
+              <>
+                Answer: <strong className="font-extrabold">{answer}</strong>
+                <span className="block">We&apos;ll come back to this one.</span>
+              </>
+            ) : undefined
+          }
+          onContinue={next}
+          continueLabel={verdict === "wrong" ? "Got it" : "Continue"}
+        >
+          <p className="hidden text-sm font-semibold text-muted sm:block">Press Enter to check</p>
+          <button key="check" type="submit" className="btn-primary btn-lg w-full sm:w-auto sm:min-w-40" disabled={!input.trim()}>
+            Check
+          </button>
+        </FeedbackSheet>
       </form>
     </div>
   );
 }
 
-function Feedback({ word, result, toFarsi }: { word: Word; result: CheckResult; toFarsi: boolean }) {
-  const { verdict } = result;
-  const answer = toFarsi ? `${word.tr} · ${word.fa}` : word.en;
+/** Example sentence, note and word actions, shown after an answer above the feedback sheet. */
+function Context({ word }: { word: Word }) {
+  const { settings } = useProgress();
   return (
-    <div
-      role="status"
-      className={cx(
-        "rounded-2xl border p-4",
-        verdict === "correct" && "border-firuze/30 bg-firuze-soft",
-        verdict === "almost" && "border-saffron/30 bg-saffron-soft",
-        verdict === "wrong" && "border-anar/30 bg-anar-soft",
-      )}
-    >
-      <p className="flex items-center gap-2 font-semibold">
-        {verdict === "wrong" ? <CircleAlert className="size-5 text-anar" /> : <CheckCircle2 className={cx("size-5", verdict === "correct" ? "text-firuze" : "text-saffron")} />}
-        {verdict === "correct" && "Correct!"}
-        {verdict === "almost" && "Almost — check your spelling"}
-        {verdict === "wrong" && "Not quite. We'll come back to this one."}
-      </p>
-      {verdict !== "correct" && (
-        <p className="mt-1 text-sm">
-          Answer: <strong>{verdict === "almost" ? result.closest : answer}</strong>
-        </p>
-      )}
-      <div className="mt-3 border-t border-black/5 pt-3 text-sm">
-        <Fa className="block text-lg">{word.example.fa}</Fa>
-        <p className="text-muted">{word.example.tr}</p>
-        <p>{word.example.en}</p>
-        {word.note && <p className="mt-2 text-xs text-muted">💡 {word.note}</p>}
-      </div>
-      <div className="mt-2 flex flex-wrap items-center gap-1">
+    <div className="card animate-pop p-4">
+      <Fa className="block text-lg">{word.example.fa}</Fa>
+      {!settings.scriptOnly && <p className="text-sm font-semibold text-muted">{word.example.tr}</p>}
+      <p className="font-semibold">{word.example.en}</p>
+      {word.note && <p className="mt-2 text-sm text-muted">💡 {word.note}</p>}
+      <div className="mt-2 flex items-center justify-between gap-1 border-t-2 border-line pt-2">
         <AudioButtons text={word.example.fa} />
-        <BookmarkButton wordId={word.id} />
-        <button type="button" className="btn-ghost !p-2" onClick={() => toggleHidden(word.id)} title="Hide this word from practice" aria-label="Hide from practice">
-          <EyeOff className="size-5" />
+        <div className="flex items-center gap-1">
+          <BookmarkButton wordId={word.id} />
+          <button type="button" className="btn-ghost btn-icon" onClick={() => toggleHidden(word.id)} title="Hide this word from practice" aria-label="Hide from practice">
+            <EyeOff className="size-5" />
+          </button>
+          <ReportButton itemId={word.id} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * SessionHeader, or the same layout with a button X when the caller needs a
+ * callback (SessionHeader only takes a link).
+ */
+function RoundHeader({ exitHref, onExit, progress, right }: { exitHref: string; onExit?: () => void; progress: number; right?: React.ReactNode }) {
+  if (!onExit) return <SessionHeader exitHref={exitHref} progress={progress} right={right} />;
+  return (
+    <div className="sticky top-0 z-30 -mx-4 mb-6 bg-card/95 px-4 py-3 backdrop-blur">
+      <FocusMode />
+      <div className="mx-auto flex max-w-3xl items-center gap-3">
+        <button type="button" onClick={onExit} className="btn-ghost btn-icon -ml-2" aria-label="Quit session">
+          <X className="size-6" strokeWidth={3} />
         </button>
-        <ReportButton itemId={word.id} />
+        <ProgressBar value={progress} className="flex-1" />
+        {right}
       </div>
     </div>
   );
