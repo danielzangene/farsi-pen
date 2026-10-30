@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/fraunces";
+import "@fontsource-variable/nunito";
 import "./globals.css";
 import { asset } from "@/lib/util";
 
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0e7c74",
+  themeColor: "#12a594",
   width: "device-width",
   initialScale: 1,
 };

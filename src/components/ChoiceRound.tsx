@@ -5,102 +5,183 @@ import type { Word } from "@/content/words";
 import { choiceOptions } from "@/lib/quiz";
 import { useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
-import { AudioButtons, Fa, FaWord, ProgressBar } from "./ui";
+import { AudioButtons, Fa, FaWord, FeedbackSheet, SessionHeader } from "./ui";
 
-/** Round 1 — Recognition: 4-option multiple choice, one pass. */
-export function ChoiceRound({ words, onDone }: { words: Word[]; onDone: (correctIds: string[]) => void }) {
+type OptionState = "idle" | "selected" | "correct" | "wrong";
+
+const BADGE: Record<OptionState, string> = {
+  idle: "border-line text-muted",
+  selected: "border-sky text-sky-ink",
+  correct: "border-pista bg-pista text-white",
+  wrong: "border-anar bg-anar text-white",
+};
+
+/** Round 1 — Recognition: 4-option multiple choice, one pass. Select, then Check. */
+export function ChoiceRound({
+  words,
+  onDone,
+  exitHref = "/app/lessons/",
+  progressSpan = [0, 1],
+  toolbar,
+}: {
+  words: Word[];
+  onDone: (correctIds: string[]) => void;
+  exitHref?: string;
+  /** Slice of the session-wide progress bar this round fills, e.g. [1/3, 2/3]. */
+  progressSpan?: [number, number];
+  /** Controls shown under the session header (e.g. CardControls). */
+  toolbar?: React.ReactNode;
+}) {
   const { settings } = useProgress();
   const [index, setIndex] = useState(0);
-  const [picked, setPicked] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [checked, setChecked] = useState(false);
   const [correct, setCorrect] = useState<string[]>([]);
   const word = words[index];
   const options = useMemo(() => choiceOptions(word, words), [word, words]);
   const faToEn = settings.direction === "fa-en";
+  const gotIt = checked && selected === word.id;
 
-  const pick = (id: string) => {
-    if (picked) return;
-    setPicked(id);
-    if (id === word.id) setCorrect((c) => [...c, word.id]);
+  const select = (id: string) => {
+    if (!checked) setSelected(id);
+  };
+
+  const check = () => {
+    if (!selected || checked) return;
+    setChecked(true);
+    if (selected === word.id) setCorrect((c) => [...c, word.id]);
   };
 
   const next = () => {
     if (index + 1 < words.length) {
       setIndex(index + 1);
-      setPicked(null);
+      setSelected(null);
+      setChecked(false);
     } else onDone(correct);
   };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      // Focused buttons handle Enter themselves; don't advance twice.
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLButtonElement) return;
-      if (picked && e.key === "Enter") next();
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target instanceof Element ? e.target : null;
+      if (el?.closest("input, textarea, select, [contenteditable]")) return;
+      if (e.key === "Enter") {
+        // Focused buttons/links (Check, Continue, the X) handle Enter
+        // themselves; acting here too would advance twice. Option tiles are
+        // the exception: Enter on a tile checks instead of re-selecting it.
+        const control = el?.closest("a, button");
+        if (control && !control.hasAttribute("data-option")) return;
+        e.preventDefault();
+        if (checked) next();
+        else check();
+        return;
+      }
       const n = ["1", "2", "3", "4", "a", "b", "c", "d"].indexOf(e.key.toLowerCase()) % 4;
-      if (!picked && n >= 0 && options[n]) pick(options[n].id);
+      if (n >= 0 && options[n]) select(options[n].id);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
 
+  const [from, to] = progressSpan;
+  const local = (index + (checked ? 1 : 0)) / words.length;
+  const answerText = faToEn ? (
+    word.en
+  ) : settings.scriptOnly ? (
+    <Fa className="text-base">{word.fa}</Fa>
+  ) : (
+    <>
+      {word.tr} · <Fa className="text-base">{word.fa}</Fa>
+    </>
+  );
+
   return (
     <div>
-      <div className="mb-4 flex items-center gap-3 text-sm text-muted">
-        <span className="whitespace-nowrap">Round 1 · Recognition</span>
-        <ProgressBar value={index / words.length} className="flex-1" />
-        <span>
-          {index + 1}/{words.length}
-        </span>
-      </div>
-      <div className="card flex flex-col items-center gap-2 p-6 text-center sm:p-8">
-        <p className="text-sm text-muted">{faToEn ? "What does this mean?" : "How do you say this in Farsi?"}</p>
+      <SessionHeader
+        exitHref={exitHref}
+        progress={from + (to - from) * local}
+        right={
+          <span className="text-sm font-extrabold tabular-nums text-muted">
+            {index + 1}/{words.length}
+          </span>
+        }
+      />
+      {toolbar && <div className="-mt-3 mb-5 flex justify-center">{toolbar}</div>}
+
+      <h2 className="text-2xl font-extrabold">{faToEn ? "Select the correct meaning" : "How do you say this?"}</h2>
+
+      <div className="my-8 flex items-center justify-center gap-4 text-center">
         {faToEn ? (
           <>
+            <AudioButtons text={word.fa} big compact />
             <FaWord word={word} settings={settings} size="xl" />
-            <AudioButtons text={word.fa} compact />
           </>
         ) : (
-          <p className="font-display text-3xl font-semibold">{word.en}</p>
+          <p className="text-3xl font-extrabold">{word.en}</p>
         )}
       </div>
-      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+
+      <div className="grid gap-3 sm:grid-cols-2">
         {options.map((o, i) => {
           const isAnswer = o.id === word.id;
-          const state = picked ? (isAnswer ? "right" : o.id === picked ? "wrong" : "idle") : "idle";
+          const state: OptionState = checked
+            ? isAnswer
+              ? "correct"
+              : o.id === selected
+                ? "wrong"
+                : "idle"
+            : o.id === selected
+              ? "selected"
+              : "idle";
           return (
             <button
               key={o.id}
               type="button"
-              onClick={() => pick(o.id)}
+              data-option=""
+              data-state={state === "idle" ? undefined : state}
+              aria-pressed={o.id === selected}
+              disabled={checked}
+              onClick={() => select(o.id)}
               className={cx(
-                "card flex min-h-14 items-center gap-3 px-4 py-3 text-left transition",
-                !picked && "hover:border-firuze hover:bg-firuze-soft/40",
-                state === "right" && "!border-firuze !bg-firuze-soft",
-                state === "wrong" && "!border-anar !bg-anar-soft",
+                "tile flex min-h-16 w-full items-center gap-3 px-4 py-3 text-start",
+                state === "wrong" && "animate-shake",
+                checked && state === "idle" && "opacity-50",
               )}
             >
-              <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-paper text-xs font-bold text-muted">
-                {state === "right" ? <Check className="size-4 text-firuze" /> : state === "wrong" ? <X className="size-4 text-anar" /> : "ABCD"[i]}
+              <span className={cx("grid size-8 shrink-0 place-items-center rounded-lg border-2 text-sm font-extrabold", BADGE[state])}>
+                {state === "correct" ? (
+                  <Check className="size-4" strokeWidth={3} aria-label="Correct" />
+                ) : state === "wrong" ? (
+                  <X className="size-4" strokeWidth={3} aria-label="Wrong" />
+                ) : (
+                  i + 1
+                )}
               </span>
               {faToEn ? (
-                <span className="font-medium">{o.en}</span>
+                <span className="text-lg font-bold">{o.en}</span>
               ) : settings.scriptOnly || settings.script === "farsi" ? (
-                <Fa className="text-xl">{o.fa}</Fa>
+                <Fa className="text-xl font-bold">{o.fa}</Fa>
               ) : (
-                <span className="font-medium">
-                  {o.tr} <Fa className="ms-2 text-muted">{o.fa}</Fa>
+                <span className="text-lg font-bold">
+                  {o.tr} <Fa className="ms-2 font-semibold opacity-70">{o.fa}</Fa>
                 </span>
               )}
             </button>
           );
         })}
       </div>
-      {picked && (
-        <div className="mt-4 flex justify-end">
-          <button type="button" className="btn-primary" onClick={next} autoFocus>
-            Continue <kbd className="rounded bg-white/20 px-1.5 text-[10px]">Enter</kbd>
-          </button>
-        </div>
-      )}
+
+      <FeedbackSheet
+        state={checked ? (gotIt ? "correct" : "wrong") : "idle"}
+        title={gotIt ? "Nicely done!" : "Correct answer:"}
+        detail={gotIt ? undefined : <span className="text-base font-bold">{answerText}</span>}
+        onContinue={next}
+      >
+        <p className="hidden text-sm font-semibold text-muted sm:block">Press 1–4 to pick, Enter to check</p>
+        <button type="button" className="btn-primary btn-lg w-full sm:w-auto sm:min-w-40" disabled={!selected} onClick={check}>
+          Check
+        </button>
+      </FeedbackSheet>
     </div>
   );
 }

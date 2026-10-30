@@ -1,0 +1,125 @@
+---
+name: farsi-pen-design-system
+description: Farsi Pen's UI design system — tokens, 3D buttons, tiles, session layout, path, feedback sheet, motion and copy rules, modelled on the playful style of leading language-learning apps but with Farsi Pen's own brand. Use before building, changing or reviewing any screen or component in this project (src/app, src/components, globals.css).
+---
+
+# Farsi Pen design system
+
+Farsi Pen's UI follows the *style* that made gamified language apps (Duolingo above all) feel friendly: flat bright colour, chunky 3D buttons, bordered tiles, heavy rounded type, one clear action per screen, and instant colourful feedback. It does **not** copy any other product's brand.
+
+Source of truth in code:
+- Tokens and utility classes: `src/app/globals.css`
+- React primitives: `src/components/ui.tsx`
+- Research notes and references: `docs/design-system.md`
+
+## 1. Brand guardrails (non-negotiable)
+
+Spec §3 forbids copying another product's branding. So:
+- **Never** use the Duolingo owl or any mascot lookalike, logo, the name in UI copy, their illustrations, their Feather/DIN Round fonts, or their exact brand green `#58CC02` as our primary.
+- **Do** use the general patterns: 3D buttons, tile borders, session header + bottom feedback sheet, path of round nodes, stat cards, playful copy.
+- Our primary is **firuze** (turquoise). Our reward colour is **saffron**. Error is **anar** (pomegranate). These names are deliberate Persian references; keep them.
+
+## 2. Tokens
+
+| Token | Hex | Role |
+|---|---|---|
+| `firuze` / `-shadow` / `-soft` / `-ink` | #12a594 / #0c7f72 / #ddf5f1 / #0b7a6e | Primary action, current lesson, brand |
+| `pista` (pistachio) | #46a21c / #36800f / #e3f6d5 / #2e7a0c | Correct answer, success, Continue after correct |
+| `anar` (pomegranate) | #e5484d / #c0353a / #ffe5e5 / #c0353a | Wrong answer, streak flame, destructive |
+| `saffron` | #f5a623 / #d38a0e / #fff3d6 / #9a5b00 | XP, badges, completed path nodes, rewards |
+| `sky` | #1e9be0 / #1679b2 / #ddf1fc / #12669a | Selected option, audio, focus ring, links |
+| `plum` | #9b5de5 / #7a3fc2 / #f1e8fc / #6d35b3 | Grammar, "Formal" tag |
+| `ink` / `muted` / `faint` | #3c3c3c / #737373 / #afafaf | Text: body / secondary / disabled |
+| `line` / `line-strong` / `paper` / `card` | #e5e5e5 / #cecece / #f7f7f7 / #ffffff | Borders / pressed borders / subtle fill / surfaces |
+
+Rules:
+- Every coloured interactive element pairs a fill with its `-shadow` for the 3D edge.
+- Text on a soft background uses the matching `-ink` (AA contrast). Never put `muted` text on a coloured fill.
+- Page background is white (`card`); `paper` is for inputs, inset areas and hover.
+- Contrast is checked: every button fill gives ≥ 3:1 with white bold labels (the reference app's green is only 2.1:1 — we deliberately went darker), every `-ink` on its `-soft` is ≥ 4.5:1, `muted` on white is 4.7:1. Re-run the check in `docs/design-system.md` when changing a colour.
+
+**Type.** Latin: Nunito Variable (`font-sans`), weights 600–800 — headings `font-extrabold`, body `font-semibold`/`font-medium`. Farsi: Yekan Bakh (`[lang="fa"]` picks it up automatically through `<Fa>`), DOTS axis 1 in text, 0 in headings. Buttons, eyebrows and stat labels are UPPERCASE with tracking (`eyebrow` utility); everything else is sentence case. **Never letter-space or uppercase Persian** — tracking breaks letter joining; `[lang="fa"]` resets both, so always wrap Persian in `<Fa>` even inside buttons.
+
+**Shape.** Radii: 16px (`rounded-2xl`) for buttons, tiles, cards; 12px for small buttons/chips inside cards; full for pills, progress bars and path nodes. Borders are 2px. Tappable surfaces have a 4px bottom edge.
+
+**Spacing.** Tailwind 4-pt scale. Screens: `max-w-3xl` for sessions, `max-w-5xl` for app pages, 16px side gutter on phones. Generous vertical rhythm (`space-y-6` between sections).
+
+## 3. Utility classes (globals.css)
+
+| Class | Use |
+|---|---|
+| `btn-primary` | The one main action on a screen (firuze, 3D). |
+| `btn-success` / `btn-danger` | Continue after a correct / wrong answer. Never as generic buttons. |
+| `btn-sky`, `btn-plum` | Audio buttons; grammar CTAs. |
+| `btn-secondary` | White 3D button with grey edge: second action ("Skip", "Review"). |
+| `btn-ghost` | Flat, no depth: icon actions, "back", "skip to quiz". |
+| `btn-sm`, `btn-lg`, `btn-icon` | Size modifiers; combine with a variant (`btn-ghost btn-icon`). |
+| `tile` | Anything tappable that isn't a button: answer options, list rows, nav cards. Set `data-state="selected|correct|wrong|current"` for state colours. |
+| `card` | Static container (2px border, no depth). |
+| `chip` | Small rounded label (register tags, counts). |
+| `input` | Text fields (grey fill, sky border on focus). |
+| `eyebrow` | Small uppercase heavy label. |
+| `animate-pop`, `animate-slide-up`, `animate-shake`, `animate-bob` | Feedback motion (all disabled under reduced motion). |
+
+Don't restyle buttons ad hoc with colours/shadows; add a variant to globals.css instead.
+
+## 4. Primitives (`src/components/ui.tsx`)
+
+- `Fa` — any Persian text. Always use it (sets `lang`, `dir`, font).
+- `FaWord` — a word in the user's script preference (Latin-first / Farsi-first / script-only).
+- `ProgressBar` — 16px bar with highlight sheen (`size="sm"` for inline meters), `tone` per context.
+- `SessionHeader` — sticky X + progress bar (+ right slot, e.g. "3/8"). Mounting it enables focus mode, which hides the app nav.
+- `FeedbackSheet` — fixed bottom bar. `idle`: holds the Check/Continue action. `correct`/`almost`/`wrong`: tinted sheet, icon, title, detail, Continue in matching colour. Use it for every answer in lessons, practice and grammar.
+- `StatCard` — result tiles (label strip + value), e.g. TOTAL XP (saffron), ACCURACY (pista), WORDS (sky).
+- `Bubble` — speech bubble ("START" over the current path node).
+- `AudioButtons` (`big` for the prompt speaker), `BookmarkButton`, `RegisterTag`, `Segmented`, `PageHeader`, `TONE` map for literal tone classes.
+
+## 5. Screen patterns
+
+**Session (lesson rounds, practice, grammar exercises)** — full-screen, no nav:
+`SessionHeader` → instruction line (`text-2xl font-extrabold`, e.g. "Select the correct meaning") → prompt (big word / big sky speaker) → answer area (option `tile`s in a 1- or 2-column grid with a number badge, or `input`) → `FeedbackSheet` with `btn-primary` "Check" (disabled until an answer exists). Keyboard: 1–4 pick options, Enter checks/continues.
+
+**Results** — centred celebration: big heading in saffron/firuze, row of `StatCard`s, primary Continue, secondary Review.
+
+**Path (lessons list)** — Unit banner (firuze block, white heading, `eyebrow` "UNIT 1" at 70% opacity, description) then lessons as 72px round 3D nodes with a deeper 6px lip (`0 6px 0` of the node's `-shadow` colour; press sinks 6px) in a gentle zig-zag. States: done = saffron + check; current = firuze + `Bubble` "START" bobbing above; locked = `line` grey with grey icon (still openable). Lesson title under each node.
+
+**App shell** — Desktop: left sidebar with large uppercase nav items (icon + label, active = sky-soft tile with sky border). Mobile: top stat bar (streak flame anar, XP saffron) + bottom tab bar with icons. Top/right stat chips everywhere: 🔥 streak, ⭐ XP.
+
+**Dashboard** — right-column style widgets: daily goal card with ProgressBar, streak, "Continue" big `btn-primary`, badges as `tile`s.
+
+## 6. Motion & feedback
+
+- Buttons sink on press (built into `btn`); tiles sink 2px.
+- Correct: sheet slides up (200ms), icon pops (spring). Wrong: the input/tile shakes once (`animate-shake`).
+- Progress bars ease over 400–500ms. Celebration screens pop in.
+- Durations stay short: 100ms press, 200–250ms sheets and pops (slight overshoot via `--ease-spring` / `--ease-sheet`), 400ms progress. Get to the payoff fast.
+- Respect `prefers-reduced-motion` (globals.css already neutralises animations).
+
+## 7. Copy voice
+
+Short, warm, encouraging, never scolding. Second person. Examples: "Nicely done!", "Almost! Watch the spelling.", "Not quite — we'll come back to it.", "Lesson complete!", "Keep the streak alive". Buttons are verbs: CHECK, CONTINUE, START, SKIP. No exclamation overload (max one per message).
+
+## 8. Farsi / RTL rules
+
+- Persian text only through `<Fa>`; never set `dir` on a whole LTR layout.
+- Show transliteration under or beside the script per `settings.script`; respect `scriptOnly`.
+- Persian digits come from the FaNum font — don't convert numbers manually.
+- Letter grids read right to left (`dir="rtl"` on the grid only).
+
+## 9. Accessibility checklist
+
+- Hit targets ≥ 44px; icon buttons have `aria-label`.
+- Focus ring: 3px sky outline (global) — don't remove it.
+- State is never colour-only: correct/wrong also show an icon and text.
+- White text only on `firuze`, `pista`, `anar`, `sky`, `plum` fills at ≥ 15px bold (button labels qualify).
+
+## 10. Review checklist (use for PRs)
+
+1. Uses primitives/utilities; no one-off colours, shadows or radii.
+2. One primary action per screen; disabled until valid.
+3. Sessions: SessionHeader + FeedbackSheet; no nav visible.
+4. All Persian through `<Fa>`; script settings respected.
+5. States covered: empty, loading/hydrating, success, error, disabled.
+6. Works at 375px wide with no horizontal scroll; bottom tab bar doesn't cover content.
+7. Copy follows §7; buttons uppercase via `btn`.
+8. No brand assets from other products (§1).
