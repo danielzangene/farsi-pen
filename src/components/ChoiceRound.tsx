@@ -12,8 +12,8 @@ type OptionState = "idle" | "selected" | "correct" | "wrong";
 const BADGE: Record<OptionState, string> = {
   idle: "border-line text-muted",
   selected: "border-sky text-sky-ink",
-  correct: "border-pista bg-pista text-white",
-  wrong: "border-anar bg-anar text-white",
+  correct: "border-pista bg-pista text-on-accent",
+  wrong: "border-anar bg-anar text-on-accent",
 };
 
 /** Round 1 — Recognition: 4-option multiple choice, one pass. Select, then Check. */

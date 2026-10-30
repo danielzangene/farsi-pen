@@ -8,6 +8,10 @@ const GRID = 60; // scoring resolution: 5px cells
 const REACH = 2; // cells of slack around strokes (~10px)
 const FONT = '"Yekan Bakh", Tahoma, sans-serif';
 
+/** Read a colour token so the canvas follows the current theme. */
+const token = (name: string, fallback: string) =>
+  getComputedStyle(document.documentElement).getPropertyValue(`--color-${name}`).trim() || fallback;
+
 function drawGlyph(ctx: CanvasRenderingContext2D, text: string, size: number, color: string) {
   ctx.clearRect(0, 0, size, size);
   ctx.fillStyle = color;
@@ -92,7 +96,7 @@ export function TraceCanvas({ text, onScore, passMark }: { text: string; onScore
       await document.fonts.load(`200px ${FONT}`, text);
     } catch {}
     const g = guideRef.current?.getContext("2d");
-    if (g) drawGlyph(g, text, SIZE, "#dcdcdc");
+    if (g) drawGlyph(g, text, SIZE, token("line", "#e5e5e5"));
     inkRef.current?.getContext("2d")?.clearRect(0, 0, SIZE, SIZE);
     setHasInk(false);
     setResult(null);
@@ -109,7 +113,7 @@ export function TraceCanvas({ text, onScore, passMark }: { text: string; onScore
 
   const stroke = (from: { x: number; y: number }, to: { x: number; y: number }) => {
     const ctx = inkRef.current!.getContext("2d")!;
-    ctx.strokeStyle = "#12a594";
+    ctx.strokeStyle = token("firuze", "#12a594");
     ctx.lineWidth = 14;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";

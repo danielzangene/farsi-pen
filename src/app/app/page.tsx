@@ -234,7 +234,7 @@ function Checklist() {
               <span
                 className={cx(
                   "grid size-7 shrink-0 place-items-center rounded-full border-2",
-                  x.done ? "border-saffron-shadow bg-saffron text-white" : "border-line-strong bg-card",
+                  x.done ? "border-saffron-shadow bg-saffron text-on-accent" : "border-line-strong bg-card",
                 )}
               >
                 {x.done && <Check className="size-4" strokeWidth={3.5} />}
