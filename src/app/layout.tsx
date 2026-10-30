@@ -3,9 +3,10 @@ import "@fontsource-variable/nunito";
 import "./globals.css";
 import { asset } from "@/lib/util";
 
-// Runs before first paint so a saved Light/Dark choice never flashes the other theme.
+// The page is served dark (the default). This runs before first paint and
+// switches to a saved Light or Auto choice, so the wrong theme never flashes.
 // Reads the same localStorage key as src/lib/store.ts.
-const themeScript = `try{var t=JSON.parse(localStorage.getItem("farsipen:v1")||"{}").settings?.theme;if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
+const themeScript = `try{var t=JSON.parse(localStorage.getItem("farsipen:v1")||"{}").settings?.theme,d=document.documentElement;if(t==="light")d.dataset.theme=t;else if(t==="system")delete d.dataset.theme}catch(e){}`;
 
 export const metadata: Metadata = {
   title: { default: "Farsi Pen — learn to read, write and speak Persian", template: "%s · Farsi Pen" },
@@ -16,17 +17,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#12a594" },
-    { media: "(prefers-color-scheme: dark)", color: "#131f24" },
-  ],
+  themeColor: "#131f24",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
