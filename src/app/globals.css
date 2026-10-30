@@ -62,6 +62,9 @@
   --color-plum-soft: #f1e8fc;
   --color-plum-ink: #6d35b3;
 
+  /* Text and icons on a solid colour fill (buttons, banners, badges). */
+  --color-on-accent: #ffffff;
+
   --font-sans: "Nunito Variable", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
   --font-display: "Nunito Variable", ui-rounded, system-ui, sans-serif;
   --font-fa: "Yekan Bakh", Tahoma, sans-serif;
@@ -105,13 +108,92 @@
   }
 }
 
+/*
+ * Dark theme. Like the reference app: dark blue-grey surfaces (not black),
+ * lighter and softer fills, dark labels on those fills. Applied when
+ * <html data-theme="dark">, or by the system setting when the learner chose
+ * "Auto" (no data-theme). Contrast checked like the light theme.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-card: #131f24;
+  --color-paper: #202f36;
+  --color-line: #37464f;
+  --color-line-strong: #4b5e68;
+  --color-faint: #52656d;
+  --color-muted: #9db0ba;
+  --color-ink: #f1f7fb;
+  --color-firuze: #2cc5b1;
+  --color-firuze-shadow: #1a9384;
+  --color-firuze-soft: #16383a;
+  --color-firuze-ink: #6be3d3;
+  --color-pista: #79c83c;
+  --color-pista-shadow: #5a9d26;
+  --color-pista-soft: #1d3a24;
+  --color-pista-ink: #a1e070;
+  --color-anar: #f26b6f;
+  --color-anar-shadow: #c94549;
+  --color-anar-soft: #3e2228;
+  --color-anar-ink: #ff9fa2;
+  --color-saffron: #ffb636;
+  --color-saffron-shadow: #d48f17;
+  --color-saffron-soft: #3a3020;
+  --color-saffron-ink: #ffcf70;
+  --color-sky: #49c0f8;
+  --color-sky-shadow: #1899d6;
+  --color-sky-soft: #163545;
+  --color-sky-ink: #86d6fb;
+  --color-plum: #c08af0;
+  --color-plum-shadow: #9563cc;
+  --color-plum-soft: #2d2640;
+  --color-plum-ink: #dbbcff;
+  --color-on-accent: #131f24;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-card: #131f24;
+    --color-paper: #202f36;
+    --color-line: #37464f;
+    --color-line-strong: #4b5e68;
+    --color-faint: #52656d;
+    --color-muted: #9db0ba;
+    --color-ink: #f1f7fb;
+    --color-firuze: #2cc5b1;
+    --color-firuze-shadow: #1a9384;
+    --color-firuze-soft: #16383a;
+    --color-firuze-ink: #6be3d3;
+    --color-pista: #79c83c;
+    --color-pista-shadow: #5a9d26;
+    --color-pista-soft: #1d3a24;
+    --color-pista-ink: #a1e070;
+    --color-anar: #f26b6f;
+    --color-anar-shadow: #c94549;
+    --color-anar-soft: #3e2228;
+    --color-anar-ink: #ff9fa2;
+    --color-saffron: #ffb636;
+    --color-saffron-shadow: #d48f17;
+    --color-saffron-soft: #3a3020;
+    --color-saffron-ink: #ffcf70;
+    --color-sky: #49c0f8;
+    --color-sky-shadow: #1899d6;
+    --color-sky-soft: #163545;
+    --color-sky-ink: #86d6fb;
+    --color-plum: #c08af0;
+    --color-plum-shadow: #9563cc;
+    --color-plum-soft: #2d2640;
+    --color-plum-ink: #dbbcff;
+    --color-on-accent: #131f24;
+  }
+}
+
 /* ── Buttons ────────────────────────────────────────────────────────────
    3D buttons: solid fill + a darker bottom edge (box-shadow) that the
    button "sinks into" when pressed. Variants only set the colour vars. */
 @utility btn {
   --btn-bg: var(--color-firuze);
   --btn-shadow: var(--color-firuze-shadow);
-  --btn-fg: #fff;
+  --btn-fg: var(--color-on-accent);
   --btn-border: transparent;
   --btn-depth: 4px;
   position: relative;

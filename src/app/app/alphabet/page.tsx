@@ -65,7 +65,7 @@ export default function AlphabetPage() {
                   {l.name}
                 </span>
                 {done && (
-                  <span className="absolute left-1 top-1 grid size-4 place-items-center rounded-full bg-pista text-white">
+                  <span className="absolute left-1 top-1 grid size-4 place-items-center rounded-full bg-pista text-on-accent">
                     <Check className="size-3" strokeWidth={4} />
                   </span>
                 )}

@@ -82,7 +82,7 @@ function PracticeResult({ r, xp, onAgain }: { r: SessionSummary; xp: number; onA
   const good = Object.values(r.outcomes).filter((o) => o !== "again").length;
   return (
     <div className="flex flex-col items-center text-center">
-      <span className="grid size-24 animate-pop place-items-center rounded-full bg-saffron text-white">
+      <span className="grid size-24 animate-pop place-items-center rounded-full bg-saffron text-on-accent">
         <PartyPopper className="size-12" />
       </span>
       <h1 className="mt-5 text-3xl font-extrabold text-saffron-ink sm:text-4xl">Practice complete!</h1>

@@ -35,6 +35,23 @@ export default function SettingsPage() {
       </section>
 
       <section className="card p-5">
+        <h2 className="eyebrow text-muted">Appearance</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-4">
+          <span className="font-bold">Theme</span>
+          <Segmented
+            label="Theme"
+            value={settings.theme}
+            onChange={(theme) => updateSettings({ theme })}
+            options={[
+              { value: "light", label: "Light" },
+              { value: "dark", label: "Dark" },
+              { value: "system", label: "Auto" },
+            ]}
+          />
+        </div>
+      </section>
+
+      <section className="card p-5">
         <h2 className="eyebrow text-muted">Learning</h2>
         <div className="divide-y-2 divide-line">
           <div className="flex flex-wrap items-center justify-between gap-3 py-4">

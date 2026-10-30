@@ -26,7 +26,7 @@ export default function GrammarPage() {
               <Link href={`/app/grammar/${g.id}/`} className="tile flex items-center gap-4 p-4">
                 <span
                   className={cx(
-                    "grid size-12 shrink-0 place-items-center rounded-2xl text-lg font-extrabold text-white",
+                    "grid size-12 shrink-0 place-items-center rounded-2xl text-lg font-extrabold text-on-accent",
                     rec?.passed ? "bg-pista shadow-[0_4px_0_var(--color-pista-shadow)]" : "bg-plum shadow-[0_4px_0_var(--color-plum-shadow)]",
                   )}
                   aria-label={rec?.passed ? "Learned" : undefined}
