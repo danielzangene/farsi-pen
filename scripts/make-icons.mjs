@@ -1,4 +1,6 @@
 // Renders Farsi Pen's brand icons from the "FA" monogram into public/.
+// After regenerating, bump ICON_VERSION in src/app/layout.tsx and the ?v=
+// in public/manifest.webmanifest so browsers drop their cached icons.
 // Run after changing the mark:  node scripts/make-icons.mjs
 // (with a global Playwright: NODE_PATH=$(npm root -g) node scripts/make-icons.mjs)
 // Needs Playwright with Chromium (not a project dependency) and Python 3
