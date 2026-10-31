@@ -27,7 +27,10 @@ export function Logo({ compact }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl text-2xl font-extrabold tracking-tight text-firuze-ink" aria-label="Farsi Pen home">
       <span className="grid size-9 place-items-center rounded-xl bg-firuze text-on-accent shadow-[0_3px_0_var(--color-firuze-shadow)]">
-        <PenLine className="size-5" strokeWidth={2.5} />
+        {/* "FA" monogram — same paths as public/icon.svg. */}
+        <svg viewBox="0 0 64 64" className="size-7" fill="none" stroke="currentColor" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M14 46V18h14M14 31h11M34 46l8-28 8 28M37 37h10" />
+        </svg>
       </span>
       {!compact && <span>Farsi Pen</span>}
     </Link>
