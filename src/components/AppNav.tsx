@@ -22,16 +22,25 @@ const EXTRA: NavItem[] = [
   { href: "/app/settings/", label: "Settings", icon: Settings },
 ];
 
+/**
+ * The "FA" monogram on a teal tile. Same paths as scripts/make-icons.mjs,
+ * which renders the favicon, app icons and share image.
+ */
+export function LogoMark({ className }: { className?: string }) {
+  return (
+    <span className={cx("grid size-9 shrink-0 place-items-center rounded-xl bg-firuze text-on-accent shadow-[0_3px_0_var(--color-firuze-shadow)]", className)}>
+      <svg viewBox="0 0 64 64" className="size-[78%]" fill="none" stroke="currentColor" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M14 46V18h14M14 31h11M34 46l8-28 8 28M37 37h10" />
+      </svg>
+    </span>
+  );
+}
+
 /** Brand mark + name. `compact` shows the mark only. */
 export function Logo({ compact }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl text-2xl font-extrabold tracking-tight text-firuze-ink" aria-label="Farsi Pen home">
-      <span className="grid size-9 place-items-center rounded-xl bg-firuze text-on-accent shadow-[0_3px_0_var(--color-firuze-shadow)]">
-        {/* "FA" monogram — same paths as public/icon.svg. */}
-        <svg viewBox="0 0 64 64" className="size-7" fill="none" stroke="currentColor" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M14 46V18h14M14 31h11M34 46l8-28 8 28M37 37h10" />
-        </svg>
-      </span>
+      <LogoMark />
       {!compact && <span>Farsi Pen</span>}
     </Link>
   );
