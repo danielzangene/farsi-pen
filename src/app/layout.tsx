@@ -8,17 +8,21 @@ import { asset } from "@/lib/util";
 // Reads the same localStorage key as src/lib/store.ts.
 const themeScript = `try{var t=JSON.parse(localStorage.getItem("farsipen:v1")||"{}").settings?.theme,d=document.documentElement;if(t==="light")d.dataset.theme=t;else if(t==="system")delete d.dataset.theme}catch(e){}`;
 
+/** Icon cache version; see scripts/make-icons.mjs. */
+const ICON_VERSION = 2;
+
 export const metadata: Metadata = {
   title: { default: "Farsi Pen — learn to read, write and speak Persian", template: "%s · Farsi Pen" },
   description:
     "Farsi Pen is a free Persian (Farsi) course: short vocabulary lessons, spaced-repetition practice, the alphabet with letter tracing, and grammar.",
-  manifest: asset("/manifest.webmanifest"),
+  manifest: asset(`/manifest.webmanifest?v=${ICON_VERSION}`),
+  // ?v= busts browsers' sticky favicon cache; bump it whenever the icons change.
   icons: {
     icon: [
-      { url: asset("/favicon.ico"), sizes: "48x48" },
-      { url: asset("/icon.svg"), type: "image/svg+xml" },
+      { url: asset(`/favicon.ico?v=${ICON_VERSION}`), sizes: "48x48" },
+      { url: asset(`/icon.svg?v=${ICON_VERSION}`), type: "image/svg+xml" },
     ],
-    apple: asset("/apple-touch-icon.png"),
+    apple: asset(`/apple-touch-icon.png?v=${ICON_VERSION}`),
   },
   // Share previews (Telegram, WhatsApp, X…) need absolute image URLs.
   metadataBase: new URL("https://danielzangene.github.io"),
