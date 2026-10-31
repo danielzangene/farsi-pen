@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BookOpen, Check, Keyboard, PenLine, Puzzle, Repeat, SpellCheck, Star } from "lucide-react";
-import { Logo } from "@/components/AppNav";
+import { Logo, LogoMark } from "@/components/AppNav";
 import { Bubble, Fa } from "@/components/ui";
 import { LESSONS } from "@/content/lessons";
 import { WORDS } from "@/content/words";
@@ -126,7 +126,10 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t-2 border-line py-6 text-center text-sm font-semibold text-muted">Farsi Pen · MVP demo · Content drafted for native-speaker review</footer>
+      <footer className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-t-2 border-line px-4 py-6 text-center text-sm font-semibold text-muted">
+        <LogoMark className="size-7 rounded-lg" />
+        Farsi Pen · MVP demo · Content drafted for native-speaker review
+      </footer>
     </div>
   );
 }
