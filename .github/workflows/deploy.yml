@@ -1,23 +1,53 @@
 name: Test and deploy to GitHub Pages
 
+# One Pages site serves both branches:
+#   main → https://<owner>.github.io/farsi-pen/
+#   dev  → https://<owner>.github.io/farsi-pen/dev/
+# Pages only deploys from main, so a push to dev asks main to redeploy, and
+# every main deploy builds both branches.
+
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# Per-ref, so a PR or dev push never cancels a production deploy.
 concurrency:
-  group: pages
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  # A push to dev: test it, then redeploy from main (which rebuilds dev too).
+  dev:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: gh workflow run deploy.yml --ref main --repo "$GITHUB_REPOSITORY"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  build:
+    if: github.ref != 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      BASE: /${{ github.event.repository.name }}
+      # Deploys (main) also build the dev branch; PRs only test their own code.
+      DEPLOY: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,11 +58,28 @@ jobs:
       - run: npm test
       - run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
-          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_PUBLIC_BASE_PATH: ${{ env.BASE }}
+
+      - uses: actions/checkout@v4
+        if: env.DEPLOY == 'true'
+        with:
+          ref: dev
+          path: dev-src
+      - name: Build dev branch into /dev
+        if: env.DEPLOY == 'true'
+        working-directory: dev-src
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ env.BASE }}/dev
+          NEXT_PUBLIC_CHANNEL: dev
+        run: |
+          npm ci
+          npm run build
+          rm -rf ../out/dev
+          cp -r out ../out/dev
+
       - run: touch out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
-        if: github.ref == 'refs/heads/main'
+        if: env.DEPLOY == 'true'
         with:
           path: out
 
@@ -40,6 +87,9 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
