@@ -2,7 +2,7 @@
 
 Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1, built from the *Farsi Pen — V1 Product & Technical Spec* and the *learnfarsi.app feature audit*.
 
-**Live demo:** https://danielzangene.github.io/farsi-pen/
+**Live demo:** https://danielzangene.github.io/farsi-pen/ · **Dev branch:** https://danielzangene.github.io/farsi-pen/dev/
 
 ## What the demo includes
 
@@ -57,4 +57,13 @@ npm run build        # static site in ./out
 
 ## Deploy
 
-Every push to `main` runs the tests, builds with `NEXT_PUBLIC_BASE_PATH=/farsi-pen`, and publishes `out/` to GitHub Pages (`.github/workflows/deploy.yml`). Moving to Vercel later needs no code changes — just drop the base path.
+One GitHub Pages site serves two branches (`.github/workflows/deploy.yml`):
+
+| Branch | URL | Built with |
+| --- | --- | --- |
+| `main` | `/farsi-pen/` | `NEXT_PUBLIC_BASE_PATH=/farsi-pen` |
+| `dev` | `/farsi-pen/dev/` | `NEXT_PUBLIC_BASE_PATH=/farsi-pen/dev`, `NEXT_PUBLIC_CHANNEL=dev` |
+
+Every push to `main` runs the tests and publishes both builds. Pages only deploys from `main`, so a push to `dev` runs its tests and then re-runs the `main` deploy, which picks up the new `dev`. The dev site shows a **DEV** badge, is hidden from search engines, and keeps its progress under its own `localStorage` key, so testing there never touches real progress.
+
+Moving to Vercel later needs no code changes — just drop the base path.

@@ -8,6 +8,7 @@ import { LESSONS } from "@/content/lessons";
 import { LETTERS } from "@/content/alphabet";
 import { GRAMMAR } from "@/content/grammar";
 import { dayKey, earnedBadges, extendStreak, liveStreak, XP, type BadgeStats, type Streak } from "./gamification";
+import { STORAGE_KEY } from "./util";
 import { gradeFor, isLearned, review, type StoredCard } from "./srs";
 
 export type Direction = "fa-en" | "en-fa";
@@ -44,7 +45,7 @@ export interface ProgressState {
   settings: Settings;
 }
 
-const KEY = "farsipen:v1";
+const KEY = STORAGE_KEY;
 
 export const DEFAULT_STATE: ProgressState = {
   version: 1,

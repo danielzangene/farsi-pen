@@ -1,18 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/nunito";
 import "./globals.css";
-import { asset } from "@/lib/util";
+import { asset, IS_DEV_SITE, STORAGE_KEY } from "@/lib/util";
 
 // The page is served dark (the default). This runs before first paint and
 // switches to a saved Light or Auto choice, so the wrong theme never flashes.
-// Reads the same localStorage key as src/lib/store.ts.
-const themeScript = `try{var t=JSON.parse(localStorage.getItem("farsipen:v1")||"{}").settings?.theme,d=document.documentElement;if(t==="light")d.dataset.theme=t;else if(t==="system")delete d.dataset.theme}catch(e){}`;
+const themeScript = `try{var t=JSON.parse(localStorage.getItem(${JSON.stringify(STORAGE_KEY)})||"{}").settings?.theme,d=document.documentElement;if(t==="light")d.dataset.theme=t;else if(t==="system")delete d.dataset.theme}catch(e){}`;
 
 /** Icon cache version; see scripts/make-icons.mjs. */
 const ICON_VERSION = 2;
 
 export const metadata: Metadata = {
   title: { default: "Farsi Pen — learn to read, write and speak Persian", template: "%s · Farsi Pen" },
+  // Keep the dev-branch site out of search results.
+  ...(IS_DEV_SITE && { robots: { index: false, follow: false } }),
   description:
     "Farsi Pen is a free Persian (Farsi) course: short vocabulary lessons, spaced-repetition practice, the alphabet with letter tracing, and grammar.",
   manifest: asset(`/manifest.webmanifest?v=${ICON_VERSION}`),
