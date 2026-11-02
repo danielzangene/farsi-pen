@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bookmark, BookOpen, Flame, House, Library, Mic, PenLine, Puzzle, Repeat, Settings, Star } from "lucide-react";
+import { Bookmark, BookOpen, Compass, Flame, House, Library, Mic, PenLine, Puzzle, Repeat, Settings, Star } from "lucide-react";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
@@ -18,6 +18,7 @@ const MAIN: NavItem[] = [
 ];
 
 const EXTRA: NavItem[] = [
+  { href: "/app/missions/", label: "Missions", icon: Compass, tone: "firuze" },
   { href: "/app/words/", label: "Words", icon: Library, tone: "firuze" },
   { href: "/app/bookmarks/", label: "Bookmarks", icon: Bookmark, tone: "saffron" },
   { href: "/app/settings/", label: "Settings", icon: Settings },

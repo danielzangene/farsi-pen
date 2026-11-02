@@ -12,6 +12,8 @@ import { STORAGE_KEY } from "./util";
 import { gradeFor, isLearned, review, type StoredCard } from "./srs";
 import { DEFAULT_PIPER_VOICE, type PiperVoiceId } from "./tts";
 import type { EnginePref } from "./stt";
+import { applyEvidence, isMastered, type SkillRecord } from "./mastery";
+import type { Evidence, MissionStatus } from "./missions";
 
 export type Direction = "fa-en" | "en-fa";
 export type Outcome = "good" | "hard" | "again";
@@ -49,6 +51,17 @@ export interface ProgressState {
   practiceSessions: number;
   earnedBadges: string[];
   settings: Settings;
+  /** Real-world skills (missions) and their mastery state. */
+  skills: Record<string, SkillRecord>;
+  missions: Record<string, MissionRecord>;
+}
+
+export interface MissionRecord {
+  status: MissionStatus;
+  attempts: number;
+  best: number;
+  lastPlayed: string;
+  masteredAt?: string;
 }
 
 const KEY = STORAGE_KEY;
@@ -66,6 +79,8 @@ export const DEFAULT_STATE: ProgressState = {
   traced: {},
   practiceSessions: 0,
   earnedBadges: [],
+  skills: {},
+  missions: {},
   settings: {
     name: "",
     dailyGoal: 10,
@@ -240,6 +255,58 @@ export function completePractice(r: SessionSummary): number {
     ),
   );
   return xp;
+}
+
+/**
+ * Records a mission session. Every answer is evidence for its skill; XP is
+ * given only when a skill becomes mastered for the first time, so replaying
+ * an easy mission earns nothing. When the whole mission is mastered its
+ * vocabulary joins spaced review.
+ */
+export function completeMission(
+  missionId: string,
+  evidence: Evidence[],
+  result: { status: MissionStatus; score: number } | null,
+  wordIds: string[] = [],
+): number {
+  let xp = 0;
+  update((s) => {
+    const now = new Date();
+    const skills = { ...s.skills };
+    for (const e of evidence) {
+      const before = skills[e.skill];
+      const after = applyEvidence(before, e.context, e.ok, now);
+      if (!before?.masteredAt && after.state === "mastered") xp += XP.skillMastered;
+      skills[e.skill] = after;
+    }
+    let next: ProgressState = { ...s, skills };
+    if (result) {
+      const prev = s.missions[missionId];
+      const mastered = result.status === "mastered";
+      next.missions = {
+        ...s.missions,
+        [missionId]: {
+          status: result.status,
+          attempts: (prev?.attempts ?? 0) + 1,
+          best: Math.max(prev?.best ?? 0, result.score),
+          lastPlayed: now.toISOString(),
+          masteredAt: prev?.masteredAt ?? (mastered ? now.toISOString() : undefined),
+        },
+      };
+      if (mastered && !prev?.masteredAt) {
+        xp += XP.missionMastered;
+        const cards = { ...next.cards };
+        for (const id of wordIds) if (!cards[id]) cards[id] = review(undefined, gradeFor("good"), now);
+        next = { ...next, cards };
+      }
+    }
+    return addActivity(next, 0, xp);
+  });
+  return xp;
+}
+
+export function skillMastered(s: ProgressState, skillId: string): boolean {
+  return isMastered(s.skills[skillId]);
 }
 
 /** Speaking practice: XP per word said right (or nearly); counts toward the daily goal. */

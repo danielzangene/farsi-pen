@@ -9,6 +9,10 @@ export const XP = {
   grammarPerCorrect: 2,
   tracePass: 3,
   speakPerCorrect: 2,
+  /** Once per skill, the first time it's proven in a mastery check. */
+  skillMastered: 5,
+  /** Once per mission, the first time every skill is mastered. */
+  missionMastered: 15,
 } as const;
 
 // Level names are Farsi Pen's own (pen and writing themed) — DRAFT for review.

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { BookOpen, Check, ChevronRight, Flame, GraduationCap, Repeat, Star, Trophy, X } from "lucide-react";
 import { LESSONS } from "@/content/lessons";
 import { WORDS } from "@/content/words";
+import { MISSIONS } from "@/content/missions";
+import { weakSkills } from "@/lib/missions";
 import { BADGES, levelFor } from "@/lib/gamification";
 import { badgeStats, currentStreak, today, updateSettings, useHydrated, useProgress, wordsLearned } from "@/lib/store";
 import { isDue } from "@/lib/srs";
@@ -77,6 +79,8 @@ export default function Dashboard() {
             </Link>
           </section>
         )}
+
+        <MissionTile />
 
         <Link href="/app/practice/" className="tile flex items-center gap-4 p-4">
           <span className="grid size-12 shrink-0 place-items-center rounded-full bg-sky-soft text-sky-ink">
@@ -246,5 +250,28 @@ function Checklist() {
         ))}
       </ul>
     </section>
+  );
+}
+
+/** Next real-world mission: the first one with skills left to master or due for a check. */
+function MissionTile() {
+  const s = useProgress();
+  const next = MISSIONS.find((m) => weakSkills(m, s.skills).length > 0);
+  if (!next) return null;
+  const left = weakSkills(next, s.skills).length;
+  return (
+    <Link href={`/app/missions/${next.id}/`} className="tile flex items-center gap-4 p-4">
+      <span className="grid size-12 shrink-0 place-items-center rounded-full bg-firuze-soft text-2xl" aria-hidden>
+        {next.emoji}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="eyebrow block text-firuze-ink">Real-world mission</span>
+        <span className="block text-lg font-extrabold">{next.title}</span>
+        <span className="block text-sm font-semibold text-muted">
+          {s.missions[next.id] ? `${left} skill${left === 1 ? "" : "s"} left to master` : next.skills[0].canDo}
+        </span>
+      </span>
+      <ChevronRight className="size-5 shrink-0 text-faint" strokeWidth={3} />
+    </Link>
   );
 }
