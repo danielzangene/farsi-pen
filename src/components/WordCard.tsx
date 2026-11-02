@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { Word } from "@/content/words";
 import { useProgress } from "@/lib/store";
 import { AudioButtons, BookmarkButton, Fa, RegisterTag } from "./ui";
+import { SayItButton } from "./SayItButton";
 import { YouglishButton } from "./YouglishPlayer";
 
 /** Word card for the lesson preview, library and bookmarks. */
@@ -49,6 +50,7 @@ export function WordCard({ word, isNew, hideMeaning, extra }: { word: Word; isNe
       <div className="-mx-2 -mb-2 mt-auto flex items-center justify-between pt-3">
         <div className="flex items-center">
           <AudioButtons text={word.fa} />
+          <SayItButton word={word} />
           <YouglishButton query={word.fa} label={word.en} />
           <BookmarkButton wordId={word.id} />
         </div>
