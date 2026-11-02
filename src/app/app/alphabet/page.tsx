@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { Check, Info } from "lucide-react";
-import { LETTERS, letterForms, type Letter } from "@/content/alphabet";
+import { BASE_LETTERS, LETTERS, letterForms, SIGNS, type Letter } from "@/content/alphabet";
 import { recordTrace, TRACE_PASS, useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { TraceCanvas } from "@/components/TraceCanvas";
@@ -12,22 +12,23 @@ const FORM_LABELS: Record<FormName, string> = { isolated: "Alone", initial: "Sta
 
 export default function AlphabetPage() {
   const s = useProgress();
-  const [filter, setFilter] = useState<"all" | "persian">("all");
-  const [selected, setSelected] = useState<Letter>(LETTERS[1]);
+  const [filter, setFilter] = useState<"all" | "persian" | "extra">("all");
+  const [selected, setSelected] = useState<Letter>(LETTERS[0]);
   const detailRef = useRef<HTMLDivElement>(null);
   const traced = LETTERS.filter((l) => (s.traced[l.id] ?? 0) >= TRACE_PASS).length;
-  const shown = filter === "all" ? LETTERS : LETTERS.filter((l) => l.persianOnly);
+  const shown = filter === "all" ? LETTERS : filter === "persian" ? LETTERS.filter((l) => l.persianOnly) : LETTERS.filter((l) => l.extra);
 
   return (
     <div>
-      <PageHeader title="Alphabet" subtitle={<>32 letters, written right to left. Tap one to see its forms — then trace it.</>}>
+      <PageHeader title="Alphabet" subtitle={<>{BASE_LETTERS.length} letters plus آ and ء, written right to left. Tap one to hear it, see its forms — then trace it.</>}>
         <Segmented
           label="Filter"
           value={filter}
           onChange={setFilter}
           options={[
-            { value: "all", label: "All 32" },
+            { value: "all", label: `All ${LETTERS.length}` },
             { value: "persian", label: "Unique to Persian (4)" },
+            { value: "extra", label: "آ and ء" },
           ]}
         />
       </PageHeader>
@@ -75,6 +76,30 @@ export default function AlphabetPage() {
           })}
         </div>
       </div>
+
+      <section className="mt-10">
+        <h2 className="text-xl font-extrabold">Short vowels and signs</h2>
+        <p className="mt-1 font-semibold text-muted">
+          Persian usually leaves short vowels unwritten — you&apos;ll see these marks in children&apos;s books, dictionaries and the Qur&apos;an, and they help you
+          read new words.
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {SIGNS.map((g) => (
+            <div key={g.name} className="card flex items-center gap-4 p-4">
+              <Fa className="grid size-14 shrink-0 place-items-center rounded-2xl bg-plum-soft text-4xl text-plum-ink">{"ـ" + g.char}</Fa>
+              <div className="min-w-0 flex-1">
+                <p className="font-extrabold">{g.name}</p>
+                <p className="text-sm font-semibold text-muted">{g.sound}</p>
+                <p className="mt-1 text-sm">
+                  <Fa className="text-lg font-bold">{g.example.fa}</Fa> <span className="font-extrabold">{g.example.tr}</span>{" "}
+                  <span className="font-semibold text-muted">· {g.example.en}</span>
+                </p>
+              </div>
+              <AudioButtons text={g.example.fa} compact />
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
@@ -91,12 +116,15 @@ function LetterDetail({ letter }: { letter: Letter }) {
       <div className="flex items-start gap-4">
         <Fa className="grid size-20 shrink-0 place-items-center rounded-2xl bg-firuze-soft text-5xl text-firuze-ink">{letter.char}</Fa>
         <div className="min-w-0">
-          <h2 className="text-2xl font-extrabold">{letter.name}</h2>
+          <h2 className="flex items-center gap-1 text-2xl font-extrabold">
+            {letter.name} <AudioButtons text={letter.char} compact />
+          </h2>
           <p className="font-semibold text-muted">
             Sound: <strong className="font-extrabold text-ink">{letter.sound}</strong>
           </p>
           <div className="mt-1.5 flex flex-wrap gap-1">
             {letter.persianOnly && <span className="chip bg-saffron-soft text-saffron-ink">Unique to Persian</span>}
+            {letter.extra && <span className="chip bg-plum-soft text-plum-ink">{letter.id === "hamze" ? "Sign" : "Form of alef"}</span>}
             {!letter.connects && <span className="chip bg-paper text-muted">Doesn’t join to the next letter</span>}
           </div>
         </div>

@@ -10,7 +10,7 @@ import { WORDS } from "@/content/words";
 const FEATURES = [
   { icon: BookOpen, tone: "bg-firuze-soft text-firuze-ink", title: "Bite-size lessons", text: "Preview, study, then two quiz rounds: pick the answer, then type it from memory." },
   { icon: Repeat, tone: "bg-sky-soft text-sky-ink", title: "Spaced repetition", text: "Daily Practice brings back each word right before you'd forget it (FSRS)." },
-  { icon: PenLine, tone: "bg-saffron-soft text-saffron-ink", title: "Write the letters", text: "Trace all 32 letters in every form — the “pen” in Farsi Pen." },
+  { icon: PenLine, tone: "bg-saffron-soft text-saffron-ink", title: "Write the letters", text: "Trace every letter in every form — the “pen” in Farsi Pen." },
   { icon: SpellCheck, tone: "bg-pista-soft text-pista-ink", title: "Forgiving grading", text: "“good nite” counts. Small typos get a spelling tip, not a red cross." },
   { icon: Keyboard, tone: "bg-anar-soft text-anar-ink", title: "Built-in Persian keyboard", text: "Type in Farsi script without changing your phone or computer settings." },
   { icon: Puzzle, tone: "bg-plum-soft text-plum-ink", title: "Grammar that clicks", text: "Short explanations, tables and exercises with hints." },
