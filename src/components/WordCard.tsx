@@ -19,7 +19,7 @@ export function WordCard({ word, isNew, hideMeaning, extra }: { word: Word; isNe
           {farsiFirst ? (
             <>
               <Fa className="block text-left text-2xl font-bold leading-relaxed">{word.fa}</Fa>
-              {!settings.scriptOnly && <p className="text-sm font-semibold text-muted">{word.tr}</p>}
+              {!settings.scriptOnly && word.tr && <p className="text-sm font-semibold text-muted">{word.tr}</p>}
             </>
           ) : (
             <>
@@ -33,15 +33,17 @@ export function WordCard({ word, isNew, hideMeaning, extra }: { word: Word; isNe
           <RegisterTag register={word.register} />
         </div>
       </div>
-      {!settings.scriptOnly && <p className="mt-1 text-xs font-semibold text-muted">sounds like “{word.soundsLike}”</p>}
+      {!settings.scriptOnly && word.soundsLike && <p className="mt-1 text-xs font-semibold text-muted">sounds like “{word.soundsLike}”</p>}
       {shown ? (
         <>
           <p className="mt-3 text-lg font-extrabold">{word.en}</p>
-          <div className="mt-2 space-y-0.5 rounded-xl bg-paper p-3 text-sm">
-            <Fa className="block text-base">{word.example.fa}</Fa>
-            {!settings.scriptOnly && <p className="font-semibold text-muted">{word.example.tr}</p>}
-            <p className="font-semibold">{word.example.en}</p>
-          </div>
+          {word.example.fa && (
+            <div className="mt-2 space-y-0.5 rounded-xl bg-paper p-3 text-sm">
+              <Fa className="block text-base">{word.example.fa}</Fa>
+              {!settings.scriptOnly && word.example.tr && <p className="font-semibold text-muted">{word.example.tr}</p>}
+              <p className="font-semibold">{word.example.en}</p>
+            </div>
+          )}
         </>
       ) : (
         <button type="button" className="btn-secondary btn-sm mt-3 self-start" onClick={() => setShown(true)}>

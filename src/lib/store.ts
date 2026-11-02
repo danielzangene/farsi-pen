@@ -67,6 +67,17 @@ export interface ProgressState {
   missions: Record<string, MissionRecord>;
   /** What was practised each day (dayKey → kinds), last 30 days. */
   activity: Record<string, ActivityKind[]>;
+  /** Words the learner added from the dictionary (id → entry). */
+  customWords: Record<string, CustomWord>;
+}
+
+export interface CustomWord {
+  fa: string;
+  en: string;
+  tr?: string;
+  /** [english, persian] */
+  example?: [string, string];
+  addedAt: string;
 }
 
 export interface MissionRecord {
@@ -95,6 +106,7 @@ export const DEFAULT_STATE: ProgressState = {
   skills: {},
   missions: {},
   activity: {},
+  customWords: {},
   settings: {
     name: "",
     dailyGoal: 10,
@@ -391,6 +403,25 @@ export function recordTrace(letterId: string, score: number): number {
 
 function toggle(list: string[], id: string) {
   return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
+}
+
+/** Adds a dictionary word to My cards (and returns its id). */
+export function addCustomWord(w: Omit<CustomWord, "addedAt">): string {
+  const id = `custom:${w.fa.replace(/\s+/g, "-")}`;
+  update((s) => ({
+    ...s,
+    customWords: { ...s.customWords, [id]: { ...w, addedAt: s.customWords?.[id]?.addedAt ?? new Date().toISOString() } },
+    bookmarks: s.bookmarks.includes(id) ? s.bookmarks : [...s.bookmarks, id],
+  }));
+  return id;
+}
+
+export function removeCustomWord(id: string) {
+  update((s) => {
+    const customWords = { ...s.customWords };
+    delete customWords[id];
+    return { ...s, customWords, bookmarks: s.bookmarks.filter((b) => b !== id) };
+  });
 }
 
 export function toggleBookmark(wordId: string) {
