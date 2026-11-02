@@ -163,6 +163,10 @@ export default function SettingsPage() {
           </button>
         )}
       </section>
+      <p className="pb-4 text-center text-xs font-semibold text-muted">
+        Version {process.env.NEXT_PUBLIC_BUILD_COMMIT} · built{" "}
+        {(process.env.NEXT_PUBLIC_BUILD_TIME ?? "").slice(0, 16).replace("T", " ")} UTC
+      </p>
     </div>
   );
 }
