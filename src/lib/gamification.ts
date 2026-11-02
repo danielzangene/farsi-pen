@@ -84,6 +84,8 @@ export function liveStreak(s: Streak, today: string): number {
 export interface BadgeStats {
   lessonsDone: number;
   totalLessons: number;
+  level1Done: number;
+  level1Total: number;
   wordsLearned: number;
   recordStreak: number;
   xp: number;
@@ -103,7 +105,8 @@ export interface Badge {
 
 export const BADGES: Badge[] = [
   { id: "first-lesson", emoji: "🌱", name: "First Words", description: "Finish your first lesson", progress: (s) => [Math.min(s.lessonsDone, 1), 1] },
-  { id: "level-1", emoji: "📗", name: "Level 1 Done", description: "Finish every Level 1 lesson", progress: (s) => [s.lessonsDone, s.totalLessons] },
+  { id: "level-1", emoji: "📗", name: "Level 1 Done", description: "Finish every Level 1 lesson", progress: (s) => [s.level1Done, s.level1Total] },
+  { id: "all-lessons", emoji: "🎓", name: "Every Lesson", description: "Finish every lesson, Levels 1 to 4", progress: (s) => [s.lessonsDone, s.totalLessons] },
   { id: "streak-3", emoji: "🔥", name: "Warm Ink", description: "Reach a 3-day streak", progress: (s) => [Math.min(s.recordStreak, 3), 3] },
   { id: "streak-7", emoji: "🔥", name: "One Week", description: "Reach a 7-day streak", progress: (s) => [Math.min(s.recordStreak, 7), 7] },
   { id: "streak-30", emoji: "🌙", name: "A Month of Farsi", description: "Reach a 30-day streak", progress: (s) => [Math.min(s.recordStreak, 30), 30] },

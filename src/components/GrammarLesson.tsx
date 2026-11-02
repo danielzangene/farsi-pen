@@ -5,6 +5,7 @@ import { ArrowLeft, Lightbulb, PartyPopper, RotateCcw, Star } from "lucide-react
 import type { Exercise, GrammarConcept } from "@/content/grammar";
 import { checkAnswer, type Verdict } from "@/lib/answer";
 import { completeGrammar } from "@/lib/store";
+import { ReportButton } from "./ReportButton";
 import { cx } from "@/lib/util";
 import { AudioButtons, Fa, FeedbackSheet, FocusMode, SessionHeader, StatCard } from "./ui";
 
@@ -241,6 +242,7 @@ function Exercises({ exercises, onDone }: { exercises: Exercise[]; onDone: (corr
       <div className="mx-auto max-w-2xl">
         <div className="flex flex-wrap items-center gap-2">
           <p className="eyebrow text-plum-ink">{LABELS[ex.kind]}</p>
+          <ReportButton itemId={`grammar:${idx}`} context={ex.prompt} className="ms-auto" />
           {missed.has(idx) && !verdict && (
             <span className="chip bg-saffron-soft text-saffron-ink">
               <RotateCcw className="size-3" strokeWidth={3} /> Let&apos;s try this one again

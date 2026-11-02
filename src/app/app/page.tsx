@@ -10,19 +10,18 @@ import { displayState } from "@/lib/mastery";
 import { buildDeck } from "@/lib/flashcards";
 import { useVoiceStatus } from "@/components/SpeechSetup";
 import type { Tone } from "@/components/ui";
-import { weakSkills } from "@/lib/missions";
 import { BADGES, levelFor } from "@/lib/gamification";
 import { badgeStats, currentStreak, today, TRACE_PASS, updateSettings, useHydrated, useProgress, wordsLearned } from "@/lib/store";
 import { isDue } from "@/lib/srs";
 import { cx } from "@/lib/util";
 import { Fa, ProgressBar, TONE } from "@/components/ui";
+import { BackupNudge, Onboarding, TodayPlan } from "@/components/TodayPlan";
 
 export default function Dashboard() {
   const s = useProgress();
   const hydrated = useHydrated();
   const level = levelFor(s.xp);
   const day = today(s);
-  const nextLesson = LESSONS.find((l) => !s.lessons[l.id]?.completedAt);
   const dueCount = Object.entries(s.cards).filter(([id, c]) => !s.hidden.includes(id) && isDue(c)).length;
   const stats = badgeStats(s);
   const goalPct = Math.min(1, day.words / s.settings.dailyGoal);
@@ -40,53 +39,12 @@ export default function Dashboard() {
           <p className="font-semibold text-muted">
             <Fa>سلام</Fa> · salâm{s.settings.name ? `, ${s.settings.name}` : ""}!
           </p>
-          <h1 className="text-3xl font-extrabold tracking-tight">Welcome back</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">{s.xp > 0 ? "Welcome back" : "Welcome"}</h1>
         </div>
 
-        {/* Continue: the one main action */}
-        {nextLesson ? (
-          <section className="card p-5 sm:p-6" aria-labelledby="next-lesson">
-            <div className="flex items-center gap-4 sm:gap-5">
-              <span className="grid size-20 shrink-0 place-items-center rounded-full bg-firuze text-4xl shadow-[0_6px_0_var(--color-firuze-shadow)]" aria-hidden>
-                {nextLesson.emoji}
-              </span>
-              <div className="min-w-0">
-                <p className="eyebrow text-firuze-ink">
-                  Unit 1 · Lesson {nextLesson.order}
-                </p>
-                <h2 id="next-lesson" className="mt-0.5 text-2xl font-extrabold tracking-tight">
-                  {nextLesson.title}
-                </h2>
-                <p className="mt-0.5 text-sm font-semibold text-muted">
-                  {s.lessons[nextLesson.id] ? "In progress" : "Up next"} · {nextLesson.wordIds.length} new words
-                </p>
-              </div>
-            </div>
-            <Link href={`/app/lessons/${nextLesson.id}/`} className="btn-primary btn-lg mt-5 w-full">
-              {s.lessons[nextLesson.id] ? "Continue" : "Start"}
-            </Link>
-          </section>
-        ) : (
-          <section className="card p-5 sm:p-6" aria-labelledby="next-lesson">
-            <div className="flex items-center gap-4 sm:gap-5">
-              <span className="grid size-20 shrink-0 place-items-center rounded-full bg-plum text-4xl shadow-[0_6px_0_var(--color-plum-shadow)]" aria-hidden>
-                🧩
-              </span>
-              <div className="min-w-0">
-                <p className="eyebrow text-plum-ink">Unit 1 complete</p>
-                <h2 id="next-lesson" className="mt-0.5 text-2xl font-extrabold tracking-tight">
-                  All Level 1 lessons done!
-                </h2>
-                <p className="mt-0.5 text-sm font-semibold text-muted">Try grammar next</p>
-              </div>
-            </div>
-            <Link href="/app/grammar/" className="btn-plum btn-lg mt-5 w-full">
-              Go to grammar
-            </Link>
-          </section>
-        )}
-
-        <MissionTile />
+        {/* The one main action: today's path (or two quick questions the first time). */}
+        {s.settings.onboarded ? <TodayPlan /> : <Onboarding />}
+        <BackupNudge />
 
         <Explore dueCount={dueCount} />
 
@@ -244,29 +202,6 @@ function Checklist() {
         ))}
       </ul>
     </section>
-  );
-}
-
-/** Next real-world mission: the first one with skills left to master or due for a check. */
-function MissionTile() {
-  const s = useProgress();
-  const next = MISSIONS.find((m) => weakSkills(m, s.skills).length > 0);
-  if (!next) return null;
-  const left = weakSkills(next, s.skills).length;
-  return (
-    <Link href={`/app/missions/${next.id}/`} className="tile flex items-center gap-4 p-4">
-      <span className="grid size-12 shrink-0 place-items-center rounded-full bg-firuze-soft text-2xl" aria-hidden>
-        {next.emoji}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="eyebrow block text-firuze-ink">Real-world mission</span>
-        <span className="block text-lg font-extrabold">{next.title}</span>
-        <span className="block text-sm font-semibold text-muted">
-          {s.missions[next.id] ? `${left} skill${left === 1 ? "" : "s"} left to master` : next.skills[0].canDo}
-        </span>
-      </span>
-      <ChevronRight className="size-5 shrink-0 text-faint" strokeWidth={3} />
-    </Link>
   );
 }
 

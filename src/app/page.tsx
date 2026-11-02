@@ -133,7 +133,7 @@ export default function Home() {
 
       <footer className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-t-2 border-line px-4 py-6 text-center text-sm font-semibold text-muted">
         <LogoMark className="size-7 rounded-lg" />
-        Farsi Pen · MVP demo · Content drafted for native-speaker review
+        Farsi Pen · free, no sign-up · Spotted a mistake? Every word and exercise has a report button.
       </footer>
     </div>
   );

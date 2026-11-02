@@ -8,9 +8,10 @@ Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1
 
 | Area | In the demo |
 | --- | --- |
+| Today | Two onboarding questions (why you’re learning; can you read the script?) shape a daily plan of up to three steps — due reviews, one new thing (letters first if you can’t read yet), one real-world mission — with a single Continue button and an honest “that’s enough for today” |
 | Home | Landing page with a lesson preview and feature overview |
 | Dashboard | Level card (own pen-themed level names, EN + FA), XP bar, daily goal, streak, stats, badges, “Getting started” checklist |
-| Vocabulary lessons | 6 Level 1 lessons / 50 words. Full flow: preview grid → study cards → Round 1 recognition (4 options, keys 1–4 / A–D) → Round 2 typed recall (missed words re-queue) → result with Good/Again and XP |
+| Vocabulary lessons | 36 lessons / 535 words in 4 levels (First Steps, Everyday Life, Getting Around, Conversations). Full flow: preview grid → study cards → Round 1 recognition (4 options, keys 1–4 / A–D) → Round 2 typed recall (missed words re-queue) → result with Good/Again and XP |
 | Card controls | FA→EN / EN→FA, Latin-first / Farsi-first / script-only, “sounds like”, bookmark, hide from practice, report |
 | Answer checking | Typo-tolerant (“good nite” ✓), Arabic ك/ي → Persian ک/ی, ZWNJ and diacritics ignored, synonyms, “almost — check your spelling” |
 | Persian keyboard | On-screen keyboard (standard ISIRI layout) for EN→FA answers; script or Latin transliteration accepted |
@@ -23,7 +24,8 @@ Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1
 | Speaking practice | Hear a word, say it, get a match score. Free speech recognition: the browser's Web Speech API (fa-IR) or Whisper running on-device (transformers.js). Sound-alike letters (س/ص/ث, ز/ذ/ض/ظ, ت/ط, ه/ح, ق/غ) count as the same sound |
 | Natural voice | Free open-source Piper neural TTS (fa_IR Amir / Gyro) running in the browser; ~63 MB one-time download, then offline. Falls back to the device's Persian voice |
 | Real-world audio | YouGlish embed in the Word Library and on word cards: YouTube clips of native speakers saying the word |
-| Settings | Name, daily goal, card defaults, keyboard, voice & speech recognition, reset progress |
+| Settings | Name, goal and reading level, daily goal, card defaults, keyboard, voice & speech recognition, progress backup / restore (file), daily reminder (calendar event), feedback, reset progress |
+| Reporting | “Report a problem” on every word, flashcard, grammar exercise and mission task opens a pre-filled GitHub issue (label `content`) |
 | PWA basics | Web app manifest and icon (installable to home screen) |
 
 All vocabulary, examples, grammar text, level and badge names are original Farsi Pen content. **They are drafts awaiting native-speaker review** (spec §3).

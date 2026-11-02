@@ -8,6 +8,7 @@ import { speak } from "@/lib/speech";
 import { useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { AudioButtons, Fa, FeedbackSheet, RegisterTag } from "../ui";
+import { ReportButton } from "../ReportButton";
 
 function StepTitle({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
@@ -139,7 +140,10 @@ export function PhrasesStep({ mission, skills, onNext }: { mission: Mission; ski
                     <p className="mt-1 font-extrabold">{p.en}</p>
                     {p.note && <p className="mt-2 rounded-xl bg-paper p-2.5 text-sm font-semibold text-muted">{p.note}</p>}
                     <div className="-mx-2 -mb-2 mt-auto pt-2">
-                      <AudioButtons text={p.fa} />
+                      <span className="flex items-center justify-between">
+                        <AudioButtons text={p.fa} />
+                        <ReportButton itemId={`${mission.id}:phrase`} context={`${p.fa} (${p.tr}) = ${p.en}`} />
+                      </span>
                     </div>
                   </div>
                 ))}

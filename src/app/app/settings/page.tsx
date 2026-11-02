@@ -5,6 +5,7 @@ import { resetProgress, updateSettings, useProgress } from "@/lib/store";
 import { CardControls } from "@/components/CardControls";
 import { PageHeader, Segmented } from "@/components/ui";
 import { RecognitionSetup, VoiceSetup } from "@/components/SpeechSetup";
+import { ProgressTools } from "@/components/ProgressTools";
 
 export default function SettingsPage() {
   const { settings } = useProgress();
@@ -29,8 +30,8 @@ export default function SettingsPage() {
         <p className="flex gap-2.5 rounded-2xl bg-sky-soft p-3 text-sm font-semibold text-sky-ink">
           <Info className="size-5 shrink-0" strokeWidth={2.5} />
           <span>
-            <strong className="font-extrabold">Guest mode.</strong> Your progress is saved in this browser only. Accounts with sync across devices are coming
-            next.
+            <strong className="font-extrabold">No sign-up needed.</strong> Your progress is saved in this browser. Use “Save backup” below to keep it safe or
+            move it to another device.
           </span>
         </p>
       </section>
@@ -55,6 +56,33 @@ export default function SettingsPage() {
       <section className="card p-5">
         <h2 className="eyebrow text-muted">Learning</h2>
         <div className="divide-y-2 divide-line">
+          <div className="flex flex-wrap items-center justify-between gap-3 py-4">
+            <span className="font-bold">Why you&apos;re learning</span>
+            <Segmented
+              label="Why you're learning"
+              value={settings.goal ?? "curious"}
+              onChange={(goal) => updateSettings({ goal, onboarded: true })}
+              options={[
+                { value: "travel", label: "Travel" },
+                { value: "family", label: "Family" },
+                { value: "heritage", label: "Heritage" },
+                { value: "curious", label: "Curious" },
+              ]}
+            />
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 py-4">
+            <span className="font-bold">I can read Persian script</span>
+            <Segmented
+              label="Reading Persian"
+              value={settings.reads ?? "some"}
+              onChange={(reads) => updateSettings({ reads, onboarded: true })}
+              options={[
+                { value: "no", label: "Not yet" },
+                { value: "some", label: "A little" },
+                { value: "yes", label: "Yes" },
+              ]}
+            />
+          </div>
           <div className="flex flex-wrap items-center justify-between gap-3 py-4">
             <span className="font-bold">Daily goal</span>
             <Segmented
@@ -103,6 +131,11 @@ export default function SettingsPage() {
             <RecognitionSetup />
           </div>
         </div>
+      </section>
+
+      <section className="card p-5">
+        <h2 className="eyebrow mb-4 text-muted">Your progress</h2>
+        <ProgressTools />
       </section>
 
       <section className="card p-5">
