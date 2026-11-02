@@ -8,6 +8,7 @@ export const XP = {
   practicePerCorrect: 1,
   grammarPerCorrect: 2,
   tracePass: 3,
+  speakPerCorrect: 2,
 } as const;
 
 // Level names are Farsi Pen's own (pen and writing themed) — DRAFT for review.

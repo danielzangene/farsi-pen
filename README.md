@@ -19,7 +19,10 @@ Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1
 | Bookmarks | Bookmarked and hidden tabs, bookmark practice |
 | Alphabet | All 32 letters with isolated / initial / medial / final forms, “Unique to Persian” filter, example words, **letter tracing with scoring** (the “pen”) |
 | Grammar | 2 concepts (pronouns, “to be”) with tables, key points, examples, and exercises (multiple choice, fill-in, translation, hints, 80% pass) |
-| Settings | Name, daily goal, card defaults, keyboard, reset progress |
+| Speaking practice | Hear a word, say it, get a match score. Free speech recognition: the browser's Web Speech API (fa-IR) or Whisper running on-device (transformers.js). Sound-alike letters (س/ص/ث, ز/ذ/ض/ظ, ت/ط, ه/ح, ق/غ) count as the same sound |
+| Natural voice | Free open-source Piper neural TTS (fa_IR Amir / Gyro) running in the browser; ~63 MB one-time download, then offline. Falls back to the device's Persian voice |
+| Real-world audio | YouGlish embed in the Word Library and on word cards: YouTube clips of native speakers saying the word |
+| Settings | Name, daily goal, card defaults, keyboard, voice & speech recognition, reset progress |
 | PWA basics | Web app manifest and icon (installable to home screen) |
 
 All vocabulary, examples, grammar text, level and badge names are original Farsi Pen content. **They are drafts awaiting native-speaker review** (spec §3).
@@ -33,7 +36,8 @@ Accounts and sync (Supabase), community (leaderboards, feed, Talk, friends), don
 - **Next.js 16 (App Router) + TypeScript + Tailwind CSS 4**, exported as a static site (`output: "export"`).
 - **Guest mode:** all progress lives in `localStorage` (`src/lib/store.ts`), shaped so it can be merged into Supabase on sign-up later.
 - **Spaced repetition:** [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) (`src/lib/srs.ts`). Recall right first time = Good, accepted with a typo = Hard, missed = Again.
-- **Audio:** uses the device’s Persian speech voice when one is installed (buttons are disabled otherwise). The spec’s pre-generated neural TTS replaces this once a provider is chosen.
+- **Audio:** Piper TTS in the browser (`src/lib/tts.ts`, models from Hugging Face cached in OPFS), else the device’s Persian voice (`src/lib/speech.ts`).
+- **Speech recognition:** `src/lib/stt.ts` (Web Speech API or Whisper via transformers.js); scoring in `src/lib/pronounce.ts`. No API keys, no backend.
 - **Fonts:** Yekan Bakh (Farsi, `src/fonts/`) and Fraunces (display, via Fontsource).
 
 ```

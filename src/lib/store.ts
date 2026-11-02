@@ -10,6 +10,8 @@ import { GRAMMAR } from "@/content/grammar";
 import { dayKey, earnedBadges, extendStreak, liveStreak, XP, type BadgeStats, type Streak } from "./gamification";
 import { STORAGE_KEY } from "./util";
 import { gradeFor, isLearned, review, type StoredCard } from "./srs";
+import { DEFAULT_PIPER_VOICE, type PiperVoiceId } from "./tts";
+import type { EnginePref } from "./stt";
 
 export type Direction = "fa-en" | "en-fa";
 export type Outcome = "good" | "hard" | "again";
@@ -27,6 +29,10 @@ export interface Settings {
   checklistHidden: boolean;
   /** Dark by default; "system" follows the device setting. */
   theme: Theme;
+  /** Natural (Piper) Persian voice used once downloaded. */
+  voice: PiperVoiceId;
+  /** Speech recognition engine for speaking practice. */
+  speechEngine: EnginePref;
 }
 
 export interface ProgressState {
@@ -69,6 +75,8 @@ export const DEFAULT_STATE: ProgressState = {
     showKeyboard: true,
     checklistHidden: false,
     theme: "dark",
+    voice: DEFAULT_PIPER_VOICE,
+    speechEngine: "auto",
   },
 };
 
@@ -234,6 +242,13 @@ export function completePractice(r: SessionSummary): number {
   return xp;
 }
 
+/** Speaking practice: XP per word said right (or nearly); counts toward the daily goal. */
+export function completeSpeaking(r: SessionSummary): number {
+  const xp = r.correct * XP.speakPerCorrect;
+  update((s) => addActivity(s, Object.keys(r.outcomes).length, xp));
+  return xp;
+}
+
 export function completeGrammar(id: string, correct: number, total: number): number {
   const pct = total ? Math.round((correct / total) * 100) : 0;
   const xp = correct * XP.grammarPerCorrect;
@@ -269,6 +284,11 @@ export function toggleBookmark(wordId: string) {
 
 export function toggleHidden(wordId: string) {
   update((s) => ({ ...s, hidden: toggle(s.hidden, wordId) }));
+}
+
+/** Current settings outside React (falls back to defaults on the server). */
+export function getSettings(): Settings {
+  return typeof window === "undefined" ? DEFAULT_STATE.settings : load().settings;
 }
 
 export function updateSettings(patch: Partial<Settings>) {
