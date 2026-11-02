@@ -1,14 +1,16 @@
 "use client";
 import { useMemo, useState } from "react";
-import { Search, SearchX } from "lucide-react";
+import { MonitorPlay, Search, SearchX } from "lucide-react";
 import { LESSONS, LESSON_OF_WORD } from "@/content/lessons";
 import { WORDS } from "@/content/words";
 import { normalize } from "@/lib/answer";
 import { isLearned } from "@/lib/srs";
 import { useProgress } from "@/lib/store";
 import { CardControls } from "@/components/CardControls";
-import { PageHeader } from "@/components/ui";
+import { Fa, PageHeader } from "@/components/ui";
 import { WordCard } from "@/components/WordCard";
+import { YouglishPlayer } from "@/components/YouglishPlayer";
+import { hasPersianScript } from "@/lib/youglish";
 
 type Kind = "all" | "word" | "phrase";
 type Status = "all" | "learned" | "learning" | "new";
@@ -20,6 +22,7 @@ export default function WordsPage() {
   const [kind, setKind] = useState<Kind>("all");
   const [status, setStatus] = useState<Status>("all");
   const [limit, setLimit] = useState(20);
+  const [videoQuery, setVideoQuery] = useState<string | null>(null);
 
   const results = useMemo(() => {
     const key = normalize(q);
@@ -33,6 +36,9 @@ export default function WordsPage() {
       return [w.en, w.tr, w.fa, ...(w.alt ?? [])].some((t) => normalize(t).includes(key));
     });
   }, [q, topic, kind, status, s.cards]);
+
+  // Real-world pronunciation: a Persian query as typed, otherwise the best match's Farsi.
+  const spoken = hasPersianScript(q) ? q.trim() : q.trim() && results.length > 0 ? results[0].fa : "";
 
   const select = "min-h-12 min-w-0 flex-1 cursor-pointer rounded-2xl border-2 border-line bg-paper px-3 text-sm font-bold text-ink transition-colors focus:border-sky focus:bg-card sm:flex-none";
 
@@ -51,6 +57,7 @@ export default function WordsPage() {
             onChange={(e) => {
               setQ(e.target.value);
               setLimit(20);
+              setVideoQuery(null);
             }}
             dir="auto"
             aria-label="Search words"
@@ -76,6 +83,28 @@ export default function WordsPage() {
           <option value="new">Not seen</option>
         </select>
       </div>
+      {spoken && (
+        <section className="card mb-6 p-4" aria-label="Hear it in real videos">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="eyebrow text-sky-ink">Hear it in real videos</p>
+              <p className="mt-1 font-semibold text-muted">
+                Native speakers saying <Fa className="text-lg font-bold text-ink">{spoken}</Fa> on YouTube
+              </p>
+            </div>
+            {videoQuery !== spoken && (
+              <button type="button" className="btn-sky btn-sm" onClick={() => setVideoQuery(spoken)}>
+                <MonitorPlay className="size-4" /> Play clips
+              </button>
+            )}
+          </div>
+          {videoQuery === spoken && (
+            <div className="mt-4">
+              <YouglishPlayer query={spoken} />
+            </div>
+          )}
+        </section>
+      )}
       {results.length === 0 ? (
         <div className="card flex flex-col items-center px-6 py-10 text-center">
           <span className="grid size-14 place-items-center rounded-full bg-paper text-faint">
