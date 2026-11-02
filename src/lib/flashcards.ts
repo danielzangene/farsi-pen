@@ -4,7 +4,7 @@
 import { LESSONS } from "@/content/lessons";
 import { WORD_BY_ID, WORDS } from "@/content/words";
 import { isDue, type StoredCard } from "./srs";
-import type { Outcome } from "./store";
+import type { CustomWord, Outcome } from "./store";
 
 export type DeckKind = "today" | "mine" | "lesson";
 
@@ -21,11 +21,12 @@ interface DeckState {
   cards: Record<string, StoredCard>;
   hidden: string[];
   bookmarks: string[];
+  customWords?: Record<string, CustomWord>;
 }
 
 export function buildDeck(kind: DeckKind, s: DeckState, lessonId?: string, now = new Date()): Deck {
   const hidden = new Set(s.hidden);
-  const usable = (id: string) => !hidden.has(id) && !!WORD_BY_ID[id];
+  const usable = (id: string) => !hidden.has(id) && (!!WORD_BY_ID[id] || !!s.customWords?.[id]);
   const eligibleOf = (ids: string[]) => new Set(ids.filter((id) => !s.cards[id] || isDue(s.cards[id], now)));
   if (kind === "mine") {
     const ids = s.bookmarks.filter(usable);

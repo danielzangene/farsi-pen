@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Bookmark, Eye, EyeOff, Play, RotateCcw, Target, ThumbsUp, Trophy, Zap } from "lucide-react";
 import { WORD_BY_ID } from "@/content/words";
+import { getWord } from "@/lib/words";
 import { completePractice, toggleHidden, useHydrated, useProgress, type SessionSummary } from "@/lib/store";
 import { shuffle } from "@/lib/util";
 import { CardControls } from "@/components/CardControls";
@@ -19,11 +20,12 @@ export default function BookmarksPage() {
   const [round, setRound] = useState(0);
 
   const ids = tab === "bookmarks" ? s.bookmarks : s.hidden;
-  const words = ids.map((id) => WORD_BY_ID[id]).filter(Boolean);
+  const words = ids.map((id) => getWord(id, s.customWords)).filter((w): w is NonNullable<typeof w> => !!w);
 
   const startPractice = () => {
     setResult(null);
-    setPractising(shuffle(s.bookmarks).slice(0, 15));
+    // Typed recall needs a transliteration, so it uses course words; flashcards cover your own words too.
+    setPractising(shuffle(s.bookmarks.filter((id) => WORD_BY_ID[id])).slice(0, 15));
     setRound((n) => n + 1);
   };
 

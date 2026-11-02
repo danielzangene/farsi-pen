@@ -9,6 +9,7 @@ import { isLearned } from "@/lib/srs";
 import { useHydrated, useProgress } from "@/lib/store";
 import { buildDeck, NEW_PER_DAY, type Deck } from "@/lib/flashcards";
 import { FlashcardSession } from "@/components/FlashcardSession";
+import { DictionaryPanel } from "@/components/DictionaryPanel";
 import { CardControls } from "@/components/CardControls";
 import { Fa, PageHeader, Segmented } from "@/components/ui";
 import { WordCard } from "@/components/WordCard";
@@ -203,7 +204,7 @@ function Browse() {
           <Search className="pointer-events-none absolute left-3.5 top-1/2 size-5 -translate-y-1/2 text-faint" strokeWidth={2.5} />
           <input
             className="input min-h-12 !py-2.5 !pl-11 !text-base"
-            placeholder="Search English, Farsi or transliteration"
+            placeholder="Search or look up any word, in English or فارسی"
             value={q}
             onChange={(e) => {
               setQ(e.target.value);
@@ -243,6 +244,7 @@ function Browse() {
           <span className="block text-sm font-semibold text-muted">Hear each word, say it, and get a match score. Or tap the mic on any card.</span>
         </span>
       </Link>
+      <DictionaryPanel query={q} onPick={(w) => setQ(w)} />
       {spoken && (
         <section className="card mb-6 p-4" aria-label="Hear it in real videos">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -270,8 +272,8 @@ function Browse() {
           <span className="grid size-14 place-items-center rounded-full bg-paper text-faint">
             <SearchX className="size-7" strokeWidth={2.5} />
           </span>
-          <p className="mt-3 text-lg font-extrabold">No words match</p>
-          <p className="mt-1 font-semibold text-muted">Try another search or loosen the filters.</p>
+          <p className="mt-3 text-lg font-extrabold">Not in the course yet</p>
+          <p className="mt-1 font-semibold text-muted">Check the dictionary above, or loosen the filters.</p>
           <button
             type="button"
             className="btn-secondary btn-sm mt-4"

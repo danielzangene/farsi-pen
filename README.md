@@ -25,6 +25,10 @@ Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1
 | Natural voice | Free open-source Piper neural TTS (fa_IR Amir / Gyro) running in the browser; ~63 MB one-time download, then offline. Falls back to the device's Persian voice |
 | Real-world audio | YouGlish embed in the Word Library and on word cards: YouTube clips of native speakers saying the word |
 | Settings | Name, goal and reading level, daily goal, card defaults, keyboard, voice & speech recognition, progress backup / restore (file), daily reminder (calendar event), feedback, reset progress |
+| Dictionary | Look up any word in English or فارسی from the word search: course words first (with transliteration and lesson), then 46,000+ dictionary entries with example sentences; plurals and verb endings are stripped to find the dictionary form. Any meaning can be added to My cards and studied as a flashcard |
+| Spelling help | “Did you mean …?” for misspelled Persian: a Norvig-style corrector where sound-alike letters (س/ص/ث…) and missing half-spaces count as small slips, ranking course words first |
+| Poetry | Fâl-e Hâfez (12 famous ghazals with transliteration, English, an omen reading and key words) and a poem of the day (Hafez, Saadi, Khayyam). “Read the full poem” loads any of them from Ganjoor's open data with vowel marks and modern-Persian explanations; tap any word to look it up |
+| Beyond the app | Curated free resources (stories, podcasts, grammar, community) and credits for every open source used |
 | Reporting | “Report a problem” on every word, flashcard, grammar exercise and mission task opens a pre-filled GitHub issue (label `content`) |
 | PWA basics | Web app manifest and icon (installable to home screen) |
 
@@ -41,6 +45,7 @@ Accounts and sync (Supabase), community (leaderboards, feed, Talk, friends), don
 - **Spaced repetition:** [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) (`src/lib/srs.ts`). Recall right first time = Good, accepted with a typo = Hard, missed = Again.
 - **Audio:** tried in order — Piper TTS in the browser once downloaded (`src/lib/tts.ts`), the device’s Persian voice, then Google Translate’s free online TTS so audio works out of the box (`src/lib/speech.ts`).
 - **Missions:** content in `src/content/missions/` (one file per situation, typed by `types.ts`); session planning in `src/lib/missions.ts`, free-answer checking in `src/lib/mission-check.ts`, skill mastery states in `src/lib/mastery.ts`; UI in `src/components/mission/`. A new mission is content only — `src/content/missions.test.ts` checks it (every skill has practice/role-play/check/recheck tasks, every model answer passes its own checker).
+- **Open data:** `public/data/dict/` is built by `scripts/build-dictionary.mjs` from [VahidN/EnglishToPersianDictionaries](https://github.com/VahidN/EnglishToPersianDictionaries) (Apache-2.0: essential-english-words, generic-1, learn-english), with meanings ranked by everyday use and missing madde restored; `public/data/fa-words.txt` is built by `scripts/build-lexicon.mjs` from [shahind/Persian-Words-Database](https://github.com/shahind/Persian-Words-Database). Poems come from [ganjoor/ganjoor-data](https://github.com/ganjoor/ganjoor-data) via jsDelivr, pinned to a commit (`src/content/poems.ts`).
 - **Speech recognition:** `src/lib/stt.ts` (Web Speech API or Whisper via transformers.js); scoring in `src/lib/pronounce.ts`. No API keys, no backend.
 - **Fonts:** Yekan Bakh (Farsi, `src/fonts/`) and Fraunces (display, via Fontsource).
 

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Bookmark, BookOpen, Check, ChevronRight, Compass, Flame, GraduationCap, Layers, Mic, PenLine, Puzzle, Repeat, Star, Trophy, Volume2, X } from "lucide-react";
+import { BookHeart, Bookmark, BookOpen, Check, ChevronRight, Compass, Flame, GraduationCap, Layers, Mic, PenLine, Puzzle, Repeat, Star, Trophy, Volume2, X } from "lucide-react";
 import { LESSONS } from "@/content/lessons";
 import { WORDS } from "@/content/words";
 import { MISSIONS } from "@/content/missions";
@@ -221,12 +221,13 @@ function Explore({ dueCount }: { dueCount: number }) {
 
   const features: Feature[] = [
     { href: "/app/missions/", title: "Missions", text: "Real situations: taxi, café, bazaar, ta'ârof", status: `${missionsDone}/${MISSIONS.length} mastered · ${mastered}/${skills.length} skills`, icon: Compass, tone: "firuze" },
-    { href: "/app/words/", title: "Flashcards", text: "See, guess, flip, hear, say it", status: cardsToday ? `${cardsToday} cards for today` : "All caught up today", icon: Layers, tone: "sky", badge: cardsToday || undefined },
+    { href: "/app/words/", title: "Words", text: "Flashcards and a dictionary for any word", status: cardsToday ? `${cardsToday} cards for today` : "All caught up today", icon: Layers, tone: "sky", badge: cardsToday || undefined },
     { href: "/app/speak/", title: "Speak", text: "Say words, get a match score", status: "Free speech recognition", icon: Mic, tone: "anar" },
     { href: "/app/lessons/", title: "Lessons", text: "Learn new words step by step", status: `${lessonsDone}/${LESSONS.length} done`, icon: BookOpen, tone: "saffron" },
     { href: "/app/grammar/", title: "Grammar", text: "A1 → B2, with exercises", status: `${grammarDone}/${GRAMMAR.length} concepts`, icon: Puzzle, tone: "plum" },
     { href: "/app/alphabet/", title: "Alphabet", text: "Letters, vowel signs, tracing", status: `${traced}/${LETTERS.length} traced`, icon: PenLine, tone: "pista" },
     { href: "/app/practice/", title: "Daily Practice", text: "Type words from memory", status: Object.keys(s.cards).length === 0 ? "Unlocks after a lesson" : dueCount ? `${dueCount} ready` : "Nothing due", icon: Repeat, tone: "sky", badge: dueCount || undefined },
+    { href: "/app/poetry/", title: "Poetry", text: "Fâl-e Hâfez, Saadi, Khayyam", status: "A new poem every day", icon: BookHeart, tone: "plum" },
     { href: "/app/bookmarks/", title: "My cards", text: "Words you saved", status: `${s.bookmarks.length} saved`, icon: Bookmark, tone: "saffron" },
     { href: "/app/settings/", title: "Voice & speech", text: "Natural voice, recognition", status: voice.state === "ready" ? "Natural voice on" : "Online voice", icon: Volume2, tone: "firuze" },
   ];
