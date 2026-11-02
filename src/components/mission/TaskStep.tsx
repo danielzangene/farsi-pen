@@ -57,7 +57,7 @@ export function TaskStep({
 
   const check = () => {
     if (!answer.trim() || result) return;
-    const r = checkTask(alts.length ? alts : answer, task.must);
+    const r = checkTask(alts.length ? alts : answer, task.must, task.mustNot);
     setResult(r);
     if (!current.retry) setOutcomes((o) => [...o, { task, verdict: r.verdict, hintUsed: hint, answer }]);
   };

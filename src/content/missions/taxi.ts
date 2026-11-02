@@ -131,9 +131,9 @@ export const TAXI: Mission = {
       skill: "taxi-fare",
       stage: "recheck",
       cue: { fa: "بیا بالا.", tr: "biyâ bâlâ.", en: "Hop in.", register: "colloquial" },
-      prompt: "Ask how much it costs to Valiasr.",
+      prompt: "Ask how much it costs to the airport (forudgâh).",
       must: price,
-      model: { fa: "تا ولیعصر چنده؟", tr: "tâ valiasr chande?", en: "How much to Valiasr?" },
+      model: { fa: "تا فرودگاه چنده؟", tr: "tâ forudgâh chande?", en: "How much to the airport?" },
     },
     // Stop
     {

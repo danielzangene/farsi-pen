@@ -56,6 +56,8 @@ export interface MissionTask {
   prompt: string;
   /** Required pieces: every group must appear; each group lists alternatives in Finglish and Persian script. */
   must: string[][];
+  /** Pieces that mean the answer is about something else; any of them makes it wrong. */
+  mustNot?: string[];
   /** A natural answer, shown after checking. */
   model: { fa: string; tr: string; en: string };
   hint?: string;

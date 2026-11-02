@@ -38,7 +38,9 @@ export default function MissionsPage() {
                   <span className="block text-lg font-extrabold">
                     {m.title} <Fa className="ms-1 text-sm font-semibold text-muted">{m.titleFa}</Fa>
                   </span>
-                  <span className="block text-sm font-semibold text-muted">{m.skills.map((sk) => sk.canDo).join(" · ")}</span>
+                  <span className="line-clamp-2 text-sm font-semibold text-muted">
+                    {m.skills.length} skills · {m.skills.map((sk) => sk.canDo).join(" · ")}
+                  </span>
                 </span>
                 <span
                   className={cx(

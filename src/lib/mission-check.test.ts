@@ -35,6 +35,13 @@ describe("checkTask", () => {
   it("takes the best of several speech alternatives", () => {
     expect(checkTask(["سلام", "کرایه چنده"], fare).verdict).toBe("correct");
   });
+  it("keeps short pieces exact", () => {
+    expect(checkTask("نون و پنیر", [["shir", "شیر"]]).verdict).toBe("wrong");
+  });
+  it("rejects off-topic answers", () => {
+    expect(checkTask("ahl-e kânâdâ hastam", [["hastam", "هستم"]], ["ahl", "اهل"]).verdict).toBe("wrong");
+    expect(checkTask("man aleks hastam", [["hastam", "هستم"]], ["ahl", "اهل"]).verdict).toBe("correct");
+  });
   it("is wrong for an empty answer", () => {
     expect(checkTask("  ", fare).verdict).toBe("wrong");
   });
