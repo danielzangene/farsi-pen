@@ -1,22 +1,27 @@
 import Link from "next/link";
-import { BookOpen, Check, Keyboard, PenLine, Puzzle, Repeat, SpellCheck, Star } from "lucide-react";
+import { BookOpen, Check, Compass, Layers, Mic, MonitorPlay, PenLine, Puzzle, SpellCheck, Star } from "lucide-react";
 import { Logo, LogoMark } from "@/components/AppNav";
 import { Bubble, Fa } from "@/components/ui";
 import { LESSONS } from "@/content/lessons";
 import { WORDS } from "@/content/words";
+import { MISSIONS } from "@/content/missions";
+import { GRAMMAR } from "@/content/grammar";
 
 // Literal tone classes (same values as TONE in ui.tsx): this is a server
 // component, and a plain object exported from a "use client" module can't be read here.
 const FEATURES = [
-  { icon: BookOpen, tone: "bg-firuze-soft text-firuze-ink", title: "Bite-size lessons", text: "Preview, study, then two quiz rounds: pick the answer, then type it from memory." },
-  { icon: Repeat, tone: "bg-sky-soft text-sky-ink", title: "Spaced repetition", text: "Daily Practice brings back each word right before you'd forget it (FSRS)." },
-  { icon: PenLine, tone: "bg-saffron-soft text-saffron-ink", title: "Write the letters", text: "Trace every letter in every form — the “pen” in Farsi Pen." },
-  { icon: SpellCheck, tone: "bg-pista-soft text-pista-ink", title: "Forgiving grading", text: "“good nite” counts. Small typos get a spelling tip, not a red cross." },
-  { icon: Keyboard, tone: "bg-anar-soft text-anar-ink", title: "Built-in Persian keyboard", text: "Type in Farsi script without changing your phone or computer settings." },
-  { icon: Puzzle, tone: "bg-plum-soft text-plum-ink", title: "Grammar that clicks", text: "Short explanations, tables and exercises with hints." },
+  { icon: Compass, tone: "bg-firuze-soft text-firuze-ink", title: "Real-world missions", text: "Take a taxi, order at a café, bargain at the bazaar, handle ta'ârof — and finish each with something you can really do." },
+  { icon: Layers, tone: "bg-sky-soft text-sky-ink", title: "Smart flashcards", text: "See the word, guess, flip, hear it, see it in a sentence. Spaced repetition (FSRS) brings it back right before you'd forget." },
+  { icon: Mic, tone: "bg-anar-soft text-anar-ink", title: "Speak and get scored", text: "Say a word or answer a character out loud. Free speech recognition tells you how close it sounded." },
+  { icon: Puzzle, tone: "bg-plum-soft text-plum-ink", title: "Grammar A1 → B2", text: "A full course of short explanations, tables and exercises — or just the bit a situation needs." },
+  { icon: PenLine, tone: "bg-saffron-soft text-saffron-ink", title: "Write the letters", text: "Every letter plus آ and ء, vowel signs, and tracing in every form — the “pen” in Farsi Pen." },
+  { icon: BookOpen, tone: "bg-pista-soft text-pista-ink", title: "Bite-size lessons", text: "Preview, study, then two quiz rounds: pick the answer, then type it from memory." },
+  { icon: MonitorPlay, tone: "bg-sky-soft text-sky-ink", title: "Real people, real videos", text: "Hear any word in YouTube clips of native speakers, cued to the moment it's said." },
+  { icon: SpellCheck, tone: "bg-firuze-soft text-firuze-ink", title: "Finglish or فارسی", text: "Answer in transliteration, Persian script or by voice. Small typos get a tip, not a red cross." },
+  { icon: Star, tone: "bg-saffron-soft text-saffron-ink", title: "Progress that means something", text: "XP for skills you prove, not clicks. When you've mastered something, the app says so and moves on." },
 ];
 
-const LETTER_STRIP = "ا ب پ ت ث ج چ ح خ د ذ ر ز ژ س ش ص ض ط ظ ع غ ف ق ک گ ل م ن و ه ی".split(" ");
+const LETTER_STRIP = "آ ا ب پ ت ث ج چ ح خ د ذ ر ز ژ س ش ص ض ط ظ ع غ ف ق ک گ ل م ن و ه ی".split(" ");
 
 const QUIZ_OPTIONS = ["hello", "goodbye", "thank you", "please"];
 
@@ -99,7 +104,7 @@ export default function Home() {
       <section className="mx-auto max-w-5xl px-4 py-16">
         <h2 className="text-3xl font-extrabold tracking-tight">What’s in the demo</h2>
         <p className="mt-2 font-semibold text-muted">
-          {LESSONS.length} lessons and {WORDS.length} words from Level 1, the full alphabet, and the first grammar concepts — all written for Farsi Pen.
+          {MISSIONS.length} real-world missions, {LESSONS.length} lessons and {WORDS.length} words, {GRAMMAR.length} grammar concepts from A1 to B2, and the full alphabet — all written for Farsi Pen.
         </p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
