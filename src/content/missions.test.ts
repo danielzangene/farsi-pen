@@ -38,9 +38,17 @@ describe("mission content", () => {
 
       it("accepts its own model answers, typed or spoken", () => {
         for (const t of m.tasks) {
-          expect(checkTask(t.model.tr, t.must).verdict, `${t.skill}/${t.stage} tr`).toBe("correct");
-          expect(checkTask(t.model.fa, t.must).verdict, `${t.skill}/${t.stage} fa`).toBe("correct");
+          expect(checkTask(t.model.tr, t.must, t.mustNot).verdict, `${t.skill}/${t.stage} tr`).toBe("correct");
+          expect(checkTask(t.model.fa, t.must, t.mustNot).verdict, `${t.skill}/${t.stage} fa`).toBe("correct");
         }
+      });
+
+      it("doesn't accept another skill's answer", () => {
+        for (const t of m.tasks)
+          for (const other of m.tasks.filter((o) => o.skill !== t.skill && (o.stage === "check" || o.stage === "recheck"))) {
+            expect(checkTask(other.model.tr, t.must, t.mustNot).verdict, `${other.skill} model passes ${t.skill}/${t.stage}`).toBe("wrong");
+            expect(checkTask(other.model.fa, t.must, t.mustNot).verdict, `${other.skill} model (fa) passes ${t.skill}/${t.stage}`).toBe("wrong");
+          }
       });
 
       it("has checks that need a cue and differ from practice", () => {
