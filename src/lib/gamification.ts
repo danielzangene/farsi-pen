@@ -109,7 +109,8 @@ export const BADGES: Badge[] = [
   { id: "xp-1000", emoji: "🌟", name: "1,000 XP", description: "Earn 1,000 XP", progress: (s) => [Math.min(s.xp, 1000), 1000] },
   { id: "first-trace", emoji: "✍️", name: "First Stroke", description: "Trace your first letter", progress: (s) => [Math.min(s.lettersTraced, 1), 1] },
   { id: "all-letters", emoji: "🖋️", name: "Full Alphabet", description: "Trace all 32 letters", progress: (s) => [s.lettersTraced, s.totalLetters] },
-  { id: "grammar", emoji: "🧩", name: "Grammar Starter", description: "Pass every grammar lesson", progress: (s) => [s.grammarDone, s.totalGrammar] },
+  { id: "grammar", emoji: "🧩", name: "Grammar Starter", description: "Pass 5 grammar concepts", progress: (s) => [Math.min(s.grammarDone, 5), Math.min(5, s.totalGrammar)] },
+  { id: "grammar-all", emoji: "🏛️", name: "Grammar Master", description: "Pass every grammar concept", progress: (s) => [s.grammarDone, s.totalGrammar] },
 ];
 
 export function earnedBadges(stats: BadgeStats): Set<string> {
