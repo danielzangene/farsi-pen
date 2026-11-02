@@ -19,6 +19,7 @@ Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1
 | Bookmarks | Bookmarked and hidden tabs, bookmark practice |
 | Alphabet | All 32 letters with isolated / initial / medial / final forms, “Unique to Persian” filter, example words, **letter tracing with scoring** (the “pen”) |
 | Grammar | Full course of 48 concepts, A1 → B2, in 10 units (pronouns, ezâfe, râ, all tenses, subjunctive, conditionals, passive, reported speech, spoken Persian, ta’ârof…). Each has a table, key points, examples and 6 exercises (multiple choice, fill-in, translation, hints, 80% pass) |
+| Real-world missions | Situation-based missions (first: **Take a taxi**). Listen to a dialogue → key phrases (spoken + formal) → grammar on demand → build sentences → role-play → unguided mastery check. Answer by typing (Finglish or فارسی) or by voice. Ends with *mastered*, *needs practice* (targeted repair of weak skills with a fresh check) or *retry*. "Prove it" skips straight to the check. XP only when a skill is first mastered; mastered skills come back for a short check after 7+ days |
 | Speaking practice | Hear a word, say it, get a match score. Free speech recognition: the browser's Web Speech API (fa-IR) or Whisper running on-device (transformers.js). Sound-alike letters (س/ص/ث, ز/ذ/ض/ظ, ت/ط, ه/ح, ق/غ) count as the same sound |
 | Natural voice | Free open-source Piper neural TTS (fa_IR Amir / Gyro) running in the browser; ~63 MB one-time download, then offline. Falls back to the device's Persian voice |
 | Real-world audio | YouGlish embed in the Word Library and on word cards: YouTube clips of native speakers saying the word |
@@ -37,6 +38,7 @@ Accounts and sync (Supabase), community (leaderboards, feed, Talk, friends), don
 - **Guest mode:** all progress lives in `localStorage` (`src/lib/store.ts`), shaped so it can be merged into Supabase on sign-up later.
 - **Spaced repetition:** [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) (`src/lib/srs.ts`). Recall right first time = Good, accepted with a typo = Hard, missed = Again.
 - **Audio:** Piper TTS in the browser (`src/lib/tts.ts`, models from Hugging Face cached in OPFS), else the device’s Persian voice (`src/lib/speech.ts`).
+- **Missions:** content in `src/content/missions/` (one file per situation, typed by `types.ts`); session planning in `src/lib/missions.ts`, free-answer checking in `src/lib/mission-check.ts`, skill mastery states in `src/lib/mastery.ts`; UI in `src/components/mission/`. A new mission is content only — `src/content/missions.test.ts` checks it (every skill has practice/role-play/check/recheck tasks, every model answer passes its own checker).
 - **Speech recognition:** `src/lib/stt.ts` (Web Speech API or Whisper via transformers.js); scoring in `src/lib/pronounce.ts`. No API keys, no backend.
 - **Fonts:** Yekan Bakh (Farsi, `src/fonts/`) and Fraunces (display, via Fontsource).
 
