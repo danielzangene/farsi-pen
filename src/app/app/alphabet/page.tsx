@@ -1,8 +1,8 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, Info } from "lucide-react";
 import { BASE_LETTERS, LETTERS, letterForms, SIGNS, type Letter } from "@/content/alphabet";
-import { recordTrace, TRACE_PASS, useProgress } from "@/lib/store";
+import { recordTrace, TRACE_PASS, useHydrated, useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { TraceCanvas } from "@/components/TraceCanvas";
 import { AudioButtons, Fa, PageHeader, ProgressBar, Segmented } from "@/components/ui";
@@ -14,6 +14,14 @@ export default function AlphabetPage() {
   const s = useProgress();
   const [filter, setFilter] = useState<"all" | "persian" | "extra">("all");
   const [selected, setSelected] = useState<Letter>(LETTERS[0]);
+  const hydrated = useHydrated();
+  // Open on the next letter still to learn (where the Today plan points).
+  useEffect(() => {
+    if (!hydrated) return;
+    const next = LETTERS.find((l) => (s.traced[l.id] ?? 0) < TRACE_PASS);
+    if (next) setSelected(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
   const detailRef = useRef<HTMLDivElement>(null);
   const traced = LETTERS.filter((l) => (s.traced[l.id] ?? 0) >= TRACE_PASS).length;
   const shown = filter === "all" ? LETTERS : filter === "persian" ? LETTERS.filter((l) => l.persianOnly) : LETTERS.filter((l) => l.extra);

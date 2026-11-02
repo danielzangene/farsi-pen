@@ -1,4 +1,8 @@
 import { WORD_BY_ID, type Word } from "./words";
+import type { LessonDraft } from "./words/define";
+import { LEVEL2 } from "./words/level2";
+import { LEVEL3 } from "./words/level3";
+import { LEVEL4 } from "./words/level4";
 
 export interface Lesson {
   id: string;
@@ -12,8 +16,15 @@ export interface Lesson {
   wordIds: string[];
 }
 
-export const LEVELS = [{ id: 1, name: "Level 1 · First Steps", nameFa: "قدم\u200cهای اول", cefr: "A1",
+export const LEVELS = [
+  { id: 1, name: "Level 1 · First Steps", nameFa: "قدم\u200cهای اول", cefr: "A1",
     description: "Greetings, courtesy, family, numbers and food: the words for your first conversations." },
+  { id: 2, name: "Level 2 · Everyday Life", nameFa: "زندگی روزمره", cefr: "A1",
+    description: "Numbers and money, time, home, the city, getting around, food, shopping, health and the verbs you'll use most." },
+  { id: 3, name: "Level 3 · Getting Around", nameFa: "سفر و شهر", cefr: "A2",
+    description: "More verbs, feelings, weather, work, study, question words, family, travel and your phone." },
+  { id: 4, name: "Level 4 · Conversations", nameFa: "گفت\u200cوگو", cefr: "A2",
+    description: "Ta'ârof, opinions, free time, nature, celebrations, relationships, the kitchen, emergencies and describing things." },
 ];
 
 export const LESSONS: Lesson[] = [
@@ -54,6 +65,26 @@ export const LESSONS: Lesson[] = [
     wordIds: ["khane", "ketab", "dust", "kar", "ruz", "shab", "emruz", "farda"],
   },
 ];
+
+function fromDrafts(drafts: LessonDraft[], level: number, cefr: Lesson["cefr"], startOrder: number): Lesson[] {
+  return drafts.map((d, i) => ({
+    id: d.id,
+    order: startOrder + i,
+    level,
+    cefr,
+    emoji: d.emoji,
+    title: d.title,
+    titleFa: d.titleFa,
+    description: d.description,
+    wordIds: d.words.map((w) => w.id),
+  }));
+}
+
+LESSONS.push(
+  ...fromDrafts(LEVEL2, 2, "A1", LESSONS.length + 1),
+);
+LESSONS.push(...fromDrafts(LEVEL3, 3, "A2", LESSONS.length + 1));
+LESSONS.push(...fromDrafts(LEVEL4, 4, "A2", LESSONS.length + 1));
 
 export const LESSON_BY_ID: Record<string, Lesson> = Object.fromEntries(LESSONS.map((l) => [l.id, l]));
 

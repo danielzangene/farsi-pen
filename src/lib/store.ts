@@ -35,7 +35,18 @@ export interface Settings {
   voice: PiperVoiceId;
   /** Speech recognition engine for speaking practice. */
   speechEngine: EnginePref;
+  /** Onboarding answers: why they're learning and whether they read Persian script. */
+  goal: Goal | null;
+  reads: Reads | null;
+  onboarded: boolean;
+  /** Last day (dayKey) we suggested backing up progress, so it's asked once. */
+  backupNudge: string | null;
 }
+
+export type Goal = "travel" | "family" | "heritage" | "curious";
+export type Reads = "yes" | "some" | "no";
+/** Kinds of practice logged per day, for the Today plan. */
+export type ActivityKind = "review" | "lesson" | "mission" | "grammar" | "alphabet" | "speak";
 
 export interface ProgressState {
   version: 1;
@@ -54,6 +65,8 @@ export interface ProgressState {
   /** Real-world skills (missions) and their mastery state. */
   skills: Record<string, SkillRecord>;
   missions: Record<string, MissionRecord>;
+  /** What was practised each day (dayKey → kinds), last 30 days. */
+  activity: Record<string, ActivityKind[]>;
 }
 
 export interface MissionRecord {
@@ -81,6 +94,7 @@ export const DEFAULT_STATE: ProgressState = {
   earnedBadges: [],
   skills: {},
   missions: {},
+  activity: {},
   settings: {
     name: "",
     dailyGoal: 10,
@@ -92,6 +106,10 @@ export const DEFAULT_STATE: ProgressState = {
     theme: "dark",
     voice: DEFAULT_PIPER_VOICE,
     speechEngine: "auto",
+    goal: null,
+    reads: null,
+    onboarded: false,
+    backupNudge: null,
   },
 };
 
@@ -176,6 +194,8 @@ export function badgeStats(s: ProgressState): BadgeStats {
   return {
     lessonsDone: LESSONS.filter((l) => s.lessons[l.id]?.completedAt).length,
     totalLessons: LESSONS.length,
+    level1Done: LESSONS.filter((l) => l.level === 1 && s.lessons[l.id]?.completedAt).length,
+    level1Total: LESSONS.filter((l) => l.level === 1).length,
     wordsLearned: wordsLearned(s),
     recordStreak: s.streak.record,
     xp: s.xp,
@@ -196,6 +216,22 @@ function withBadges(s: ProgressState): ProgressState {
 }
 
 // ── Actions ────────────────────────────────────────────────────────────────
+
+/** Logs a kind of practice for today (kept for 30 days). */
+function logActivity(s: ProgressState, kind: ActivityKind): ProgressState {
+  const key = dayKey();
+  const day = s.activity?.[key] ?? [];
+  if (day.includes(kind)) return s;
+  const keep = Object.keys(s.activity ?? {}).sort().slice(-29);
+  const activity: Record<string, ActivityKind[]> = {};
+  for (const k of keep) activity[k] = s.activity[k];
+  activity[key] = [...day, kind];
+  return { ...s, activity };
+}
+
+export function markActivity(kind: ActivityKind) {
+  update((s) => logActivity(s, kind));
+}
 
 function addActivity(s: ProgressState, words: number, xp: number): ProgressState {
   const key = dayKey();
@@ -240,7 +276,7 @@ export function completeLesson(lessonId: string, r: SessionSummary): number {
         },
       },
     };
-    return addActivity(next, Object.keys(r.outcomes).length, xp);
+    return logActivity(addActivity(next, Object.keys(r.outcomes).length, xp), "lesson");
   });
   return xp;
 }
@@ -248,10 +284,13 @@ export function completeLesson(lessonId: string, r: SessionSummary): number {
 export function completePractice(r: SessionSummary): number {
   const xp = r.correct * XP.practicePerCorrect;
   update((s) =>
-    addActivity(
-      { ...s, cards: reviewAll(s.cards, r.outcomes), practiceSessions: s.practiceSessions + 1 },
-      Object.keys(r.outcomes).length,
-      xp,
+    logActivity(
+      addActivity(
+        { ...s, cards: reviewAll(s.cards, r.outcomes), practiceSessions: s.practiceSessions + 1 },
+        Object.keys(r.outcomes).length,
+        xp,
+      ),
+      "review",
     ),
   );
   return xp;
@@ -300,7 +339,7 @@ export function completeMission(
         next = { ...next, cards };
       }
     }
-    return addActivity(next, 0, xp);
+    return logActivity(addActivity(next, 0, xp), "mission");
   });
   return xp;
 }
@@ -315,14 +354,14 @@ export function skillMastered(s: ProgressState, skillId: string): boolean {
  */
 export function completeFlashcards(outcomes: Record<string, Outcome>, eligible: Set<string>): number {
   const xp = Object.entries(outcomes).filter(([id, o]) => o !== "again" && eligible.has(id)).length * XP.practicePerCorrect;
-  update((s) => addActivity({ ...s, cards: reviewAll(s.cards, outcomes) }, Object.keys(outcomes).filter((id) => eligible.has(id)).length, xp));
+  update((s) => logActivity(addActivity({ ...s, cards: reviewAll(s.cards, outcomes) }, Object.keys(outcomes).filter((id) => eligible.has(id)).length, xp), "review"));
   return xp;
 }
 
 /** Speaking practice: XP per word said right (or nearly); counts toward the daily goal. */
 export function completeSpeaking(r: SessionSummary): number {
   const xp = r.correct * XP.speakPerCorrect;
-  update((s) => addActivity(s, Object.keys(r.outcomes).length, xp));
+  update((s) => logActivity(addActivity(s, Object.keys(r.outcomes).length, xp), "speak"));
   return xp;
 }
 
@@ -331,10 +370,9 @@ export function completeGrammar(id: string, correct: number, total: number): num
   const xp = correct * XP.grammarPerCorrect;
   update((s) => {
     const prev = s.grammar[id];
-    return addActivity(
-      { ...s, grammar: { ...s.grammar, [id]: { best: Math.max(prev?.best ?? 0, pct), passed: !!prev?.passed || pct >= 80 } } },
-      0,
-      xp,
+    return logActivity(
+      addActivity({ ...s, grammar: { ...s.grammar, [id]: { best: Math.max(prev?.best ?? 0, pct), passed: !!prev?.passed || pct >= 80 } } }, 0, xp),
+      "grammar",
     );
   });
   return xp;
@@ -346,7 +384,7 @@ export function recordTrace(letterId: string, score: number): number {
   update((s) => {
     const prev = s.traced[letterId] ?? 0;
     xp = prev < TRACE_PASS && score >= TRACE_PASS ? XP.tracePass : 0;
-    return addActivity({ ...s, traced: { ...s.traced, [letterId]: Math.max(prev, score) } }, 0, xp);
+    return logActivity(addActivity({ ...s, traced: { ...s.traced, [letterId]: Math.max(prev, score) } }, 0, xp), "alphabet");
   });
   return xp;
 }
@@ -370,6 +408,24 @@ export function getSettings(): Settings {
 
 export function updateSettings(patch: Partial<Settings>) {
   update((s) => ({ ...s, settings: { ...s.settings, ...patch } }));
+}
+
+/** The whole progress as a JSON file's contents, for backup or moving devices. */
+export function exportProgress(): string {
+  return JSON.stringify({ app: "farsi-pen", exportedAt: new Date().toISOString(), progress: load() }, null, 2);
+}
+
+/** Replaces progress with an exported file. Returns false if the file isn't a Farsi Pen backup. */
+export function importProgress(text: string): boolean {
+  try {
+    const data = JSON.parse(text) as { app?: string; progress?: Partial<ProgressState> };
+    const p = data.app === "farsi-pen" ? data.progress : (data as Partial<ProgressState>);
+    if (!p || p.version !== 1 || typeof p.xp !== "number" || typeof p.cards !== "object") return false;
+    save(withBadges({ ...DEFAULT_STATE, ...p, settings: { ...DEFAULT_STATE.settings, ...p.settings } } as ProgressState));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function resetProgress() {

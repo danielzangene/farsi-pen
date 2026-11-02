@@ -6,6 +6,10 @@
 //   kh = خ   gh = غ/ق   sh = ش   zh = ژ   ch = چ   ' = ع/ء
 // "\u200c" is the zero-width non-joiner (half-space), e.g. می\u200cبینمت.
 
+import { LEVEL2 } from "./words/level2";
+import { LEVEL3 } from "./words/level3";
+import { LEVEL4 } from "./words/level4";
+
 export type Register = "colloquial" | "formal" | "both";
 export type Pos = "noun" | "verb" | "adjective" | "phrase" | "number" | "pronoun" | "interjection";
 
@@ -33,7 +37,7 @@ export interface Word {
 
 const ZW = "\u200c";
 
-export const WORDS: Word[] = [
+const LEVEL1_WORDS: Word[] = [
   // ── Lesson 1: Greetings ────────────────────────────────────────────────
   {
     id: "salam", fa: "سلام", tr: "salâm", en: "hello", alt: ["hi"], pos: "interjection", register: "both",
@@ -310,5 +314,8 @@ export const WORDS: Word[] = [
     example: { fa: `فردا می${ZW}بینمت.`, tr: "fardâ mibinamet.", en: "See you tomorrow." },
   },
 ];
+
+/** Every word in the course: Level 1 above, Levels 2–4 from src/content/words/. */
+export const WORDS: Word[] = [...LEVEL1_WORDS, ...[...LEVEL2, ...LEVEL3, ...LEVEL4].flatMap((l) => l.words)];
 
 export const WORD_BY_ID: Record<string, Word> = Object.fromEntries(WORDS.map((w) => [w.id, w]));

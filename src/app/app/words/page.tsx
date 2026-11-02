@@ -39,6 +39,18 @@ export default function WordsPage() {
     } catch {}
   };
 
+  // Opened from the Today plan (?start=today): go straight into today's deck.
+  const progress = useProgress();
+  useEffect(() => {
+    if (!hydrated) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("start") !== "today") return;
+    window.history.replaceState(null, "", window.location.pathname);
+    const deck = buildDeck("today", progress);
+    if (deck.ids.length) setSession({ deck, title: "Today", key: Date.now() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+
   if (!hydrated) return null;
   if (session) return <FlashcardSession key={session.key} deck={session.deck} title={session.title} onExit={() => setSession(null)} />;
 

@@ -8,6 +8,7 @@ import { speak } from "@/lib/speech";
 import { completeFlashcards, toggleBookmark, useProgress, type Outcome } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { SayItButton } from "./SayItButton";
+import { ReportButton } from "./ReportButton";
 import { AudioButtons, Fa, FocusMode, RegisterTag, SessionHeader, StatCard } from "./ui";
 import { YouglishButton } from "./YouglishPlayer";
 
@@ -137,6 +138,7 @@ export function FlashcardSession({ deck, title, onExit }: { deck: Deck; title: s
               <button type="button" className={cx("btn-ghost btn-sm", inDeck && "!text-saffron-ink")} onClick={() => toggleBookmark(word.id)} aria-pressed={inDeck}>
                 <Bookmark className={cx("size-4", inDeck && "fill-current")} /> {inDeck ? "In my cards" : "Add to my cards"}
               </button>
+              <ReportButton itemId={word.id} context={`${word.fa} (${word.tr}) = ${word.en}`} align="right" />
             </div>
           </div>
         ) : (

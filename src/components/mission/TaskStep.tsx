@@ -9,6 +9,7 @@ import { useProgress } from "@/lib/store";
 import { Fa, FeedbackSheet, type FeedbackState } from "../ui";
 import { AnswerInput } from "./AnswerInput";
 import { Bubble } from "./InfoSteps";
+import { ReportButton } from "../ReportButton";
 
 const COPY: Record<TaskStage, { eyebrow: string; title: string; sub: string }> = {
   practice: { eyebrow: "Build sentences", title: "Say it in Persian", sub: "No options — build it yourself. Hints are there if you need them." },
@@ -98,7 +99,10 @@ export function TaskStep({
         </div>
       )}
 
-      <p className="mb-3 text-xl font-extrabold">{task.prompt}</p>
+      <div className="mb-3 flex items-start justify-between gap-2">
+        <p className="text-xl font-extrabold">{task.prompt}</p>
+        <ReportButton itemId={`${mission.id}:${task.skill}:${task.stage}`} context={`${task.prompt} — model: ${task.model.tr}`} className="-mt-1 shrink-0" />
+      </div>
       <AnswerInput
         value={answer}
         onChange={(t, a) => {

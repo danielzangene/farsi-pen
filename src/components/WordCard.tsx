@@ -4,6 +4,7 @@ import type { Word } from "@/content/words";
 import { useProgress } from "@/lib/store";
 import { AudioButtons, BookmarkButton, Fa, RegisterTag } from "./ui";
 import { SayItButton } from "./SayItButton";
+import { ReportButton } from "./ReportButton";
 import { YouglishButton } from "./YouglishPlayer";
 
 /** Word card for the lesson preview, library and bookmarks. */
@@ -53,6 +54,7 @@ export function WordCard({ word, isNew, hideMeaning, extra }: { word: Word; isNe
           <SayItButton word={word} />
           <YouglishButton query={word.fa} label={word.en} />
           <BookmarkButton wordId={word.id} />
+          <ReportButton itemId={word.id} context={`${word.fa} (${word.tr}) = ${word.en}`} align="left" />
         </div>
         {extra}
       </div>
