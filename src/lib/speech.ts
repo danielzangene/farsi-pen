@@ -1,6 +1,9 @@
 "use client";
-// Audio. Prefers the natural Piper voice (tts.ts) once the learner has
-// downloaded it; otherwise plays the device's own Persian voice when it has one.
+// Audio, tried in order until one works:
+//  1. the natural Piper voice (tts.ts), once the learner has downloaded it;
+//  2. the device's own Persian voice, if it has one;
+//  3. an online Persian voice (Google Translate's free TTS endpoint) — so the
+//     speaker buttons work out of the box on every device.
 import { getSettings } from "./store";
 import { onVoiceStatus, refreshVoice, speakNatural, voiceStatus } from "./tts";
 
@@ -23,8 +26,26 @@ function persianVoice(): SpeechSynthesisVoice | null {
   return cachedVoice;
 }
 
+/** Speaker buttons stay enabled: there's always the online voice to fall back on. */
 export function canSpeak(): boolean {
-  return natural() || persianVoice() !== null;
+  return natural() || persianVoice() !== null || (typeof navigator !== "undefined" && navigator.onLine !== false);
+}
+
+const ONLINE_TTS = "https://translate.google.com/translate_tts?ie=UTF-8&tl=fa&client=tw-ob&q=";
+let onlineAudio: HTMLAudioElement | null = null;
+
+/** Plays `text` with the online Persian voice. Resolves true when playback finished. */
+function speakOnline(text: string, slow: boolean): Promise<boolean> {
+  onlineAudio?.pause();
+  const audio = new Audio(ONLINE_TTS + encodeURIComponent(text.slice(0, 200)));
+  audio.playbackRate = slow ? 0.7 : 1;
+  audio.preservesPitch = true;
+  onlineAudio = audio;
+  return new Promise((resolve) => {
+    audio.onended = () => resolve(true);
+    audio.onerror = () => resolve(false);
+    audio.play().catch(() => resolve(false));
+  });
 }
 
 /** True when the device itself has a Persian voice (no download needed). */
@@ -48,21 +69,27 @@ export function onVoicesChanged(cb: () => void): () => void {
   };
 }
 
-/** Speaks `text`; resolves when done (immediately for the device voice). */
-export async function speak(text: string, slow = false): Promise<void> {
+/** Speaks `text`; resolves true if it played (when done for recorded voices, at start for the device voice). */
+export async function speak(text: string, slow = false): Promise<boolean> {
+  const t = text.trim();
+  if (!t) return false;
   if (natural()) {
     try {
-      return await speakNatural(text, slow ? 0.7 : 1);
+      await speakNatural(t, slow ? 0.7 : 1);
+      return true;
     } catch {
-      // fall through to the device voice
+      // fall through
     }
   }
   const voice = persianVoice();
-  if (!voice) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.voice = voice;
-  u.lang = voice.lang;
-  u.rate = slow ? 0.6 : 0.9;
-  window.speechSynthesis.speak(u);
+  if (voice) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t);
+    u.voice = voice;
+    u.lang = voice.lang;
+    u.rate = slow ? 0.6 : 0.9;
+    window.speechSynthesis.speak(u);
+    return true;
+  }
+  return speakOnline(t, slow);
 }

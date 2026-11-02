@@ -89,27 +89,42 @@ function useCanSpeak() {
 /** Audio controls. `big` renders the prominent sky speaker button used on prompts. */
 export function AudioButtons({ text, compact, big }: { text: string; compact?: boolean; big?: boolean }) {
   const ok = useCanSpeak();
-  const title = ok ? undefined : "No Persian voice yet — download the free natural voice in Settings";
+  const [state, setState] = useState<"idle" | "playing" | "failed">("idle");
+  const title = state === "failed" ? "Couldn't play audio — check your connection, or download the natural voice in Settings" : ok ? undefined : "You're offline — download the natural voice in Settings to hear words offline";
+  const play = async (slow: boolean) => {
+    setState("playing");
+    const played = await speak(text, slow);
+    setState(played ? "idle" : "failed");
+  };
   if (big)
     return (
-      <span className="inline-flex items-center gap-2" title={title}>
-        <button type="button" className="btn-sky btn-icon !size-14 !rounded-2xl" disabled={!ok} onClick={() => speak(text)} aria-label="Play audio">
-          <Volume2 className="size-7" />
-        </button>
-        {!compact && (
-          <button type="button" className="btn-sky btn-icon !size-11" disabled={!ok} onClick={() => speak(text, true)} aria-label="Play slowly">
-            <Snail className="size-5" />
+      <span className="inline-flex flex-col items-center gap-1" title={title}>
+        <span className="inline-flex items-center gap-2">
+          <button type="button" className={cx("btn-sky btn-icon !size-14 !rounded-2xl", state === "playing" && "animate-pulse")} disabled={!ok} onClick={() => play(false)} aria-label="Play audio">
+            <Volume2 className="size-7" />
           </button>
-        )}
+          {!compact && (
+            <button type="button" className="btn-sky btn-icon !size-11" disabled={!ok} onClick={() => play(true)} aria-label="Play slowly">
+              <Snail className="size-5" />
+            </button>
+          )}
+        </span>
+        {state === "failed" && <span className="text-xs font-bold text-anar-ink">Audio unavailable</span>}
       </span>
     );
   return (
     <span className="inline-flex items-center" title={title}>
-      <button type="button" className="btn-ghost btn-icon !text-sky-ink disabled:!text-line-strong" disabled={!ok} onClick={() => speak(text)} aria-label="Play audio">
+      <button
+        type="button"
+        className={cx("btn-ghost btn-icon disabled:!text-line-strong", state === "failed" ? "!text-anar-ink" : "!text-sky-ink", state === "playing" && "animate-pulse")}
+        disabled={!ok}
+        onClick={() => play(false)}
+        aria-label={state === "failed" ? "Audio unavailable — try again" : "Play audio"}
+      >
         <Volume2 className="size-5" />
       </button>
       {!compact && (
-        <button type="button" className="btn-ghost btn-icon !text-sky-ink disabled:!text-line-strong" disabled={!ok} onClick={() => speak(text, true)} aria-label="Play slowly">
+        <button type="button" className="btn-ghost btn-icon !text-sky-ink disabled:!text-line-strong" disabled={!ok} onClick={() => play(true)} aria-label="Play slowly">
           <Snail className="size-5" />
         </button>
       )}
@@ -126,7 +141,8 @@ export function BookmarkButton({ wordId }: { wordId: string }) {
       className={cx("btn-ghost btn-icon", on && "!text-saffron")}
       onClick={() => toggleBookmark(wordId)}
       aria-pressed={on}
-      aria-label={on ? "Remove bookmark" : "Bookmark this word"}
+      aria-label={on ? "Remove from my cards" : "Add to my cards"}
+      title={on ? "In my cards" : "Add to my cards"}
     >
       <Bookmark className={cx("size-5", on && "fill-current")} />
     </button>
@@ -193,14 +209,20 @@ export function FocusMode() {
 }
 
 /** Session header: close (X), progress bar, optional right-hand slot. */
-export function SessionHeader({ exitHref, progress, right }: { exitHref: string; progress: number; right?: React.ReactNode }) {
+export function SessionHeader({ exitHref, onExit, progress, right }: { exitHref: string; onExit?: () => void; progress: number; right?: React.ReactNode }) {
   return (
     <div className="sticky top-0 z-30 -mx-4 mb-6 bg-card/95 px-4 py-3 backdrop-blur">
       <FocusMode />
       <div className="mx-auto flex max-w-3xl items-center gap-3">
-        <Link href={exitHref} className="btn-ghost btn-icon -ml-2" aria-label="Quit session">
-          <X className="size-6" strokeWidth={3} />
-        </Link>
+        {onExit ? (
+          <button type="button" onClick={onExit} className="btn-ghost btn-icon -ml-2" aria-label="Quit session">
+            <X className="size-6" strokeWidth={3} />
+          </button>
+        ) : (
+          <Link href={exitHref} className="btn-ghost btn-icon -ml-2" aria-label="Quit session">
+            <X className="size-6" strokeWidth={3} />
+          </Link>
+        )}
         <ProgressBar value={progress} className="flex-1" />
         {right}
       </div>

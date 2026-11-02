@@ -309,6 +309,16 @@ export function skillMastered(s: ProgressState, skillId: string): boolean {
   return isMastered(s.skills[skillId]);
 }
 
+/**
+ * Flashcard session: every first rating updates the word's FSRS card. XP only
+ * for words that were due or new, so re-running a deck can't farm points.
+ */
+export function completeFlashcards(outcomes: Record<string, Outcome>, eligible: Set<string>): number {
+  const xp = Object.entries(outcomes).filter(([id, o]) => o !== "again" && eligible.has(id)).length * XP.practicePerCorrect;
+  update((s) => addActivity({ ...s, cards: reviewAll(s.cards, outcomes) }, Object.keys(outcomes).filter((id) => eligible.has(id)).length, xp));
+  return xp;
+}
+
 /** Speaking practice: XP per word said right (or nearly); counts toward the daily goal. */
 export function completeSpeaking(r: SessionSummary): number {
   const xp = r.correct * XP.speakPerCorrect;
