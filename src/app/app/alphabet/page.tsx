@@ -40,7 +40,7 @@ export default function AlphabetPage() {
         <ProgressBar value={traced / LETTERS.length} tone="pista" className="flex-1" />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div ref={detailRef} className="scroll-mt-20 lg:order-2">
           <LetterDetail key={selected.id} letter={selected} />
         </div>
@@ -141,7 +141,7 @@ function LetterDetail({ letter }: { letter: Letter }) {
             aria-pressed={form === f}
           >
             <Fa className="block text-3xl leading-[1.6]">{forms[f]}</Fa>
-            <span className={cx("eyebrow text-[10px]", form === f ? "text-sky-ink" : "text-muted")}>{FORM_LABELS[f]}</span>
+            <span className={cx("eyebrow text-[11px]", form === f ? "text-sky-ink" : "text-muted")}>{FORM_LABELS[f]}</span>
           </button>
         ))}
       </div>

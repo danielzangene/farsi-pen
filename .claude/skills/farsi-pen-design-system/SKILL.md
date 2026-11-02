@@ -32,6 +32,7 @@ Spec §3 forbids copying another product's branding. So:
 | `plum` | #9b5de5 / #7a3fc2 / #f1e8fc / #6d35b3 | Grammar, "Formal" tag |
 | `ink` / `muted` / `faint` | #3c3c3c / #737373 / #afafaf | Text: body / secondary / disabled |
 | `line` / `line-strong` / `paper` / `card` | #e5e5e5 / #cecece / #f7f7f7 / #ffffff | Borders / pressed borders / subtle fill / surfaces |
+| `field-edge` | #8a8a8a (dark #62798a) | Edge of inputs and selects — 3:1 against the card (WCAG 1.4.11) |
 
 Rules:
 - Every coloured interactive element pairs a fill with its `-shadow` for the 3D edge.
@@ -85,7 +86,7 @@ Don't restyle buttons ad hoc with colours/shadows; add a variant to globals.css 
 
 **Path (lessons list)** — Unit banner (firuze block, white heading, `eyebrow` "UNIT 1" at 70% opacity, description) then lessons as 72px round 3D nodes with a deeper 6px lip (`0 6px 0` of the node's `-shadow` colour; press sinks 6px) in a gentle zig-zag. States: done = saffron + check; current = firuze + `Bubble` "START" bobbing above; locked = `line` grey with grey icon (still openable). Lesson title under each node.
 
-**App shell** — Desktop: left sidebar with large uppercase nav items (icon + label, active = sky-soft tile with sky border). Mobile: top stat bar (streak flame anar, XP saffron) + bottom tab bar with icons. Top/right stat chips everywhere: 🔥 streak, ⭐ XP.
+**App shell** — Desktop: left sidebar with large uppercase nav items (icon + label, active = sky-soft tile with sky border). Mobile: top stat bar (streak flame anar, XP saffron) + bottom tab bar with icons and 11px sentence-case labels (uppercase labels collide at 320–375px with six tabs). Nothing may scroll sideways at 320px. Top/right stat chips everywhere: 🔥 streak, ⭐ XP.
 
 **Dashboard** — right-column style widgets: daily goal card with ProgressBar, streak, "Continue" big `btn-primary`, badges as `tile`s.
 
@@ -110,7 +111,8 @@ Short, warm, encouraging, never scolding. Second person. Examples: "Nicely done!
 
 ## 9. Accessibility checklist
 
-- Hit targets ≥ 44px; icon buttons have `aria-label`.
+- Hit targets ≥ 44px (segmented options at least 40px tall); icon buttons have `aria-label`.
+- Inputs and selects use `field-edge` borders (3:1 against the card); disabled labels use `muted`, not `faint`.
 - Focus ring: 3px sky outline (global) — don't remove it.
 - State is never colour-only: correct/wrong also show an icon and text.
 - White text only on `firuze`, `pista`, `anar`, `sky`, `plum` fills at ≥ 15px bold (button labels qualify).

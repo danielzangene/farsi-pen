@@ -59,7 +59,7 @@ export default function BookmarksPage() {
         </div>
         <div className="mt-8 flex w-full max-w-md flex-col gap-3 sm:flex-row-reverse">
           <button type="button" className="btn-primary btn-lg flex-1" onClick={() => setPractising(null)} autoFocus>
-            Back to bookmarks
+            Back to my cards
           </button>
           <button type="button" className="btn-secondary btn-lg flex-1" onClick={startPractice}>
             Practise again
@@ -77,7 +77,7 @@ export default function BookmarksPage() {
           value={tab}
           onChange={setTab}
           options={[
-            { value: "bookmarks", label: `Bookmarked (${s.bookmarks.length})` },
+            { value: "bookmarks", label: `Saved (${s.bookmarks.length})` },
             { value: "hidden", label: `Hidden (${s.hidden.length})` },
           ]}
         />
@@ -85,7 +85,7 @@ export default function BookmarksPage() {
 
       {tab === "bookmarks" && words.length > 0 && (
         <button type="button" className="btn-primary btn-lg mb-6 w-full sm:w-auto" onClick={startPractice}>
-          <Play className="size-5 fill-current" /> Practise bookmarks
+          <Play className="size-5 fill-current" /> Practise my cards
         </button>
       )}
 
@@ -100,15 +100,15 @@ export default function BookmarksPage() {
           >
             {tab === "bookmarks" ? <Bookmark className="size-10" /> : <EyeOff className="size-10" />}
           </span>
-          <h2 className="mt-5 text-2xl font-extrabold">{tab === "bookmarks" ? "No bookmarks yet" : "No hidden words"}</h2>
+          <h2 className="mt-5 text-2xl font-extrabold">{tab === "bookmarks" ? "No cards saved yet" : "No hidden words"}</h2>
           <p className="mt-2 max-w-sm font-semibold text-muted">
             {tab === "bookmarks"
-              ? "Tap the bookmark icon on any word — in lessons, practice or the Word Library — to collect it here."
+              ? "Tap the bookmark icon (Add to my cards) on any word, in flashcards, lessons or the word list, to collect it here."
               : "Words you hide during practice appear here. They won't come up in Daily Practice."}
           </p>
           {tab === "bookmarks" && (
             <Link href="/app/words/" className="btn-secondary mt-6">
-              Browse the Word Library
+              Go to flashcards
             </Link>
           )}
         </div>

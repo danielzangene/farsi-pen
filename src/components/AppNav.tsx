@@ -117,7 +117,7 @@ export function AppNav() {
                   title={l.label}
                   aria-label={l.label === "Words" ? "Word library" : l.label}
                   aria-current={on ? "page" : undefined}
-                  className={cx("btn-ghost btn-icon", on && "!bg-sky-soft !text-sky-ink")}
+                  className={cx("btn-ghost btn-icon max-[359px]:!size-9", on && "!bg-sky-soft !text-sky-ink")}
                 >
                   <l.icon className="size-[22px]" strokeWidth={2.5} />
                 </Link>
@@ -129,7 +129,7 @@ export function AppNav() {
 
       {/* Mobile bottom tab bar */}
       <nav className="app-nav fixed inset-x-0 bottom-0 z-30 border-t-2 border-line bg-card pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
-        <div className="mx-auto flex max-w-md justify-around px-2 py-1.5">
+        <div className="mx-auto flex max-w-md justify-around gap-0.5 px-1 py-1.5">
           {MAIN.map((l) => {
             const on = isActive(l.href, l.exact);
             return (
@@ -137,7 +137,7 @@ export function AppNav() {
                 key={l.href}
                 href={l.href}
                 aria-current={on ? "page" : undefined}
-                className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[10px] font-extrabold uppercase tracking-wide", on ? "text-sky-ink" : "text-muted")}
+                className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-extrabold", on ? "text-sky-ink" : "text-muted")}
               >
                 <span className={cx("grid h-9 w-12 place-items-center rounded-xl border-2 transition-colors", on ? "border-sky bg-sky-soft" : "border-transparent")}>
                   <l.icon className="size-[26px]" strokeWidth={2.5} />

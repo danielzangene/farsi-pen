@@ -74,7 +74,7 @@ export default function SpeakPage() {
     );
 
   const engine = resolveEngine(s.settings.speechEngine);
-  const select = "min-h-12 w-full cursor-pointer rounded-2xl border-2 border-line bg-paper px-3 text-sm font-bold text-ink transition-colors focus:border-sky focus:bg-card";
+  const select = "min-h-12 w-full cursor-pointer rounded-2xl border-2 border-field-edge bg-paper px-3 text-sm font-bold text-ink transition-colors focus:border-sky focus:bg-card";
 
   return (
     <div className="mx-auto max-w-xl space-y-6 pt-4 sm:pt-10">
@@ -115,7 +115,7 @@ export default function SpeakPage() {
         <section className="card p-5">
           <h2 className="eyebrow text-sky-ink">Hear a natural voice</h2>
           <p className="mb-3 mt-1 text-sm font-semibold text-muted">
-            {deviceVoice ? "Your device has a Persian voice. For a clearer, more natural one:" : "Your device has no Persian voice, so the speaker buttons stay silent until you add one."}
+            {deviceVoice ? "Your device has a Persian voice. For a clearer, more natural one that also works offline:" : "Words play with an online voice right now. Download a natural voice to hear them offline:"}
           </p>
           <VoiceSetup compact />
         </section>

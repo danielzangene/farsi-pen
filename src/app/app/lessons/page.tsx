@@ -27,7 +27,7 @@ export default function LessonsPage() {
         <section key={level.id} aria-labelledby={`unit-${level.id}`}>
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-firuze p-5 text-on-accent sm:p-6">
             <div className="min-w-0">
-              <p className="eyebrow inline-block rounded-full bg-firuze-shadow px-2.5 py-1 text-on-accent">
+              <p className="eyebrow inline-block rounded-full bg-card px-2.5 py-1 text-firuze-ink">
                 Unit {level.id} · {level.cefr}
               </p>
               <h2 id={`unit-${level.id}`} className="mt-2 flex flex-wrap items-baseline gap-x-2 text-2xl font-extrabold">

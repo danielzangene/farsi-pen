@@ -42,7 +42,7 @@ export default function GrammarPage() {
           label="Level"
           value={level}
           onChange={setLevel}
-          options={GRAMMAR_LEVELS.map((l) => ({ value: l.id, label: `${l.id} · ${l.name}` }))}
+          options={GRAMMAR_LEVELS.map((l) => ({ value: l.id, label: l.id }))}
         />
       </div>
 

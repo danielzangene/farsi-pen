@@ -24,6 +24,8 @@
   --color-line-strong: #cecece;
   --color-faint: #afafaf;
   --color-muted: #737373;
+  /* Edge of inputs and selects: 3:1 against the card (WCAG 1.4.11). */
+  --color-field-edge: #8a8a8a;
   --color-ink: #3c3c3c;
 
   /* Brand: firuze (turquoise) — primary actions, current progress */
@@ -77,6 +79,20 @@
   html {
     -webkit-text-size-adjust: 100%;
   }
+  /* Safety net against sideways scrolling on narrow phones (never overflow: hidden, which breaks sticky). */
+  html,
+  body {
+    overflow-x: clip;
+  }
+  /* Headings wrap evenly instead of leaving one word alone on the last line. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
   body {
     background: var(--color-card);
     color: var(--color-ink);
@@ -122,6 +138,7 @@
   --color-line-strong: #4b5e68;
   --color-faint: #52656d;
   --color-muted: #9db0ba;
+  --color-field-edge: #62798a;
   --color-ink: #f1f7fb;
   --color-firuze: #2cc5b1;
   --color-firuze-shadow: #1a9384;
@@ -158,6 +175,7 @@
     --color-line-strong: #4b5e68;
     --color-faint: #52656d;
     --color-muted: #9db0ba;
+  --color-field-edge: #62798a;
     --color-ink: #f1f7fb;
     --color-firuze: #2cc5b1;
     --color-firuze-shadow: #1a9384;
@@ -231,7 +249,8 @@
   &[aria-disabled="true"] {
     --btn-bg: var(--color-line);
     --btn-shadow: var(--color-line);
-    --btn-fg: var(--color-faint);
+    /* muted (not faint): a disabled label must still be readable. */
+    --btn-fg: var(--color-muted);
     --btn-border: transparent;
     cursor: not-allowed;
     filter: none;
@@ -369,7 +388,7 @@
 @utility input {
   width: 100%;
   border-radius: 1rem;
-  border: 2px solid var(--color-line);
+  border: 2px solid var(--color-field-edge);
   background: var(--color-paper);
   padding: 0.75rem 1rem;
   font-size: 1.125rem;
@@ -450,7 +469,7 @@
 
 /* Faint dot pattern used behind hero areas. */
 .tile-bg {
-  background-image: radial-gradient(circle at 1px 1px, rgb(18 165 148 / 0.14) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--color-firuze) 14%, transparent) 1px, transparent 0);
   background-size: 18px 18px;
 }
 
