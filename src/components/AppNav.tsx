@@ -1,28 +1,32 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bookmark, BookOpen, Compass, Flame, House, Library, Mic, PenLine, Puzzle, Repeat, Settings, Star } from "lucide-react";
+import { Bookmark, BookOpen, Compass, Flame, House, Layers, Menu, Mic, PenLine, Puzzle, Repeat, Settings, Star, X } from "lucide-react";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
 
-type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean };
+type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean; hint?: string };
 
-const MAIN: NavItem[] = [
+/** The core loop: on the phone's tab bar and first in the sidebar. */
+const PRIMARY: NavItem[] = [
   { href: "/app/", label: "Home", icon: House, tone: "firuze", exact: true },
   { href: "/app/lessons/", label: "Lessons", icon: BookOpen, tone: "saffron" },
-  { href: "/app/practice/", label: "Practice", icon: Repeat, tone: "sky" },
-  { href: "/app/speak/", label: "Speak", icon: Mic, tone: "anar" },
-  { href: "/app/alphabet/", label: "Alphabet", icon: PenLine, tone: "pista" },
-  { href: "/app/grammar/", label: "Grammar", icon: Puzzle, tone: "plum" },
+  { href: "/app/missions/", label: "Missions", icon: Compass, tone: "firuze" },
+  { href: "/app/words/", label: "Words", icon: Layers, tone: "sky" },
 ];
 
-const EXTRA: NavItem[] = [
-  { href: "/app/missions/", label: "Missions", icon: Compass, tone: "firuze" },
-  { href: "/app/words/", label: "Words", icon: Library, tone: "firuze" },
-  { href: "/app/bookmarks/", label: "My cards", icon: Bookmark, tone: "saffron" },
-  { href: "/app/settings/", label: "Settings", icon: Settings },
+/** Extra practice and tools: under "More" on phones, a second group in the sidebar. */
+const SECONDARY: NavItem[] = [
+  { href: "/app/speak/", label: "Speak", icon: Mic, tone: "anar", hint: "Say words, get a match score" },
+  { href: "/app/practice/", label: "Daily Practice", icon: Repeat, tone: "sky", hint: "Type words from memory" },
+  { href: "/app/grammar/", label: "Grammar", icon: Puzzle, tone: "plum", hint: "A1 to B2, with exercises" },
+  { href: "/app/alphabet/", label: "Alphabet", icon: PenLine, tone: "pista", hint: "Letters, vowel signs, tracing" },
+  { href: "/app/bookmarks/", label: "My cards", icon: Bookmark, tone: "saffron", hint: "Words you saved" },
 ];
+
+const SETTINGS: NavItem = { href: "/app/settings/", label: "Settings", icon: Settings, hint: "Voice, speech, goals, theme" };
 
 /**
  * The "FA" monogram on a teal tile. Same paths as scripts/make-icons.mjs,
@@ -67,8 +71,13 @@ function StatChips({ streak, xp }: { streak: number; xp: number }) {
 export function AppNav() {
   const pathname = usePathname();
   const s = useProgress();
+  const [moreOpen, setMoreOpen] = useState(false);
   const isActive = (href: string, exact?: boolean) => (exact ? pathname === href || pathname === href.slice(0, -1) : pathname.startsWith(href.slice(0, -1)));
   const streak = currentStreak(s);
+  const moreActive = [...SECONDARY, SETTINGS].some((l) => isActive(l.href));
+
+  // Close the sheet whenever the route changes.
+  useEffect(() => setMoreOpen(false), [pathname]);
 
   return (
     <>
@@ -77,77 +86,139 @@ export function AppNav() {
         <div className="px-3">
           <Logo />
         </div>
-        <nav aria-label="Main" className="flex flex-col gap-1.5 overflow-y-auto">
-          {[...MAIN, ...EXTRA].map((l) => {
-            const on = isActive(l.href, l.exact);
-            return (
-              <Link
-                key={l.href}
-                href={l.href}
-                aria-current={on ? "page" : undefined}
-                className={cx(
-                  "flex items-center gap-4 rounded-xl border-2 px-3 py-2 text-[15px] font-extrabold uppercase tracking-wider transition-colors",
-                  on ? "border-sky bg-sky-soft text-sky-ink" : "border-transparent text-muted hover:bg-paper",
-                )}
-              >
-                <span className={cx("grid size-8 shrink-0 place-items-center", on ? "text-sky-ink" : l.tone ? TONE[l.tone].ink : "text-muted")}>
-                  <l.icon className="size-6" strokeWidth={2.5} />
-                </span>
-                {l.label}
-              </Link>
-            );
-          })}
+        <nav aria-label="Main" className="flex flex-1 flex-col gap-1.5 overflow-y-auto">
+          {PRIMARY.map((l) => (
+            <SideLink key={l.href} item={l} on={isActive(l.href, l.exact)} />
+          ))}
+          <hr className="mx-3 my-2 border-t-2 border-line" />
+          {SECONDARY.map((l) => (
+            <SideLink key={l.href} item={l} on={isActive(l.href)} />
+          ))}
+          <div className="mt-auto pt-2">
+            <SideLink item={SETTINGS} on={isActive(SETTINGS.href)} />
+          </div>
         </nav>
       </aside>
 
-      {/* Mobile top bar; on desktop only the stat chips, top right of the content column */}
+      {/* Mobile top bar: brand and progress only. On desktop only the stat chips, top right of the content column. */}
       <header className="app-nav sticky top-0 z-30 border-b-2 border-line bg-card/95 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:backdrop-blur-none">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4 lg:h-auto lg:justify-end lg:pt-5">
           <div className="mr-auto lg:hidden">
-            <Logo compact />
+            <Logo />
           </div>
           <StatChips streak={streak} xp={s.xp} />
-          <nav aria-label="More" className="flex items-center lg:hidden">
-            {EXTRA.map((l) => {
-              const on = isActive(l.href);
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  title={l.label}
-                  aria-label={l.label === "Words" ? "Word library" : l.label}
-                  aria-current={on ? "page" : undefined}
-                  className={cx("btn-ghost btn-icon max-[359px]:!size-9", on && "!bg-sky-soft !text-sky-ink")}
-                >
-                  <l.icon className="size-[22px]" strokeWidth={2.5} />
-                </Link>
-              );
-            })}
-          </nav>
         </div>
       </header>
 
-      {/* Mobile bottom tab bar */}
+      {/* Mobile bottom tab bar: the core loop + More */}
       <nav className="app-nav fixed inset-x-0 bottom-0 z-30 border-t-2 border-line bg-card pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
         <div className="mx-auto flex max-w-md justify-around gap-0.5 px-1 py-1.5">
-          {MAIN.map((l) => {
-            const on = isActive(l.href, l.exact);
-            return (
-              <Link
-                key={l.href}
-                href={l.href}
-                aria-current={on ? "page" : undefined}
-                className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-extrabold", on ? "text-sky-ink" : "text-muted")}
-              >
-                <span className={cx("grid h-9 w-12 place-items-center rounded-xl border-2 transition-colors", on ? "border-sky bg-sky-soft" : "border-transparent")}>
-                  <l.icon className="size-[26px]" strokeWidth={2.5} />
-                </span>
-                {l.label}
-              </Link>
-            );
-          })}
+          {PRIMARY.map((l) => (
+            <TabLink key={l.href} href={l.href} label={l.label} icon={l.icon} on={isActive(l.href, l.exact) && !moreOpen} />
+          ))}
+          <button
+            type="button"
+            onClick={() => setMoreOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={moreOpen}
+            className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-extrabold", moreActive || moreOpen ? "text-sky-ink" : "text-muted")}
+          >
+            <TabIcon icon={Menu} on={moreActive || moreOpen} />
+            More
+          </button>
         </div>
       </nav>
+
+      {moreOpen && <MoreSheet onClose={() => setMoreOpen(false)} isActive={isActive} />}
     </>
+  );
+}
+
+function SideLink({ item: l, on }: { item: NavItem; on: boolean }) {
+  return (
+    <Link
+      href={l.href}
+      aria-current={on ? "page" : undefined}
+      className={cx(
+        "flex items-center gap-4 rounded-xl border-2 px-3 py-2 text-[15px] font-extrabold uppercase tracking-wider transition-colors",
+        on ? "border-sky bg-sky-soft text-sky-ink" : "border-transparent text-muted hover:bg-paper",
+      )}
+    >
+      <span className={cx("grid size-8 shrink-0 place-items-center", on ? "text-sky-ink" : l.tone ? TONE[l.tone].ink : "text-muted")}>
+        <l.icon className="size-6" strokeWidth={2.5} />
+      </span>
+      {l.label}
+    </Link>
+  );
+}
+
+function TabIcon({ icon: Icon, on }: { icon: typeof House; on: boolean }) {
+  return (
+    <span className={cx("grid h-9 w-12 place-items-center rounded-xl border-2 transition-colors", on ? "border-sky bg-sky-soft" : "border-transparent")}>
+      <Icon className="size-[26px]" strokeWidth={2.5} />
+    </span>
+  );
+}
+
+function TabLink({ href, label, icon, on }: { href: string; label: string; icon: typeof House; on: boolean }) {
+  return (
+    <Link
+      href={href}
+      aria-current={on ? "page" : undefined}
+      className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-extrabold", on ? "text-sky-ink" : "text-muted")}
+    >
+      <TabIcon icon={icon} on={on} />
+      {label}
+    </Link>
+  );
+}
+
+/** Bottom sheet listing everything that isn't on the tab bar, each with what it's for. */
+function MoreSheet({ onClose, isActive }: { onClose: () => void; isActive: (href: string) => boolean }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const d = ref.current;
+    if (d && !d.open) d.showModal();
+  }, []);
+  return (
+    <dialog
+      ref={ref}
+      onClose={onClose}
+      onClick={(e) => e.target === ref.current && onClose()}
+      aria-label="More"
+      className="app-nav fixed inset-x-0 bottom-0 top-auto m-0 w-full max-w-none animate-slide-up rounded-t-3xl border-t-2 border-line bg-card p-0 pb-[env(safe-area-inset-bottom)] text-ink backdrop:bg-black/50 lg:hidden"
+    >
+      <div className="mx-auto max-w-md px-4 pb-4 pt-3">
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-lg font-extrabold">More</h2>
+          <button type="button" className="btn-ghost btn-icon -mr-2" onClick={onClose} aria-label="Close" autoFocus>
+            <X className="size-6" />
+          </button>
+        </div>
+        <ul className="space-y-1">
+          {[...SECONDARY, SETTINGS].map((l) => {
+            const on = isActive(l.href);
+            return (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  onClick={onClose}
+                  aria-current={on ? "page" : undefined}
+                  className={cx("flex min-h-14 items-center gap-3 rounded-2xl border-2 px-3 py-2", on ? "border-sky bg-sky-soft" : "border-transparent hover:bg-paper")}
+                >
+                  <span className={cx("grid size-10 shrink-0 place-items-center rounded-full", l.tone ? cx(TONE[l.tone].soft, TONE[l.tone].ink) : "bg-paper text-muted")}>
+                    <l.icon className="size-5" strokeWidth={2.5} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className={cx("block font-extrabold", on && "text-sky-ink")}>{l.label}</span>
+                    {l.hint && <span className="block text-sm font-semibold text-muted">{l.hint}</span>}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </dialog>
   );
 }
