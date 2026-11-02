@@ -75,11 +75,3 @@ export function loadYouglish(timeoutMs = 15000): Promise<YGNamespace> {
 export function hasPersianScript(text: string): boolean {
   return /[؀-ۿﭐ-﷿ﹰ-﻿]/.test(text);
 }
-
-export function youglishPageUrl(query: string): string {
-  return `https://youglish.com/pronounce/${encodeURIComponent(query.trim())}/${YOUGLISH_LANG}`;
-}
-
-export function youtubeSearchUrl(query: string): string {
-  return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${query.trim()} تلفظ`)}`;
-}

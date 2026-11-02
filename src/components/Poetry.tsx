@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { BookOpenText, Check, ExternalLink, Languages, Loader2, Plus, X } from "lucide-react";
+import { BookOpenText, Check, Languages, Loader2, Plus, X } from "lucide-react";
 import { GANJOOR_DATA, POETS, type Couplet } from "@/content/poems";
 import { lookupPersian, type DictEntry } from "@/lib/dictionary";
 import { cleanFa } from "@/lib/spell";
@@ -54,9 +54,6 @@ export function PoemCard({ poem, showOmen, className }: { poem: Couplet; showOme
         <button type="button" className="btn-secondary btn-sm" onClick={() => setFull(!full)} aria-expanded={full}>
           <BookOpenText className="size-4" /> {full ? "Hide the full poem" : "Read the full poem"}
         </button>
-        <a href={`https://ganjoor.net${poem.path}`} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">
-          Listen on Ganjoor <ExternalLink className="size-4" />
-        </a>
       </div>
       {full && <FullPoem path={poem.path} />}
     </article>
@@ -95,13 +92,7 @@ export function FullPoem({ path }: { path: string }) {
     );
   if (state.status === "error")
     return (
-      <p className="mt-4 rounded-2xl bg-paper p-4 text-sm font-semibold text-muted">
-        Couldn&apos;t load the poem. Check your connection, or read it on{" "}
-        <a className="font-bold text-sky-ink underline" href={`https://ganjoor.net${path}`} target="_blank" rel="noopener noreferrer">
-          Ganjoor
-        </a>
-        .
-      </p>
+      <p className="mt-4 rounded-2xl bg-paper p-4 text-sm font-semibold text-muted">Couldn&apos;t load the poem. Check your connection and try again.</p>
     );
 
   const couplets = new Map<number, GanjoorVerse[]>();
@@ -146,11 +137,7 @@ export function FullPoem({ path }: { path: string }) {
         })}
       </ol>
       <p className="mt-5 text-xs font-semibold text-muted">
-        Text and explanations from{" "}
-        <a className="underline" href={`https://ganjoor.net${path}`} target="_blank" rel="noopener noreferrer">
-          Ganjoor
-        </a>
-        .
+        Text and explanations: Ganjoor (ganjoor.net).
       </p>
     </div>
   );

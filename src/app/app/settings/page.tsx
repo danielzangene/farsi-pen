@@ -163,6 +163,15 @@ export default function SettingsPage() {
           </button>
         )}
       </section>
+      <section className="card p-5">
+        <h2 className="eyebrow text-muted">Made with open sources</h2>
+        <p className="mt-2 text-sm font-semibold text-muted">
+          Poems: Ganjoor (ganjoor-data). Dictionary: EnglishToPersianDictionaries by VahidN (Apache-2.0). Spelling: Persian-Words-Database and
+          Persian-Spell-Corrector by shahind, after Peter Norvig (MIT). Voice: Piper (MIT). Speech recognition: Whisper via transformers.js (Apache-2.0).
+          Real-video pronunciation: YouGlish.
+        </p>
+      </section>
+
       <p className="pb-4 text-center text-xs font-semibold text-muted">
         Version {process.env.NEXT_PUBLIC_BUILD_COMMIT} · built{" "}
         {(process.env.NEXT_PUBLIC_BUILD_TIME ?? "").slice(0, 16).replace("T", " ")} UTC

@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ExternalLink, Loader2, MonitorPlay, Search, VideoOff, X } from "lucide-react";
-import { loadYouglish, YOUGLISH_LANG, youglishPageUrl, youtubeSearchUrl, type YGWidget } from "@/lib/youglish";
+import { Loader2, MonitorPlay, VideoOff, X } from "lucide-react";
+import { loadYouglish, YOUGLISH_LANG, type YGWidget } from "@/lib/youglish";
 import { Fa } from "./ui";
 
 type Status = "loading" | "ready" | "empty" | "error";
@@ -84,28 +84,16 @@ export function YouglishPlayer({ query }: { query: string }) {
               )}
             </p>
             <p className="mt-1 font-semibold text-muted">
-              {status === "empty" ? "Try a shorter or more common word." : "Check your connection, or open the clips on YouGlish."}
+              {status === "empty" ? "Try a shorter or more common word." : "Check your connection and try again."}
             </p>
           </div>
         )}
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-muted">
-        <span>
-          {status === "ready" && `${total.toLocaleString()} clip${total === 1 ? "" : "s"} · `}
-          Powered by{" "}
-          <a href="https://youglish.com" target="_blank" rel="noopener noreferrer" className="font-bold text-sky-ink underline-offset-2 hover:underline">
-            YouGlish.com
-          </a>
-        </span>
-        <span className="flex flex-wrap gap-1">
-          <a href={youglishPageUrl(query)} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">
-            <ExternalLink className="size-4" /> YouGlish
-          </a>
-          <a href={youtubeSearchUrl(query)} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">
-            <Search className="size-4" /> YouTube
-          </a>
-        </span>
-      </div>
+      {/* YouGlish asks that "Powered by YouGlish.com" stays visible next to the widget. */}
+      <p className="text-sm font-semibold text-muted">
+        {status === "ready" && `${total.toLocaleString()} clip${total === 1 ? "" : "s"} · `}
+        Powered by YouGlish.com
+      </p>
     </div>
   );
 }

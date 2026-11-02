@@ -23,11 +23,6 @@ export function reportUrl(itemId: string, context: string, note: string): string
   return `${REPO}/issues/new?labels=content&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
 }
 
-/** General feedback (no page in the link, so server and client render the same href). */
-export function feedbackUrl(): string {
-  return `${REPO}/issues/new?labels=feedback&title=${encodeURIComponent("Feedback: ")}`;
-}
-
 /**
  * "Report a problem" on any piece of content (word, sentence, exercise). Opens
  * a pre-filled GitHub issue; a copy also stays in this browser.
