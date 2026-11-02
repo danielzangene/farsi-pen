@@ -59,7 +59,7 @@ export function VoiceSetup({ compact }: { compact?: boolean }) {
       ) : (
         <div className="space-y-2">
           <p className="text-sm font-semibold text-muted">
-            A free, open-source neural voice (Piper) that runs in your browser. One-time download of about {size} MB, then it works offline.
+            Right now words play with a free online voice. For a more natural voice that also works offline, download Piper (open source, about {size} MB, once).
           </p>
           {st.state === "error" && <p className="text-sm font-bold text-anar-ink">Download failed — check your connection and try again.</p>}
           <button type="button" className="btn-sky btn-sm" onClick={() => void downloadVoice(settings.voice)}>
