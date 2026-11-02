@@ -71,7 +71,9 @@ export function GrammarLesson({ concept }: { concept: GrammarConcept }) {
         <ArrowLeft className="size-4" strokeWidth={3} /> Grammar
       </Link>
 
-      <p className="eyebrow text-plum-ink">Grammar · G{concept.order}</p>
+      <p className="eyebrow text-plum-ink">
+        Grammar · {concept.level} · G{concept.order} · {concept.unit}
+      </p>
       <h1 className="mt-1 text-3xl font-extrabold tracking-tight">
         {concept.title} <Fa className="ms-2 text-2xl font-bold text-muted">{concept.titleFa}</Fa>
       </h1>

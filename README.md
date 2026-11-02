@@ -18,7 +18,7 @@ Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1
 | Word Library | Search (EN / FA / transliteration), lesson, type and progress filters |
 | Bookmarks | Bookmarked and hidden tabs, bookmark practice |
 | Alphabet | All 32 letters with isolated / initial / medial / final forms, “Unique to Persian” filter, example words, **letter tracing with scoring** (the “pen”) |
-| Grammar | 2 concepts (pronouns, “to be”) with tables, key points, examples, and exercises (multiple choice, fill-in, translation, hints, 80% pass) |
+| Grammar | Full course of 48 concepts, A1 → B2, in 10 units (pronouns, ezâfe, râ, all tenses, subjunctive, conditionals, passive, reported speech, spoken Persian, ta’ârof…). Each has a table, key points, examples and 6 exercises (multiple choice, fill-in, translation, hints, 80% pass) |
 | Speaking practice | Hear a word, say it, get a match score. Free speech recognition: the browser's Web Speech API (fa-IR) or Whisper running on-device (transformers.js). Sound-alike letters (س/ص/ث, ز/ذ/ض/ظ, ت/ط, ه/ح, ق/غ) count as the same sound |
 | Natural voice | Free open-source Piper neural TTS (fa_IR Amir / Gyro) running in the browser; ~63 MB one-time download, then offline. Falls back to the device's Persian voice |
 | Real-world audio | YouGlish embed in the Word Library and on word cards: YouTube clips of native speakers saying the word |
