@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bookmark, BookHeart, BookOpen, Compass, Flame, House, Layers, Menu, Mic, PenLine, Puzzle, Repeat, Settings, Star, Telescope, X } from "lucide-react";
+import { Bookmark, BookHeart, BookOpen, Compass, Flame, House, Layers, Menu, Mic, PenLine, Puzzle, Repeat, Settings, Star, X } from "lucide-react";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
@@ -25,7 +25,6 @@ const SECONDARY: NavItem[] = [
   { href: "/app/alphabet/", label: "Alphabet", icon: PenLine, tone: "pista", hint: "Letters, vowel signs, tracing" },
   { href: "/app/poetry/", label: "Poetry", icon: BookHeart, tone: "plum", hint: "Fâl-e Hâfez and the poems everyone knows" },
   { href: "/app/bookmarks/", label: "My cards", icon: Bookmark, tone: "saffron", hint: "Words you saved" },
-  { href: "/app/resources/", label: "Beyond the app", icon: Telescope, tone: "sky", hint: "Free stories, podcasts and communities" },
 ];
 
 const SETTINGS: NavItem = { href: "/app/settings/", label: "Settings", icon: Settings, hint: "Voice, speech, goals, theme" };

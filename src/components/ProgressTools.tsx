@@ -1,12 +1,11 @@
 "use client";
 import { useRef, useState } from "react";
-import { BellRing, CheckCircle2, Download, MessageSquare, Upload } from "lucide-react";
+import { BellRing, CheckCircle2, Download, Upload } from "lucide-react";
 import { reminderIcs } from "@/lib/reminder";
 import { importProgress } from "@/lib/store";
 import { downloadBackup } from "./TodayPlan";
-import { feedbackUrl } from "./ReportButton";
 
-/** Settings: back up / restore progress, a daily reminder, and feedback. */
+/** Settings: back up / restore progress and a daily reminder. */
 export function ProgressTools() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -54,7 +53,7 @@ export function ProgressTools() {
         )}
       </div>
 
-      <div className="py-4">
+      <div className="pt-4">
         <p className="font-bold">Daily reminder</p>
         <p className="mt-1 text-sm font-semibold text-muted">Adds a repeating event with an alert to your phone or computer calendar, with a link back here.</p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -66,14 +65,6 @@ export function ProgressTools() {
             <BellRing className="size-4" /> Add to calendar
           </button>
         </div>
-      </div>
-
-      <div className="pt-4">
-        <p className="font-bold">Feedback</p>
-        <p className="mt-1 text-sm font-semibold text-muted">Something confusing, missing or wrong? Tell the team directly.</p>
-        <a href={feedbackUrl()} target="_blank" rel="noopener noreferrer" className="btn-secondary btn-sm mt-3">
-          <MessageSquare className="size-4" /> Send feedback
-        </a>
       </div>
     </div>
   );

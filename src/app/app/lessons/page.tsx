@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { feedbackUrl } from "@/components/ReportButton";
 import { Check, Library, Lock } from "lucide-react";
 import { LESSONS, LEVELS } from "@/content/lessons";
 import { useProgress } from "@/lib/store";
@@ -99,12 +98,9 @@ export default function LessonsPage() {
           {done === LESSONS.length ? "You've finished every lesson so far" : `That's all ${LESSONS.length} lessons for now`}
         </h2>
         <p className="mx-auto mt-1 max-w-md text-sm font-semibold text-muted">
-          Level 5 is being written. Your reviews keep coming back when they&apos;re due, and missions and grammar go further than the lessons. Tell us what
-          you&apos;d like to learn next.
+          Level 5 is being written. Your reviews keep coming back when they&apos;re due, and missions, grammar and poetry go further than the
+          lessons.
         </p>
-        <a href={feedbackUrl()} target="_blank" rel="noopener noreferrer" className="btn-secondary btn-sm mt-4">
-          Suggest a topic
-        </a>
       </section>
     </div>
   );

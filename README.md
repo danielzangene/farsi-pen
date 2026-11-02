@@ -27,8 +27,7 @@ Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1
 | Settings | Name, goal and reading level, daily goal, card defaults, keyboard, voice & speech recognition, progress backup / restore (file), daily reminder (calendar event), feedback, reset progress |
 | Dictionary | Look up any word in English or فارسی from the word search: course words first (with transliteration and lesson), then 46,000+ dictionary entries with example sentences; plurals and verb endings are stripped to find the dictionary form. Any meaning can be added to My cards and studied as a flashcard |
 | Spelling help | “Did you mean …?” for misspelled Persian: a Norvig-style corrector where sound-alike letters (س/ص/ث…) and missing half-spaces count as small slips, ranking course words first |
-| Poetry | Fâl-e Hâfez (12 famous ghazals with transliteration, English, an omen reading and key words) and a poem of the day (Hafez, Saadi, Khayyam). “Read the full poem” loads any of them from Ganjoor's open data with vowel marks and modern-Persian explanations; tap any word to look it up |
-| Beyond the app | Curated free resources (stories, podcasts, grammar, community) and credits for every open source used |
+| Poetry | Fâl-e Hâfez (12 famous ghazals with transliteration, English, an omen reading and key words) and a poem of the day (Hafez, Saadi, Khayyam). “Read the full poem” loads any of them from Ganjoor's open data inside the app (no outbound links) with vowel marks and modern-Persian explanations; tap any word to look it up |
 | Reporting | “Report a problem” on every word, flashcard, grammar exercise and mission task opens a pre-filled GitHub issue (label `content`) |
 | PWA basics | Web app manifest and icon (installable to home screen) |
 
