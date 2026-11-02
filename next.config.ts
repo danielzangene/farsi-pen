@@ -9,6 +9,13 @@ const nextConfig: NextConfig = {
   basePath,
   trailingSlash: true,
   images: { unoptimized: true },
+  // The Piper phonemizer (Emscripten) has a Node-only branch that requires
+  // "fs"; it never runs in the browser, so stub it out for the bundler.
+  turbopack: {
+    resolveAlias: {
+      fs: { browser: "./src/lib/empty-module.ts" },
+    },
+  },
 };
 
 export default nextConfig;

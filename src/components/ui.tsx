@@ -89,7 +89,7 @@ function useCanSpeak() {
 /** Audio controls. `big` renders the prominent sky speaker button used on prompts. */
 export function AudioButtons({ text, compact, big }: { text: string; compact?: boolean; big?: boolean }) {
   const ok = useCanSpeak();
-  const title = ok ? undefined : "No Persian voice on this device yet — recorded audio is coming";
+  const title = ok ? undefined : "No Persian voice yet — download the free natural voice in Settings";
   if (big)
     return (
       <span className="inline-flex items-center gap-2" title={title}>

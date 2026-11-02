@@ -4,6 +4,7 @@ import { Info } from "lucide-react";
 import { resetProgress, updateSettings, useProgress } from "@/lib/store";
 import { CardControls } from "@/components/CardControls";
 import { PageHeader, Segmented } from "@/components/ui";
+import { RecognitionSetup, VoiceSetup } from "@/components/SpeechSetup";
 
 export default function SettingsPage() {
   const { settings } = useProgress();
@@ -89,6 +90,18 @@ export default function SettingsPage() {
               onChange={(e) => updateSettings({ checklistHidden: !e.target.checked })}
             />
           </label>
+        </div>
+      </section>
+
+      <section className="card p-5">
+        <h2 className="eyebrow text-muted">Voice &amp; speech</h2>
+        <div className="divide-y-2 divide-line">
+          <div className="py-4">
+            <VoiceSetup />
+          </div>
+          <div className="pt-4">
+            <RecognitionSetup />
+          </div>
         </div>
       </section>
 

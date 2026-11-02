@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "@fontsource-variable/nunito": "^5.3.0",
+    "@huggingface/transformers": "^4.3.2",
+    "@mintplex-labs/piper-tts-web": "^1.0.5",
     "lucide-react": "^1.65.0",
     "next": "^16.4.3",
+    "onnxruntime-web": "1.31.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "ts-fsrs": "^6.0.0"
