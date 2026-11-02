@@ -23,7 +23,12 @@ export default function SpeakPage() {
   const [session, setSession] = useState<Word[] | null>(null);
   const [result, setResult] = useState<{ r: SessionSummary; xp: number } | null>(null);
   const [round, setRound] = useState(0);
-  useEffect(() => setDeviceVoice(hasDeviceVoice()), []);
+  useEffect(() => {
+    setDeviceVoice(hasDeviceVoice());
+    // Opened from the Word Library with a lesson filter: start with those words.
+    const lesson = new URLSearchParams(window.location.search).get("lesson");
+    if (lesson && LESSONS.some((l) => l.id === lesson)) setSource(lesson);
+  }, []);
 
   const mine = Object.keys(s.cards).filter((id) => !s.hidden.includes(id) && WORD_BY_ID[id]);
   const effective = source === "mine" && mine.length === 0 ? LESSONS[0].id : source;

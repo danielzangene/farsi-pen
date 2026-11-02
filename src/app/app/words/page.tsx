@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
-import { MonitorPlay, Search, SearchX } from "lucide-react";
+import Link from "next/link";
+import { Mic, MonitorPlay, Search, SearchX } from "lucide-react";
 import { LESSONS, LESSON_OF_WORD } from "@/content/lessons";
 import { WORDS } from "@/content/words";
 import { normalize } from "@/lib/answer";
@@ -83,6 +84,15 @@ export default function WordsPage() {
           <option value="new">Not seen</option>
         </select>
       </div>
+      <Link href={topic !== "all" ? `/app/speak/?lesson=${topic}` : "/app/speak/"} className="tile mb-6 flex items-center gap-3 p-3.5">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-anar-soft text-anar-ink">
+          <Mic className="size-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-extrabold">Practise saying {topic !== "all" ? "these words" : "your words"}</span>
+          <span className="block text-sm font-semibold text-muted">Hear each word, say it, and get a match score. Or tap the mic on any card.</span>
+        </span>
+      </Link>
       {spoken && (
         <section className="card mb-6 p-4" aria-label="Hear it in real videos">
           <div className="flex flex-wrap items-center justify-between gap-3">
