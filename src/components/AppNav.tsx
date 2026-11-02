@@ -20,7 +20,7 @@ const MAIN: NavItem[] = [
 const EXTRA: NavItem[] = [
   { href: "/app/missions/", label: "Missions", icon: Compass, tone: "firuze" },
   { href: "/app/words/", label: "Words", icon: Library, tone: "firuze" },
-  { href: "/app/bookmarks/", label: "Bookmarks", icon: Bookmark, tone: "saffron" },
+  { href: "/app/bookmarks/", label: "My cards", icon: Bookmark, tone: "saffron" },
   { href: "/app/settings/", label: "Settings", icon: Settings },
 ];
 

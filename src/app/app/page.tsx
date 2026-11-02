@@ -1,15 +1,21 @@
 "use client";
 import Link from "next/link";
-import { BookOpen, Check, ChevronRight, Flame, GraduationCap, Repeat, Star, Trophy, X } from "lucide-react";
+import { Bookmark, BookOpen, Check, ChevronRight, Compass, Flame, GraduationCap, Layers, Mic, PenLine, Puzzle, Repeat, Star, Trophy, Volume2, X } from "lucide-react";
 import { LESSONS } from "@/content/lessons";
 import { WORDS } from "@/content/words";
 import { MISSIONS } from "@/content/missions";
+import { GRAMMAR } from "@/content/grammar";
+import { LETTERS } from "@/content/alphabet";
+import { displayState } from "@/lib/mastery";
+import { buildDeck } from "@/lib/flashcards";
+import { useVoiceStatus } from "@/components/SpeechSetup";
+import type { Tone } from "@/components/ui";
 import { weakSkills } from "@/lib/missions";
 import { BADGES, levelFor } from "@/lib/gamification";
-import { badgeStats, currentStreak, today, updateSettings, useHydrated, useProgress, wordsLearned } from "@/lib/store";
+import { badgeStats, currentStreak, today, TRACE_PASS, updateSettings, useHydrated, useProgress, wordsLearned } from "@/lib/store";
 import { isDue } from "@/lib/srs";
 import { cx } from "@/lib/util";
-import { Fa, ProgressBar } from "@/components/ui";
+import { Fa, ProgressBar, TONE } from "@/components/ui";
 
 export default function Dashboard() {
   const s = useProgress();
@@ -82,19 +88,7 @@ export default function Dashboard() {
 
         <MissionTile />
 
-        <Link href="/app/practice/" className="tile flex items-center gap-4 p-4">
-          <span className="grid size-12 shrink-0 place-items-center rounded-full bg-sky-soft text-sky-ink">
-            <Repeat className="size-6" strokeWidth={2.5} />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-lg font-extrabold">Daily Practice</span>
-            <span className="block text-sm font-semibold text-muted">
-              {Object.keys(s.cards).length === 0 ? "Unlocks after your first lesson" : dueCount > 0 ? `${dueCount} word${dueCount === 1 ? "" : "s"} ready for review` : "Keep your words fresh"}
-            </span>
-          </span>
-          {dueCount > 0 && <span className="chip bg-sky-soft text-sky-ink">{dueCount}</span>}
-          <ChevronRight className="size-5 shrink-0 text-faint" strokeWidth={3} />
-        </Link>
+        <Explore dueCount={dueCount} />
 
         {!s.settings.checklistHidden && <Checklist />}
 
@@ -273,5 +267,55 @@ function MissionTile() {
       </span>
       <ChevronRight className="size-5 shrink-0 text-faint" strokeWidth={3} />
     </Link>
+  );
+}
+
+type Feature = { href: string; title: string; text: string; status: string; icon: typeof Star; tone: Tone; badge?: number };
+
+/** Every area of the app with a live status, so nothing is hidden behind a small icon. */
+function Explore({ dueCount }: { dueCount: number }) {
+  const s = useProgress();
+  const voice = useVoiceStatus();
+  const skills = MISSIONS.flatMap((m) => m.skills);
+  const mastered = skills.filter((sk) => displayState(s.skills[sk.id]) === "mastered").length;
+  const missionsDone = MISSIONS.filter((m) => m.skills.every((sk) => displayState(s.skills[sk.id]) === "mastered")).length;
+  const lessonsDone = LESSONS.filter((l) => s.lessons[l.id]?.completedAt).length;
+  const cardsToday = buildDeck("today", s).ids.length;
+  const grammarDone = GRAMMAR.filter((g) => s.grammar[g.id]?.passed).length;
+  const traced = LETTERS.filter((l) => (s.traced[l.id] ?? 0) >= TRACE_PASS).length;
+
+  const features: Feature[] = [
+    { href: "/app/missions/", title: "Missions", text: "Real situations: taxi, café, bazaar, ta'ârof", status: `${missionsDone}/${MISSIONS.length} mastered · ${mastered}/${skills.length} skills`, icon: Compass, tone: "firuze" },
+    { href: "/app/words/", title: "Flashcards", text: "See, guess, flip, hear, say it", status: cardsToday ? `${cardsToday} cards for today` : "All caught up today", icon: Layers, tone: "sky", badge: cardsToday || undefined },
+    { href: "/app/speak/", title: "Speak", text: "Say words, get a match score", status: "Free speech recognition", icon: Mic, tone: "anar" },
+    { href: "/app/lessons/", title: "Lessons", text: "Learn new words step by step", status: `${lessonsDone}/${LESSONS.length} done`, icon: BookOpen, tone: "saffron" },
+    { href: "/app/grammar/", title: "Grammar", text: "A1 → B2, with exercises", status: `${grammarDone}/${GRAMMAR.length} concepts`, icon: Puzzle, tone: "plum" },
+    { href: "/app/alphabet/", title: "Alphabet", text: "Letters, vowel signs, tracing", status: `${traced}/${LETTERS.length} traced`, icon: PenLine, tone: "pista" },
+    { href: "/app/practice/", title: "Daily Practice", text: "Type words from memory", status: Object.keys(s.cards).length === 0 ? "Unlocks after a lesson" : dueCount ? `${dueCount} ready` : "Nothing due", icon: Repeat, tone: "sky", badge: dueCount || undefined },
+    { href: "/app/bookmarks/", title: "My cards", text: "Words you saved", status: `${s.bookmarks.length} saved`, icon: Bookmark, tone: "saffron" },
+    { href: "/app/settings/", title: "Voice & speech", text: "Natural voice, recognition", status: voice.state === "ready" ? "Natural voice on" : "Online voice", icon: Volume2, tone: "firuze" },
+  ];
+
+  return (
+    <section aria-labelledby="explore-heading">
+      <h2 id="explore-heading" className="eyebrow mb-3 text-muted">
+        Everything in Farsi Pen
+      </h2>
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {features.map((f) => (
+          <li key={f.href}>
+            <Link href={f.href} className="tile relative flex h-full flex-col p-3.5 sm:p-4">
+              {f.badge && <span className={cx("chip absolute right-2.5 top-2.5", TONE[f.tone].soft, TONE[f.tone].ink)}>{f.badge}</span>}
+              <span className={cx("grid size-10 place-items-center rounded-full", TONE[f.tone].soft, TONE[f.tone].ink)}>
+                <f.icon className="size-5" strokeWidth={2.5} />
+              </span>
+              <span className="mt-3 block font-extrabold leading-tight">{f.title}</span>
+              <span className="mt-0.5 block text-xs font-semibold text-muted sm:text-sm">{f.text}</span>
+              <span className={cx("mt-auto block pt-2 text-xs font-bold", TONE[f.tone].ink)}>{f.status}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

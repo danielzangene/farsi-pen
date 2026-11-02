@@ -34,7 +34,7 @@ export default function BookmarksPage() {
           <RecallRound
             key={round}
             words={practising.map((id) => WORD_BY_ID[id])}
-            label="Bookmarks"
+            label="My cards"
             onExit={() => setPractising(null)}
             toolbar={<CardControls />}
             onDone={(r) => setResult({ r, xp: completePractice(r) })}
@@ -47,7 +47,7 @@ export default function BookmarksPage() {
         <span className="grid size-24 animate-pop place-items-center rounded-full bg-saffron text-on-accent">
           <Trophy className="size-12" />
         </span>
-        <h1 className="mt-5 text-3xl font-extrabold text-saffron-ink sm:text-4xl">Bookmarks practised!</h1>
+        <h1 className="mt-5 text-3xl font-extrabold text-saffron-ink sm:text-4xl">My cards practised!</h1>
         <p className="mt-2 font-semibold text-muted">
           {result.r.correct}/{result.r.total} right first time
         </p>
@@ -71,7 +71,7 @@ export default function BookmarksPage() {
 
   return (
     <div>
-      <PageHeader title="Bookmarks" subtitle="Your personal flashcard set.">
+      <PageHeader title="My cards" subtitle="Words you saved — your personal flashcard set.">
         <Segmented
           label="List"
           value={tab}
