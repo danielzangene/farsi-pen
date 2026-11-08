@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Mic, PartyPopper, Target, Zap } from "lucide-react";
+import { AudioLines, ChevronRight, Mic, PartyPopper, Target, Zap } from "lucide-react";
 import { LESSONS } from "@/content/lessons";
 import { WORD_BY_ID, type Word } from "@/content/words";
 import { hasDeviceVoice } from "@/lib/speech";
@@ -84,7 +84,7 @@ export default function SpeakPage() {
         </span>
         <h1 className="mt-5 text-3xl font-extrabold">Speaking practice</h1>
         <p className="mt-2 max-w-sm font-semibold text-muted">
-          Hear each word, say it out loud, and we&apos;ll tell you how close it sounded. {SESSION} words, about two minutes.
+          Hear each word, say it out loud, and we&apos;ll score it sound by sound. {SESSION} words, about two minutes.
         </p>
         <label className="mt-6 block w-full max-w-xs text-left">
           <span className="eyebrow text-muted">Words</span>
@@ -110,6 +110,17 @@ export default function SpeakPage() {
           </p>
         )}
       </div>
+
+      <Link href="/app/sounds/" className="tile flex items-center gap-4 p-4">
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-saffron-soft text-saffron-ink">
+          <AudioLines className="size-6" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-extrabold">Persian sounds</span>
+          <span className="block text-sm font-semibold text-muted">How to make kh, gh, the rolled r and long vowels — and a workout on your weakest.</span>
+        </span>
+        <ChevronRight className="size-5 shrink-0 text-muted" />
+      </Link>
 
       {voice.state !== "ready" && (
         <section className="card p-5">

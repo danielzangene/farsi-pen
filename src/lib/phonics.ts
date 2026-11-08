@@ -97,7 +97,7 @@ function soundOf(parts: { char: string; space?: boolean }[], i: number): [string
     if (prev && SOUND[prev.char]?.[0] === "aa") return ["y", "y"];
     return ["i", "i"];
   }
-  if (c === "ه" && atEnd && prev && !prev.space) return ["e", "e"];
+  if (c === "ه" && atEnd && prev && !prev.space && !"اآو".includes(prev.char)) return ["e", "e"];
   return base;
 }
 

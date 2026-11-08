@@ -7,7 +7,8 @@ import { checkSpoken, type SpeakResult } from "@/lib/pronounce";
 import { recordSounds, type Outcome, type SessionSummary, useProgress } from "@/lib/store";
 import { listen, loadWhisper, resolveEngine, SttError, whisperLoaded, type Listening } from "@/lib/stt";
 import { cx } from "@/lib/util";
-import { PronunciationFeedback } from "./PronunciationFeedback";
+import { SOUND_BY_ID } from "@/content/sounds";
+import { PronunciationFeedback, SoundTipCard } from "./PronunciationFeedback";
 import { AudioButtons, Fa, FaWord, FeedbackSheet, ProgressBar, SessionHeader, type FeedbackState } from "./ui";
 
 type Phase = "idle" | "preparing" | "listening" | "checking" | "done";
@@ -25,7 +26,18 @@ const ERRORS: Record<SttError["code"], string> = {
  * Speaking practice: hear the word, say it, and see how close it sounded.
  * Up to three tries per word; the first try sets the outcome.
  */
-export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words: Word[]; onDone: (r: SessionSummary) => void; exitHref?: string }) {
+export function SpeakRound({
+  words,
+  onDone,
+  exitHref = "/app/speak/",
+  focus,
+}: {
+  words: Word[];
+  onDone: (r: SessionSummary) => void;
+  exitHref?: string;
+  /** Sound workout: the sound each word is there to practise (word id → sound id). */
+  focus?: Record<string, string>;
+}) {
   const { settings } = useProgress();
   const [i, setI] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -37,9 +49,13 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
   const [error, setError] = useState("");
   const [outcomes, setOutcomes] = useState<Record<string, Outcome>>({});
   const [correct, setCorrect] = useState(0);
+  const [showTip, setShowTip] = useState(false);
   const live = useRef<Listening | null>(null);
 
   const word = words[i];
+  const focusSound = focus?.[word.id] ? SOUND_BY_ID[focus[word.id]] : undefined;
+  // The tip stays one tap away so the mic never drops below the fold.
+  useEffect(() => setShowTip(false), [i]);
   const engine = resolveEngine(settings.speechEngine);
   const targets = [word.fa, word.fa.replace(/[!؟?.،,]/g, "")];
 
@@ -134,6 +150,21 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
         <p className="text-lg font-bold text-muted">{word.en}</p>
         {!settings.scriptOnly && <p className="text-sm font-semibold text-muted">sounds like “{word.soundsLike}”</p>}
         <AudioButtons text={word.fa} big />
+        {focusSound && phase !== "done" && (
+          <div className="w-full max-w-xl text-start">
+            <button type="button" className="tile flex w-full items-center gap-3 p-3 text-start" onClick={() => setShowTip(!showTip)} aria-expanded={showTip}>
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-saffron-soft text-saffron-ink">
+                <Fa className="text-xl font-bold">{focusSound.letters.split(" ")[0]}</Fa>
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="eyebrow block text-saffron-ink">Focus sound</span>
+                <span className="font-extrabold">{focusSound.name}</span> <span className="text-sm font-semibold text-muted">· like {focusSound.like}</span>
+              </span>
+              <span className="text-sm font-bold text-sky-ink">{showTip ? "Hide" : "How to say it"}</span>
+            </button>
+            {showTip && <SoundTipCard sound={focusSound} compact className="mt-2" />}
+          </div>
+        )}
       </div>
 
       <div className="mt-10 flex flex-col items-center gap-3">
@@ -170,7 +201,7 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
             {error && <p className="max-w-sm text-center text-sm font-bold text-anar-ink">{error}</p>}
             {phase === "done" && result && phonics && (
               <div className="card mt-2 w-full max-w-xl p-4 sm:p-5">
-                <PronunciationFeedback result={phonics} overall={result.score} model={word.fa} audio={take} />
+                <PronunciationFeedback result={phonics} overall={result.score} model={word.fa} audio={take} focus={focusSound?.id} />
               </div>
             )}
           </>

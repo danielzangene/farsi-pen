@@ -76,3 +76,10 @@ describe("sound guide", () => {
     }
   });
 });
+
+describe("final he", () => {
+  it("is h after a long vowel letter", () => {
+    expect(analyzeSpoken([], "ماه").letters[2].sound).toBe("h");
+    expect(analyzeSpoken([], "کوه").letters[2].sound).toBe("h");
+  });
+});
