@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AudioLines, Bookmark, Clapperboard, Headphones, BookHeart, BookOpen, Compass, Flame, House, Layers, Menu, Mic, PenLine, Puzzle, Repeat, Settings, Star, X } from "lucide-react";
 import { currentStreak, useProgress } from "@/lib/store";
-import { cx, IS_DEV_SITE } from "@/lib/util";
+import { CHANNEL, cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
 
 type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean; hint?: string };
@@ -52,7 +52,7 @@ export function Logo({ compact }: { compact?: boolean }) {
     <Link href="/" className="flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl text-2xl font-extrabold tracking-tight text-firuze-ink" aria-label="Farsi Pen home">
       <LogoMark />
       {!compact && <span>Farsi Pen</span>}
-      {IS_DEV_SITE && <span className="chip bg-saffron-soft text-saffron-ink">DEV</span>}
+      {IS_DEV_SITE && <span className="chip bg-saffron-soft text-saffron-ink uppercase">{CHANNEL}</span>}
     </Link>
   );
 }

@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Farsi Pen System Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&family=Vazirmatn:wght@500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one reading column with a sticky section bar; each design layer is a
+   card holding a box-and-arrow diagram built from the app's own tile style. */
+:root {
+  --bg: #f4f8f8;
+  --surface: #ffffff;
+  --sunk: #eaf1f1;
+  --line: #d6e1e1;
+  --ink: #1b2a30;
+  --muted: #56686f;
+  --firuze: #0b7a6e;
+  --firuze-fill: #12a594;
+  --firuze-soft: #ddf5f1;
+  --saffron: #8a5200;
+  --saffron-soft: #fff1d1;
+  --anar: #b8323a;
+  --anar-soft: #ffe6e6;
+  --sky: #12669a;
+  --sky-soft: #ddf1fc;
+  --plum: #6d35b3;
+  --plum-soft: #f1e8fc;
+  --on-fill: #ffffff;
+  --display: "Nunito", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  --body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fa: "Vazirmatn", Tahoma, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131f24; --surface: #1a282e; --sunk: #16242a; --line: #33444c; --ink: #eef5f8; --muted: #9db0ba;
+    --firuze: #6be3d3; --firuze-fill: #2cc5b1; --firuze-soft: #16383a; --saffron: #ffcf70; --saffron-soft: #3a3020;
+    --anar: #ff9fa2; --anar-soft: #3e2228; --sky: #86d6fb; --sky-soft: #163545; --plum: #dbbcff; --plum-soft: #2d2640;
+    --on-fill: #131f24; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131f24; --surface: #1a282e; --sunk: #16242a; --line: #33444c; --ink: #eef5f8; --muted: #9db0ba;
+  --firuze: #6be3d3; --firuze-fill: #2cc5b1; --firuze-soft: #16383a; --saffron: #ffcf70; --saffron-soft: #3a3020;
+  --anar: #ff9fa2; --anar-soft: #3e2228; --sky: #86d6fb; --sky-soft: #163545; --plum: #dbbcff; --plum-soft: #2d2640;
+  --on-fill: #131f24; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; font-weight: 500; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: -0.02em; }
+h2 { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.01em; }
+h3 { font-size: 1.15rem; font-weight: 800; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--sky); font-weight: 700; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; border-radius: 6px; }
+.fa { font-family: var(--fa); }
+.eyebrow { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--mono); font-size: 0.85em; }
+
+/* Sticky section bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 2px solid var(--line); }
+.bar nav { max-width: 980px; margin: 0 auto; display: flex; gap: 4px; overflow-x: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 8px; scrollbar-width: none; }
+.bar a { white-space: nowrap; text-decoration: none; color: var(--muted); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 10px; border-radius: 10px; }
+.bar a:hover { background: var(--sunk); color: var(--ink); }
+
+/* Hero */
+header.hero { padding-block: 40px 28px; display: grid; gap: 16px; }
+.mark { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--firuze-fill); color: var(--on-fill); box-shadow: 0 4px 0 color-mix(in srgb, var(--firuze-fill) 60%, #000); }
+.hero .lede { font-size: 1.15rem; color: var(--muted); }
+.verdict { display: grid; gap: 12px; border: 2px solid var(--firuze-fill); border-bottom-width: 5px; background: var(--firuze-soft); border-radius: 18px; padding: 20px; }
+.verdict strong { color: var(--firuze); }
+.verdict ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+
+section { padding-top: 48px; display: grid; gap: 18px; scroll-margin-top: 64px; }
+.sub { color: var(--muted); }
+
+/* Tables */
+.tbl { overflow-x: auto; border: 2px solid var(--line); border-radius: 16px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.92rem; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--sunk); }
+tr:last-child td { border-bottom: 0; }
+td.us { background: var(--firuze-soft); }
+.yes { color: var(--firuze); font-weight: 800; }
+.no { color: var(--anar); font-weight: 800; }
+.part { color: var(--saffron); font-weight: 800; }
+
+/* Option cards */
+.options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .options { grid-template-columns: 1fr; } }
+.opt { border: 2px solid var(--line); border-bottom-width: 4px; border-radius: 16px; padding: 16px; background: var(--surface); display: grid; gap: 10px; align-content: start; }
+.opt.pick { border-color: var(--firuze-fill); }
+.opt ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; font-size: 0.93rem; }
+.pill { justify-self: start; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 999px; padding: 2px 10px; }
+.pill.ok { background: var(--firuze-soft); color: var(--firuze); }
+.pill.meh { background: var(--saffron-soft); color: var(--saffron); }
+.pill.bad { background: var(--anar-soft); color: var(--anar); }
+
+/* Layer cards + diagrams */
+.layer { border: 2px solid var(--line); border-radius: 18px; background: var(--surface); padding: 18px; display: grid; gap: 14px; }
+.layer header { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.tag { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+.diagram { overflow-x: auto; background: var(--sunk); border-radius: 14px; padding: 14px; }
+.flow { display: flex; align-items: stretch; gap: 0; min-width: max-content; }
+.flow > .node { width: 150px; }
+.arrow { display: grid; place-items: center; width: 34px; color: var(--muted); font-weight: 900; font-size: 1.2rem; flex: none; }
+.node { border: 2px solid var(--line); border-bottom-width: 4px; border-radius: 12px; background: var(--surface); padding: 10px; display: grid; gap: 2px; align-content: start; }
+.node b { font-family: var(--display); font-weight: 800; font-size: 0.95rem; }
+.node small { color: var(--muted); font-size: 0.78rem; line-height: 1.35; }
+.node.f { border-color: var(--firuze-fill); }
+.node.s { border-color: var(--saffron); }
+.node.k { border-color: var(--sky); }
+.node.p { border-color: var(--plum); }
+.node.a { border-color: var(--anar); }
+.stack { display: grid; gap: 8px; min-width: 560px; }
+.band { display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: stretch; }
+.band > .lbl { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; }
+.band > .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.down { text-align: center; color: var(--muted); font-weight: 900; line-height: 1; }
+.why { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; font-size: 0.93rem; }
+@media (max-width: 640px) { .why { grid-template-columns: 1fr; } }
+.why > div { min-width: 0; }
+.why ul { margin: 4px 0 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 16px; font-size: 0.8rem; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; border: 2px solid var(--c); }
+
+/* Phases */
+.phases { display: grid; gap: 12px; }
+.phase { display: grid; grid-template-columns: 64px 1fr; gap: 14px; border: 2px solid var(--line); border-radius: 16px; padding: 16px; background: var(--surface); }
+.phase .n { font-family: var(--display); font-weight: 900; font-size: 1.6rem; color: var(--firuze); }
+.phase ul { margin: 6px 0 0; padding-left: 1.1em; display: grid; gap: 3px; font-size: 0.93rem; }
+.note { font-size: 0.85rem; color: var(--muted); }
+.sources { font-size: 0.85rem; columns: 2 280px; column-gap: 28px; }
+.sources li { break-inside: avoid; margin-bottom: 4px; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+
+</head>
+<body>
+<div class="bar"><nav aria-label="Sections">
+  <a href="#verdict">Verdict</a>
+  <a href="#market">Market</a>
+  <a href="#options">Options</a>
+  <a href="#overview">Big picture</a>
+  <a href="#client">App</a>
+  <a href="#engine">Learning engine</a>
+  <a href="#content">Content</a>
+  <a href="#sync">Accounts &amp; sync</a>
+  <a href="#speech">Speech &amp; AI</a>
+  <a href="#money">Money</a>
+  <a href="#ia">Navigation</a>
+  <a href="#plan">Plan</a>
+  <a href="#sources">Sources</a>
+  <a href="../design/">UI kit ›</a>
+</nav></div>
+
+<div class="wrap">
+
+<header class="hero" id="verdict">
+  <span class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" width="30" height="30" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 46V18h14M14 31h11M34 46l8-28 8 28M37 37h10"/></svg></span>
+  <p class="eyebrow">System design proposal · based on the <span class="mono">dev</span> branch, 8 Nov 2026</p>
+  <h1>How Farsi Pen should be built from here</h1>
+  <p class="lede">The learning side of Farsi Pen is already deep. What it lacks is the platform around it: accounts, offline mode, payments and a way to ship reviewed content. This page proposes one architecture and shows each part of it as a simple diagram.</p>
+  <div class="verdict">
+    <p><strong>Recommendation: a local-first app with a thin backend.</strong> Keep everything that works today running on the learner's device, and add a small server only for the things a device can't do alone.</p>
+    <ol>
+      <li><strong>The device stays in charge of learning.</strong> Lessons, reviews, scoring and audio work offline, as most of them already do.</li>
+      <li><strong>The server keeps a copy, not the original.</strong> The device sends a log of what the learner did; the server stores it for sync across devices, streak checks and leaderboards.</li>
+      <li><strong>Paid features are the ones that cost money to run.</strong> An AI conversation partner and accurate server-side speech scoring go in Pro. Lessons and offline mode stay free.</li>
+      <li><strong>Content goes through review before it ships.</strong> A pipeline moves each batch from draft to native-speaker approval to published, and generates its audio automatically.</li>
+    </ol>
+  </div>
+</header>
+
+<section id="market" aria-labelledby="h-market">
+  <p class="eyebrow">1 · Who else teaches Persian</p>
+  <h2 id="h-market">The market has a gap where Duolingo isn't</h2>
+  <p class="sub">Duolingo still doesn't teach Persian. The closest products are a learnfarsi.app-style course app, a community-led podcast course, and generic multi-language apps where Persian is one of many. None of them combines writing, real conversation practice and spoken Tehrani Persian the way Farsi Pen already does.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Product</th><th>What it is</th><th>Price</th><th>Writing</th><th>Speaking feedback</th><th>Spoken vs formal</th><th>Offline</th></tr></thead>
+    <tbody>
+      <tr><td class="us"><b>Farsi Pen (dev)</b></td><td class="us">Lessons, missions, scenes, grammar A1–B2, tracing, pronunciation lab</td><td class="us">Free (no model yet)</td><td class="us yes">Tracing</td><td class="us yes">On-device, per sound</td><td class="us yes">Labelled</td><td class="us part">Audio local, no offline app</td></tr>
+      <tr><td><b>learnfarsi.app</b></td><td>Vocabulary course, alphabet, grammar; Pro adds full curriculum, offline, AI speaking</td><td>$5.99/mo or $49.99/yr</td><td class="no">No</td><td class="part">AI tutor in Pro</td><td class="part">Users report confusion</td><td class="part">Pro only</td></tr>
+      <tr><td><b>Chai and Conversation</b></td><td>Podcast and courses with a private community of 11,000+ members</td><td>About $10–28/mo by tier</td><td class="part">Reading &amp; writing course</td><td class="part">Live sessions</td><td class="yes">Conversational</td><td class="part">Podcast</td></tr>
+      <tr><td><b>Pimsleur, PersianPod101, Mango</b></td><td>Audio-led or bite-size generic courses; Mango is weak past beginner</td><td>Mango about $7.99/mo</td><td class="no">No</td><td class="part">Varies</td><td class="part">Varies</td><td class="yes">Yes</td></tr>
+      <tr><td><b>Drops</b></td><td>Vocabulary mini-games only, no grammar</td><td>Free 5 min/day, then paid</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="yes">Yes</td></tr>
+      <tr><td><b>Praktika, Speak</b></td><td>AI conversation tutors, big but not Persian-focused</td><td>Praktika about $8/mo</td><td class="no">No</td><td class="yes">AI tutor</td><td class="no">No</td><td class="part">Partly</td></tr>
+    </tbody>
+  </table></div>
+  <div class="why">
+    <div><h3>Who the users are</h3><ul>
+      <li><b>Heritage learners</b> who understand some spoken Persian but can't read or write it. The Iranian diaspora is large in the US (roughly 385,000–577,000 by Census-based counts), Canada and Germany.</li>
+      <li><b>Partners and family</b> of Persian speakers, who need everyday spoken phrases and ta'ârof.</li>
+      <li><b>Travellers</b>, who need the missions (taxi, café, bazaar).</li>
+    </ul></div>
+    <div><h3>What that means for the design</h3><ul>
+      <li>Teach <b>spoken Tehrani first</b>, with formal forms shown. Competitors mix them up.</li>
+      <li><b>Reading and writing</b> is the heritage learner's real gap, so the alphabet and tracing matter more here than in a generic app.</li>
+      <li>Language apps convert few free users to paid (often quoted at 2–5%), so the free tier has to be good and the paid tier has to be something people clearly value.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="options" aria-labelledby="h-options">
+  <p class="eyebrow">2 · Three ways to build it</p>
+  <h2 id="h-options">Option B fits a small team and the product you already have</h2>
+  <div class="options">
+    <article class="opt">
+      <span class="pill meh">Where dev is now</span>
+      <h3>A · Static app only</h3>
+      <p class="note">Everything lives in the browser. No server at all.</p>
+      <ul><li>Costs almost nothing to host</li><li>Clearing the browser loses all progress</li><li>No sync, no leaderboards, no payments</li><li>No way to stop someone faking XP</li></ul>
+    </article>
+    <article class="opt pick">
+      <span class="pill ok">Recommended</span>
+      <h3>B · Local-first app + thin backend</h3>
+      <p class="note">The device does the learning; a small server keeps a synced copy and handles accounts, payments and paid AI features.</p>
+      <ul><li>Works offline, fast on slow networks</li><li>Keeps all of today's code; adds to it</li><li>Server costs grow only with paid features</li><li>Matches the spec's chosen stack (Supabase, Stripe)</li></ul>
+    </article>
+    <article class="opt">
+      <span class="pill bad">Too much for now</span>
+      <h3>C · Server builds every lesson</h3>
+      <p class="note">Like Duolingo: a model on the server scores about 200 candidate exercises and a session service picks each lesson.</p>
+      <ul><li>Best personalisation at huge scale</li><li>Needs a network for every lesson</li><li>Needs a data team and lots of learners to train on</li><li>Rewrites the engine that works today</li></ul>
+    </article>
+  </div>
+</section>
+
+<section id="overview" aria-labelledby="h-overview">
+  <p class="eyebrow">3 · The big picture</p>
+  <h2 id="h-overview">Three layers: device, delivery, backend</h2>
+  <div class="layer">
+    <div class="diagram"><div class="stack">
+      <div class="band"><div class="lbl">On the device</div><div class="row">
+        <div class="node f"><b>App screens</b><small>Today, Learn, Speak, Review, Me</small></div>
+        <div class="node f"><b>Learning engine</b><small>One review queue, spaced repetition, session builder</small></div>
+        <div class="node f"><b>Local database</b><small>Progress, cards, outbox of events</small></div>
+        <div class="node f"><b>Offline cache</b><small>App, content packs, audio</small></div>
+        <div class="node f"><b>On-device speech</b><small>Recognition and scoring, free</small></div>
+      </div></div>
+      <div class="down" aria-hidden="true">↕</div>
+      <div class="band"><div class="lbl">Delivery</div><div class="row">
+        <div class="node k"><b>CDN</b><small>Static app, versioned content packs, audio files</small></div>
+        <div class="node k"><b>Edge functions</b><small>Accept event batches, check XP and streaks</small></div>
+      </div></div>
+      <div class="down" aria-hidden="true">↕</div>
+      <div class="band"><div class="lbl">Backend</div><div class="row">
+        <div class="node s"><b>Accounts</b><small>Email link, Google sign-in</small></div>
+        <div class="node s"><b>Database</b><small>Event log, profiles, leaderboards</small></div>
+        <div class="node s"><b>Payments</b><small>Stripe, Pro entitlement</small></div>
+        <div class="node p"><b>AI gateway</b><small>Tutor and server speech, Pro only, with quotas</small></div>
+        <div class="node a"><b>Monitoring</b><small>Error reports, privacy-friendly analytics</small></div>
+      </div></div>
+    </div></div>
+    <div class="legend"><span style="--c: var(--firuze-fill)">Exists today in some form</span><span style="--c: var(--sky)">New, low cost</span><span style="--c: var(--saffron)">New backend</span><span style="--c: var(--plum)">Paid feature</span><span style="--c: var(--anar)">Operations</span></div>
+  </div>
+</section>
+
+<section id="client" aria-labelledby="h-client">
+  <p class="eyebrow">4 · Design layer</p>
+  <div class="layer">
+    <header><h2 id="h-client">The app on the device</h2><span class="tag">PWA · offline-first</span></header>
+    <div class="diagram"><div class="flow">
+      <div class="node f"><b>Screen</b><small>Learner taps "Check"</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node f"><b>Learning engine</b><small>Grades answer, updates card</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node f"><b>Local database</b><small>Saves new state and an event</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node k"><b>Outbox</b><small>Event waits until online</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node s"><b>Sync</b><small>Sent in a batch later</small></div>
+    </div></div>
+    <div class="why">
+      <div><h3>What changes</h3><ul>
+        <li>Move progress from localStorage to <b>IndexedDB</b>. It holds more and suits an outbox.</li>
+        <li>Add a <b>service worker</b> so the whole app opens offline. The audio is already local, which makes this cheap.</li>
+        <li>Download <b>content packs</b> per level, so a phone doesn't fetch all 72 MB at once.</li>
+      </ul></div>
+      <div><h3>Why</h3><ul>
+        <li>Learners practise on the train, abroad and on weak connections.</li>
+        <li>Every action is instant because nothing waits for a server.</li>
+        <li>learnfarsi.app charges for offline mode; giving it free is a selling point.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="engine" aria-labelledby="h-engine">
+  <p class="eyebrow">5 · Design layer</p>
+  <div class="layer">
+    <header><h2 id="h-engine">One learning engine for everything</h2><span class="tag">items → cards → sessions</span></header>
+    <div class="diagram"><div class="flow">
+      <div class="node f"><b>Items</b><small>Word, phrase, letter, grammar point, mission skill, sound</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node f"><b>Cards</b><small>One memory state per item, spaced repetition</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node f"><b>Session builder</b><small>Due reviews + one new thing + weakest sound</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node f"><b>Exercise</b><small>Choose, type, say, trace, role-play</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node k"><b>Review event</b><small>Result written back to the card</small></div>
+    </div></div>
+    <div class="why">
+      <div><h3>What changes</h3><ul>
+        <li>Today there are four ways to review (Today plan, Daily Practice, the Words deck, My cards). Make them <b>one queue</b> that every item type feeds.</li>
+        <li>One <b>session builder</b> decides what comes next, the way Duolingo's session generator does, but on the device and with simple rules.</li>
+      </ul></div>
+      <div><h3>Why</h3><ul>
+        <li>Learners stop wondering which review button to press.</li>
+        <li>Letters, grammar and pronunciation weaknesses come back for review, not only words.</li>
+        <li>The review log is the data a smarter model would need later, if Farsi Pen ever grows enough for Option C.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="content" aria-labelledby="h-content">
+  <p class="eyebrow">6 · Design layer</p>
+  <div class="layer">
+    <header><h2 id="h-content">Content pipeline with native review</h2><span class="tag">draft → reviewed → published</span></header>
+    <div class="diagram"><div class="flow">
+      <div class="node f"><b>Draft</b><small>Batch written as structured files</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node s"><b>Native review</b><small>Reviewer approves each row; status saved</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node f"><b>Checks</b><small>Existing tests: every word, lesson and mission valid</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node k"><b>Audio</b><small>Generated for new text; better voices or real recordings later</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node k"><b>Pack</b><small>Versioned and published to the CDN</small></div>
+    </div></div>
+    <div class="why">
+      <div><h3>What changes</h3><ul>
+        <li>Each item gets a <b>review status</b>. Only approved items ship to the live site; drafts can stay on dev.</li>
+        <li>The reviewer approves in a <b>shared sheet or as a required pull-request reviewer</b>.</li>
+        <li>Audio stays on the open Piper voice for now. Azure has Persian neural voices (Dilara, Farid) for an upgrade, and the 500 most common words could get real human recordings.</li>
+      </ul></div>
+      <div><h3>Why</h3><ul>
+        <li>The spec requires native approval, and the "drafted for review" label was removed on dev.</li>
+        <li>Quality is the promised edge over learnfarsi.app (no duplicates, one transliteration style).</li>
+        <li>Reports from learners land in the same queue instead of public GitHub issues.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="sync" aria-labelledby="h-sync">
+  <p class="eyebrow">7 · Design layer</p>
+  <div class="layer">
+    <header><h2 id="h-sync">Accounts and sync as an event log</h2><span class="tag">append-only · conflict-free</span></header>
+    <div class="diagram"><div class="flow">
+      <div class="node f"><b>Guest</b><small>Learns with no account, as today</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node s"><b>Sign in</b><small>Email link or Google</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node k"><b>Upload log</b><small>Guest history is merged once</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node s"><b>Server checks</b><small>Recomputes XP and streak from events</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node f"><b>Other devices</b><small>Download the log and rebuild progress</small></div>
+    </div></div>
+    <div class="why">
+      <div><h3>What changes</h3><ul>
+        <li>The device sends <b>what happened</b> ("reviewed word 41, grade Good, 10:02"), never the final totals.</li>
+        <li>Events never change, so two phones can't conflict; the server just adds both.</li>
+        <li>Supabase covers accounts and the database, as the spec planned. A sync library such as PowerSync is optional later; check its web support first.</li>
+      </ul></div>
+      <div><h3>Why</h3><ul>
+        <li>Today, clearing the browser wipes progress. Manual backup files are a stopgap.</li>
+        <li>Leaderboards need XP the server has checked, or people will fake it.</li>
+        <li>Push reminders need an account to attach to.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="speech" aria-labelledby="h-speech">
+  <p class="eyebrow">8 · Design layer</p>
+  <div class="layer">
+    <header><h2 id="h-speech">Speech and AI in three tiers</h2><span class="tag">free on device · paid on server</span></header>
+    <div class="diagram"><div class="flow">
+      <div class="node f"><b>Tier 1 · Free</b><small>On-device recognition and per-sound scoring, as on dev today</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node p"><b>Tier 2 · Pro</b><small>Server speech recognition for more accurate scoring</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node p"><b>Tier 3 · Pro</b><small>AI conversation partner for missions and scenes</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node s"><b>AI gateway</b><small>Keeps API keys secret, limits minutes per user</small></div>
+    </div></div>
+    <div class="why">
+      <div><h3>What to know</h3><ul>
+        <li>Azure supports Persian speech-to-text and voices, but its <b>pronunciation assessment</b> doesn't appear to cover Persian. Keep Farsi Pen's own letter-level scoring.</li>
+        <li>Persian quality varies a lot between speech vendors. Test two or three with native speakers before choosing.</li>
+        <li>Chrome's built-in recognition sends audio to Google. That needs a clear privacy notice.</li>
+      </ul></div>
+      <div><h3>Why tiers</h3><ul>
+        <li>Server speech and AI cost money per minute; the free tier must not.</li>
+        <li>An AI partner that plays the taxi driver or Sara's aunt builds directly on the missions and scenes you already have.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="money" aria-labelledby="h-money">
+  <p class="eyebrow">9 · Design layer</p>
+  <div class="layer">
+    <header><h2 id="h-money">Money: free core, Pro for what costs to run</h2><span class="tag">one entitlement flag</span></header>
+    <div class="diagram"><div class="flow">
+      <div class="node f"><b>Free</b><small>All lessons, alphabet, grammar, missions, offline, on-device speech</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node p"><b>Pro</b><small>AI conversation partner, server scoring, family sharing</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node s"><b>Stripe</b><small>Checkout and customer portal</small></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="node s"><b>Entitlement</b><small>One "is Pro" flag the app checks</small></div>
+    </div></div>
+    <div class="why">
+      <div><h3>Suggested shape</h3><ul>
+        <li>Price near the market: learnfarsi.app charges $5.99/mo or $49.99/yr; Praktika about $8/mo.</li>
+        <li>A <b>family plan</b> suits heritage families where parents and children learn together.</li>
+        <li>Keep donations and a supporters wall from the spec for people who just want to help.</li>
+      </ul></div>
+      <div><h3>Why not lock lessons</h3><ul>
+        <li>Few free users ever pay in this category, so lessons are how people find and trust the app.</li>
+        <li>Charging for AI minutes keeps revenue in line with the only real running cost.</li>
+        <li>This answers the spec's open question (§4.3): Option A at launch, with Pro switched on when the AI tier is ready.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="ia" aria-labelledby="h-ia">
+  <p class="eyebrow">10 · Design layer</p>
+  <div class="layer">
+    <header><h2 id="h-ia">Navigation: five tabs, each with a clear job</h2><span class="tag">from 10 items under More</span></header>
+    <div class="diagram"><div class="flow">
+      <div class="node f"><b>Today</b><small>The plan and one Continue button</small></div><div class="arrow" aria-hidden="true">·</div>
+      <div class="node f"><b>Learn</b><small>Lessons, Alphabet, Grammar</small></div><div class="arrow" aria-hidden="true">·</div>
+      <div class="node f"><b>Speak</b><small>Missions, Scenes, Pronunciation, Sounds, Hands-free</small></div><div class="arrow" aria-hidden="true">·</div>
+      <div class="node f"><b>Review</b><small>One queue, My cards, Dictionary</small></div><div class="arrow" aria-hidden="true">·</div>
+      <div class="node f"><b>Me</b><small>Progress, badges, Poetry, Settings</small></div>
+    </div></div>
+    <p class="note">Today the More sheet holds Speak, Hands-free, Scenes, Sounds, Daily Practice, Grammar, Alphabet, Poetry, My cards and Settings. Grouping them by what the learner wants to do (learn, speak, review) puts every feature one tap from its tab. The <span class="fa">فارسی</span> sound and speaking tools also stop competing with each other for attention.</p>
+  </div>
+</section>
+
+<section id="plan" aria-labelledby="h-plan">
+  <p class="eyebrow">11 · Order of work</p>
+  <h2 id="h-plan">Four phases, each shippable on its own</h2>
+  <div class="phases">
+    <div class="phase"><div class="n">1</div><div><h3>Ready for a public launch</h3><ul>
+      <li>Privacy and terms pages (microphone use), and confirm the Yekan Bakh web licence</li>
+      <li>Service worker for offline use; move progress to IndexedDB</li>
+      <li>One review queue and the five-tab navigation</li>
+      <li>Native review pass and review status on content; analytics and error reports</li>
+    </ul></div></div>
+    <div class="phase"><div class="n">2</div><div><h3>Accounts and sync</h3><ul>
+      <li>Email-link and Google sign-in, guest merge, event-log sync</li>
+      <li>Push streak reminders (on iPhone only after "Add to Home Screen")</li>
+      <li>End-to-end tests for lessons, missions and sync</li>
+    </ul></div></div>
+    <div class="phase"><div class="n">3</div><div><h3>Pro</h3><ul>
+      <li>Stripe and the Pro flag; donations page</li>
+      <li>AI gateway, then the conversation partner in missions and scenes</li>
+      <li>Server speech scoring after a vendor test with native speakers</li>
+    </ul></div></div>
+    <div class="phase"><div class="n">4</div><div><h3>Light community</h3><ul>
+      <li>Leaderboards and friends from server-checked XP</li>
+      <li>Family plan and shared progress</li>
+      <li>Skip an open discussion board at first; it needs moderation the team doesn't have yet</li>
+    </ul></div></div>
+  </div>
+</section>
+
+<section id="sources" aria-labelledby="h-sources">
+  <p class="eyebrow">Sources</p>
+  <h2 id="h-sources">Where the market facts come from</h2>
+  <p class="note">Searched 8 Nov 2026. Many app roundups are vendor blogs, so prices and figures should be checked on each product's own site before they're quoted elsewhere.</p>
+  <ul class="sources">
+    <li><a href="https://learn-persian.pages.dev/blog/best-app-to-learn-farsi/" target="_blank" rel="noopener">Best app to learn Farsi (2026, Duolingo has no Persian)</a></li>
+    <li><a href="https://ling-app.com/blog/no-farsi-on-duolingo/" target="_blank" rel="noopener">Ling: no Farsi on Duolingo</a></li>
+    <li><a href="https://apps.apple.com/app/id6778589333" target="_blank" rel="noopener">Learn Farsi (learnfarsi.app) on the App Store</a></li>
+    <li><a href="https://chaiandconversation.com/signup" target="_blank" rel="noopener">Chai and Conversation membership tiers</a></li>
+    <li><a href="https://circle.so/blog/chai-and-conversation-community" target="_blank" rel="noopener">Chai and Conversation community (11,000+ members)</a></li>
+    <li><a href="https://preply.com/en/blog/top-apps-to-learn-persian/" target="_blank" rel="noopener">Preply: 15 best apps to learn Persian</a></li>
+    <li><a href="https://www.mangolanguages.com/available-languages/farsi" target="_blank" rel="noopener">Mango Languages: Farsi</a></li>
+    <li><a href="https://techcrunch.com/2024/05/22/praktika-raises-35-5m-to-use-ai-avatars-to-make-learning-languages-feel-more-natural" target="_blank" rel="noopener">TechCrunch: Praktika raises $35.5M</a></li>
+    <li><a href="https://appsops.store/blog/language-learning-app-subscription-pricing-2026" target="_blank" rel="noopener">Language app subscription pricing 2026 (conversion benchmark)</a></li>
+    <li><a href="https://venturebeat.com/ai/how-duolingo-uses-ai-in-every-part-of-its-app" target="_blank" rel="noopener">VentureBeat: how Duolingo uses AI (session generator)</a></li>
+    <li><a href="https://blog.duolingo.com/learning-how-to-help-you-learn-introducing-birdbrain/" target="_blank" rel="noopener">Duolingo blog: introducing Birdbrain</a></li>
+    <li><a href="https://powersync.com/blog/bringing-offline-first-to-supabase" target="_blank" rel="noopener">PowerSync: offline-first for Supabase</a></li>
+    <li><a href="https://serwist.pages.dev/docs/next/getting-started" target="_blank" rel="noopener">Serwist: service workers for Next.js</a></li>
+    <li><a href="https://learn.microsoft.com/azure/ai-services/speech-service/language-support" target="_blank" rel="noopener">Azure Speech language support (fa-IR)</a></li>
+    <li><a href="https://techcommunity.microsoft.com/t5/azure-ai/azure-speech-s-neural-tts-empowers-organizations-to-serve-users/ba-p/2920882" target="_blank" rel="noopener">Azure Persian neural voices Dilara and Farid</a></li>
+    <li><a href="https://soniox.com/compare-stt/soniox-vs-openai/persian" target="_blank" rel="noopener">Soniox vs OpenAI on Persian (vendor benchmark)</a></li>
+    <li><a href="https://iran-times.com/census-bureau-finds-577000-iranian-americans" target="_blank" rel="noopener">Iran Times: Census finds 577,000 Iranian-Americans</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Iranian_diaspora" target="_blank" rel="noopener">Wikipedia: Iranian diaspora</a></li>
+  </ul>
+</section>
+
+</div>
+
+</body>
+</html>
