@@ -69,7 +69,7 @@ export function onVoicesChanged(cb: () => void): () => void {
   };
 }
 
-/** Speaks `text`; resolves true if it played (when done for recorded voices, at start for the device voice). */
+/** Speaks `text`; resolves true once it has played. */
 export async function speak(text: string, slow = false): Promise<boolean> {
   const t = text.trim();
   if (!t) return false;
@@ -88,8 +88,18 @@ export async function speak(text: string, slow = false): Promise<boolean> {
     u.voice = voice;
     u.lang = voice.lang;
     u.rate = slow ? 0.6 : 0.9;
-    window.speechSynthesis.speak(u);
-    return true;
+    // Resolve when it finishes (so "back to back" can follow it), with a
+    // safety timeout: some engines never fire onend.
+    return new Promise<boolean>((resolve) => {
+      const timer = setTimeout(() => resolve(true), 1500 + t.length * (slow ? 220 : 140));
+      const done = () => {
+        clearTimeout(timer);
+        resolve(true);
+      };
+      u.onend = done;
+      u.onerror = done;
+      window.speechSynthesis.speak(u);
+    });
   }
   return speakOnline(t, slow);
 }

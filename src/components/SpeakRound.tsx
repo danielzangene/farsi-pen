@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, RotateCcw, Square } from "lucide-react";
+import { Loader2, Mic, Square } from "lucide-react";
 import type { Word } from "@/content/words";
+import { analyzeSpoken, type PhonicsResult } from "@/lib/phonics";
 import { checkSpoken, type SpeakResult } from "@/lib/pronounce";
-import { type Outcome, type SessionSummary, useProgress } from "@/lib/store";
+import { recordSounds, type Outcome, type SessionSummary, useProgress } from "@/lib/store";
 import { listen, loadWhisper, resolveEngine, SttError, whisperLoaded, type Listening } from "@/lib/stt";
 import { cx } from "@/lib/util";
+import { PronunciationFeedback } from "./PronunciationFeedback";
 import { AudioButtons, Fa, FaWord, FeedbackSheet, ProgressBar, SessionHeader, type FeedbackState } from "./ui";
 
 type Phase = "idle" | "preparing" | "listening" | "checking" | "done";
@@ -29,6 +31,8 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
   const [phase, setPhase] = useState<Phase>("idle");
   const [prep, setPrep] = useState(0);
   const [result, setResult] = useState<SpeakResult | null>(null);
+  const [phonics, setPhonics] = useState<PhonicsResult | null>(null);
+  const [take, setTake] = useState<Blob | null>(null);
   const [tries, setTries] = useState(0);
   const [error, setError] = useState("");
   const [outcomes, setOutcomes] = useState<Record<string, Outcome>>({});
@@ -45,6 +49,8 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
     if (!engine || phase === "listening" || phase === "checking" || phase === "preparing") return;
     setError("");
     setResult(null);
+    setPhonics(null);
+    setTake(null);
     if (engine === "whisper" && !whisperLoaded()) {
       setPhase("preparing");
       try {
@@ -57,7 +63,7 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
     }
     let l: Listening;
     try {
-      l = listen(engine);
+      l = listen(engine, 5000, { record: true });
     } catch (e) {
       setPhase("idle");
       setError(e instanceof SttError ? ERRORS[e.code] : ERRORS.failed);
@@ -70,7 +76,11 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
     try {
       const heard = await l.result;
       const r = checkSpoken(heard, targets);
+      const p = analyzeSpoken(r.verdict === "correct" ? [word.fa] : heard, word.fa);
       setResult(r);
+      setPhonics(p);
+      setTake(await Promise.race([l.audio, new Promise<null>((res) => setTimeout(() => res(null), 1500))]));
+      recordSounds(p.sounds);
       setPhase("done");
       setTries((n) => n + 1);
       if (!(word.id in outcomes)) {
@@ -103,6 +113,8 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
     setI(i + 1);
     setPhase("idle");
     setResult(null);
+    setPhonics(null);
+    setTake(null);
     setTries(0);
     setError("");
   };
@@ -150,12 +162,17 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
                     ? "Checking…"
                     : phase === "done"
                       ? canRetry
-                        ? "Tap to try again"
+                        ? `Tap the mic to try again (${3 - tries} left)`
                         : ""
                       : "Tap the mic, then say the word"}
             </p>
             {phase === "preparing" && <ProgressBar value={prep} tone="sky" size="sm" className="w-56" />}
             {error && <p className="max-w-sm text-center text-sm font-bold text-anar-ink">{error}</p>}
+            {phase === "done" && result && phonics && (
+              <div className="card mt-2 w-full max-w-xl p-4 sm:p-5">
+                <PronunciationFeedback result={phonics} overall={result.score} model={word.fa} audio={take} />
+              </div>
+            )}
           </>
         ) : (
           <p className="card max-w-sm p-4 text-center font-semibold text-muted">
@@ -170,7 +187,7 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
         detail={
           result && (
             <span className="flex flex-wrap items-center gap-x-2">
-              We heard <Fa className="text-base font-bold">{result.heard || "…"}</Fa> · {result.score}% match
+              We heard <Fa className="text-base font-bold">{result.heard || "…"}</Fa> · {result.score}%
             </span>
           )
         }
@@ -182,13 +199,6 @@ export function SpeakRound({ words, onDone, exitHref = "/app/speak/" }: { words:
         </button>
         <span className="hidden text-sm font-semibold text-muted sm:block">Listen first, then speak clearly and close to the mic.</span>
       </FeedbackSheet>
-      {canRetry && (
-        <div className="fixed inset-x-0 bottom-44 z-40 flex justify-center sm:bottom-32">
-          <button type="button" className="btn-secondary btn-sm shadow-lg" onClick={start}>
-            <RotateCcw className="size-4" /> Try again ({3 - tries} left)
-          </button>
-        </div>
-      )}
     </div>
   );
 }

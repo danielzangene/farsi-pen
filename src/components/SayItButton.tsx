@@ -4,11 +4,13 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { CheckCircle2, CircleAlert, Loader2, Mic, Square, X, XCircle } from "lucide-react";
 import type { Word } from "@/content/words";
+import { analyzeSpoken, type PhonicsResult } from "@/lib/phonics";
 import { checkSpoken, type SpeakResult } from "@/lib/pronounce";
-import { useProgress } from "@/lib/store";
+import { recordSounds, useProgress } from "@/lib/store";
 import { listen, loadWhisper, resolveEngine, SttError, whisperLoaded, type Listening } from "@/lib/stt";
 import { cx } from "@/lib/util";
-import { AudioButtons, FaWord, Fa, ProgressBar } from "./ui";
+import { PronunciationFeedback } from "./PronunciationFeedback";
+import { AudioButtons, FaWord, Fa } from "./ui";
 
 /** Mic button on a word card: say the word and see how close it sounded. */
 export function SayItButton({ word }: { word: Word }) {
@@ -40,6 +42,8 @@ function SayItDialog({ word, onClose }: { word: Word; onClose: () => void }) {
   const live = useRef<Listening | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const [result, setResult] = useState<SpeakResult | null>(null);
+  const [phonics, setPhonics] = useState<PhonicsResult | null>(null);
+  const [take, setTake] = useState<Blob | null>(null);
   const [error, setError] = useState("");
   const engine = resolveEngine(settings.speechEngine);
 
@@ -58,16 +62,23 @@ function SayItDialog({ word, onClose }: { word: Word; onClose: () => void }) {
     }
     setError("");
     setResult(null);
+    setPhonics(null);
+    setTake(null);
     try {
       if (engine === "whisper" && !whisperLoaded()) {
         setPhase("loading");
         await loadWhisper();
       }
-      const l = listen(engine);
+      const l = listen(engine, 5000, { record: true });
       live.current = l;
       setPhase("listening");
       const heard = await l.result;
-      setResult(checkSpoken(heard, [word.fa, word.fa.replace(/[!؟?.،,]/g, "")]));
+      const r = checkSpoken(heard, [word.fa, word.fa.replace(/[!؟?.،,]/g, "")]);
+      const p = analyzeSpoken(r.verdict === "correct" ? [word.fa] : heard, word.fa);
+      setResult(r);
+      setPhonics(p);
+      setTake(await Promise.race([l.audio, new Promise<null>((res) => setTimeout(() => res(null), 1500))]));
+      recordSounds(p.sounds);
       setPhase("done");
     } catch (e) {
       const code = e instanceof SttError ? e.code : "failed";
@@ -87,7 +98,7 @@ function SayItDialog({ word, onClose }: { word: Word; onClose: () => void }) {
       ref={ref}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="card m-auto w-[min(28rem,calc(100vw-2rem))] animate-pop p-0 text-ink backdrop:bg-black/50"
+      className="card m-auto max-h-[calc(100dvh-2rem)] w-[min(32rem,calc(100vw-2rem))] animate-pop overflow-y-auto p-0 text-ink backdrop:bg-black/50"
       aria-label="Say it"
     >
       <div className="p-5">
@@ -146,16 +157,18 @@ function SayItDialog({ word, onClose }: { word: Word; onClose: () => void }) {
           {error && <p className="text-center text-sm font-bold text-anar-ink">{error}</p>}
         </div>
 
-        {result && (
-          <div role="status" className={cx("mt-4 rounded-2xl p-4", good ? "bg-pista-soft text-pista-ink" : "bg-anar-soft text-anar-ink")}>
-            <p className="flex items-center gap-2 text-lg font-extrabold">
-              {good ? <CheckCircle2 className="size-6" /> : <XCircle className="size-6" />}
-              {result.verdict === "correct" ? "Spot on!" : result.verdict === "almost" ? "Almost — sounds close." : "Not quite yet."}
-            </p>
-            <p className="mt-1 text-sm font-semibold">
-              We heard <Fa className="text-base font-bold">{result.heard || "…"}</Fa> · {result.score}% match
-            </p>
-            <ProgressBar value={result.score / 100} tone={good ? "pista" : "anar"} size="sm" className="mt-2" />
+        {result && phonics && (
+          <div className="mt-4 space-y-4">
+            <div role="status">
+              <p className={cx("flex items-center gap-2 text-lg font-extrabold", good ? "text-pista-ink" : "text-anar-ink")}>
+                {good ? <CheckCircle2 className="size-6 shrink-0" /> : <XCircle className="size-6 shrink-0" />}
+                {result.verdict === "correct" ? "Spot on!" : result.verdict === "almost" ? "Almost — sounds close." : "Not quite yet."}
+              </p>
+              <p className="ms-8 text-sm font-semibold text-muted">
+                We heard <Fa className="text-base font-bold">{result.heard || "…"}</Fa>
+              </p>
+            </div>
+            <PronunciationFeedback result={phonics} overall={result.score} model={word.fa} audio={take} />
           </div>
         )}
       </div>
