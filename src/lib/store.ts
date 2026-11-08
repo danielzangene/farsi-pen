@@ -416,6 +416,13 @@ export function completeScene(sceneId: string, part: string | null, good: number
   return xp;
 }
 
+/** A hands-free session: 1 XP per two items heard and repeated. */
+export function completeHandsFree(items: number): number {
+  const xp = Math.ceil(items / 2);
+  if (items > 0) update((s) => logActivity(addActivity(s, 0, xp), "speak"));
+  return xp;
+}
+
 export function completeGrammar(id: string, correct: number, total: number): number {
   const pct = total ? Math.round((correct / total) * 100) : 0;
   const xp = correct * XP.grammarPerCorrect;
