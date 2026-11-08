@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
-import { AudioLines, BookHeart, Bookmark, BookOpen, Check, ChevronRight, Compass, Flame, GraduationCap, Layers, Mic, PenLine, Puzzle, Repeat, Star, Trophy, Volume2, X } from "lucide-react";
+import { AudioLines, BookHeart, Clapperboard, Bookmark, BookOpen, Check, ChevronRight, Compass, Flame, GraduationCap, Layers, Mic, PenLine, Puzzle, Repeat, Star, Trophy, Volume2, X } from "lucide-react";
 import { LESSONS } from "@/content/lessons";
 import { WORDS } from "@/content/words";
 import { MISSIONS } from "@/content/missions";
 import { GRAMMAR } from "@/content/grammar";
 import { LETTERS } from "@/content/alphabet";
 import { HARD_SOUNDS } from "@/content/sounds";
+import { SCENES } from "@/content/scenes";
 import { soundLevel } from "@/lib/sound-workout";
 import { displayState } from "@/lib/mastery";
 import { buildDeck } from "@/lib/flashcards";
@@ -227,6 +228,7 @@ function Explore({ dueCount }: { dueCount: number }) {
     { href: "/app/missions/", title: "Missions", text: "Real situations: taxi, café, bazaar, ta'ârof", status: `${missionsDone}/${MISSIONS.length} mastered · ${mastered}/${skills.length} skills`, icon: Compass, tone: "firuze" },
     { href: "/app/words/", title: "Words", text: "Flashcards and a dictionary for any word", status: cardsToday ? `${cardsToday} cards for today` : "All caught up today", icon: Layers, tone: "sky", badge: cardsToday || undefined },
     { href: "/app/speak/", title: "Speak", text: "Say words, see each sound scored", status: "Free speech recognition", icon: Mic, tone: "anar" },
+    { href: "/app/scenes/", title: "Scenes", text: "Play Sara, Arash or Khale Mahin", status: `${Object.keys(s.scenes ?? {}).length}/${SCENES.length} episodes played`, icon: Clapperboard, tone: "sky" },
     { href: "/app/sounds/", title: "Sounds", text: "kh, gh, rolled r and the vowels English lacks", status: soundsTried ? `${soundsSolid}/${HARD_SOUNDS.length} sounds solid` : "Daily 3-minute workout", icon: AudioLines, tone: "saffron" },
     { href: "/app/lessons/", title: "Lessons", text: "Learn new words step by step", status: `${lessonsDone}/${LESSONS.length} done`, icon: BookOpen, tone: "saffron" },
     { href: "/app/grammar/", title: "Grammar", text: "A1 → B2, with exercises", status: `${grammarDone}/${GRAMMAR.length} concepts`, icon: Puzzle, tone: "plum" },

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_STATE, exportProgress, importProgress, recordSounds } from "./store";
+import { completeScene, DEFAULT_STATE, exportProgress, importProgress, recordSounds } from "./store";
 
 describe("progress backup", () => {
   it("round-trips through export and import", () => {
@@ -25,5 +25,16 @@ describe("recordSounds", () => {
     const stats = JSON.parse(exportProgress()).progress.soundStats;
     expect(stats.kh).toMatchObject({ n: 2, avg: 65 });
     expect(stats.r).toMatchObject({ n: 1, avg: 100 });
+  });
+});
+
+describe("completeScene", () => {
+  it("gives XP for good lines and a bonus for each new part", () => {
+    importProgress(JSON.stringify({ app: "farsi-pen", progress: DEFAULT_STATE }));
+    expect(completeScene("welcome", "sara", 4, 5)).toBe(13);
+    expect(completeScene("welcome", "sara", 5, 5)).toBe(10);
+    expect(completeScene("welcome", null, 0, 0)).toBe(0);
+    const rec = JSON.parse(exportProgress()).progress.scenes.welcome;
+    expect(rec).toMatchObject({ parts: ["sara"], best: 100, plays: 3 });
   });
 });

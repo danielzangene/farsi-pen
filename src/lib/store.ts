@@ -71,6 +71,17 @@ export interface ProgressState {
   customWords: Record<string, CustomWord>;
   /** How each Persian sound has gone when speaking (sound id → running score). */
   soundStats: Record<string, SoundStat>;
+  /** Scenes played (scene id → parts played and best score). */
+  scenes: Record<string, SceneRecord>;
+}
+
+export interface SceneRecord {
+  /** Characters played at least once. */
+  parts: string[];
+  /** Best share of your lines said well, 0–100. */
+  best: number;
+  plays: number;
+  last: string;
 }
 
 export interface SoundStat {
@@ -118,6 +129,7 @@ export const DEFAULT_STATE: ProgressState = {
   activity: {},
   customWords: {},
   soundStats: {},
+  scenes: {},
   settings: {
     name: "",
     dailyGoal: 10,
@@ -385,6 +397,22 @@ export function completeFlashcards(outcomes: Record<string, Outcome>, eligible: 
 export function completeSpeaking(r: SessionSummary): number {
   const xp = r.correct * XP.speakPerCorrect;
   update((s) => logActivity(addActivity(s, Object.keys(r.outcomes).length, xp), "speak"));
+  return xp;
+}
+
+/** A scene played as `part` (or just listened to, part = null). XP: 2 per line said well, +5 for a new part. */
+export function completeScene(sceneId: string, part: string | null, good: number, total: number): number {
+  let xp = 0;
+  update((s) => {
+    const prev = s.scenes?.[sceneId];
+    const parts = prev?.parts ?? [];
+    const newPart = !!part && !parts.includes(part);
+    xp = part ? good * XP.speakPerCorrect + (newPart ? 5 : 0) : 0;
+    const score = total ? Math.round((good / total) * 100) : 0;
+    const rec: SceneRecord = { parts: newPart ? [...parts, part!] : parts, best: Math.max(prev?.best ?? 0, part ? score : 0), plays: (prev?.plays ?? 0) + 1, last: dayKey() };
+    const next = { ...s, scenes: { ...(s.scenes ?? {}), [sceneId]: rec } };
+    return part ? logActivity(addActivity(next, 0, xp), "speak") : next;
+  });
   return xp;
 }
 

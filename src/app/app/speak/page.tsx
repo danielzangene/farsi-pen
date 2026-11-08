@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AudioLines, ChevronRight, Mic, PartyPopper, Target, Zap } from "lucide-react";
+import { ChevronRight, Mic, PartyPopper, Target, Zap } from "lucide-react";
 import { LESSONS } from "@/content/lessons";
 import { WORD_BY_ID, type Word } from "@/content/words";
 import { hasDeviceVoice } from "@/lib/speech";
@@ -112,8 +112,8 @@ export default function SpeakPage() {
       </div>
 
       <Link href="/app/sounds/" className="tile flex items-center gap-4 p-4">
-        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-saffron-soft text-saffron-ink">
-          <AudioLines className="size-6" />
+        <span lang="fa" className="grid size-12 shrink-0 place-items-center rounded-2xl bg-paper text-2xl font-bold">
+          خ
         </span>
         <span className="min-w-0 flex-1">
           <span className="block font-extrabold">Persian sounds</span>

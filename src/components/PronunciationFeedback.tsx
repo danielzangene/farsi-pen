@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Headphones, Lightbulb, Mic, Repeat2, Volume2 } from "lucide-react";
+import { Headphones, Mic, Repeat2, Volume2 } from "lucide-react";
 import { SOUND_BY_ID, type Sound } from "@/content/sounds";
 import { joinedText, type LetterMark, type PhonicsResult, type SoundScore } from "@/lib/phonics";
 import { speak } from "@/lib/speech";
@@ -193,8 +193,7 @@ export function SoundTipCard({ sound, score, compact, className }: { sound: Soun
   const { settings } = useProgress();
   return (
     <div className={cx("animate-pop rounded-2xl border-2 border-line bg-paper p-4", className)}>
-      <div className="flex items-start gap-2">
-        <Lightbulb className="mt-0.5 size-5 shrink-0 text-saffron-ink" />
+      <div>
         <div className="min-w-0">
           <p className="font-extrabold">
             {sound.letters.split(" ").map((l) => (

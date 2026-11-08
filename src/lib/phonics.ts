@@ -66,13 +66,16 @@ const SOUND: Record<string, [string, string]> = {
 
 /** Splits Persian text into letters (with trailing marks) and spaces. */
 function split(text: string): { char: string; text: string; space?: boolean }[] {
-  const out: { char: string; text: string; space?: boolean }[] = [];
+  const out: { char: string; text: string; space?: boolean; ws?: boolean }[] = [];
   for (const ch of text) {
-    if (MARK.test(ch) && out.length && !out[out.length - 1].space) out[out.length - 1].text += ch;
-    else if (/\s|‌/.test(ch)) {
-      if (!out.length || !out[out.length - 1].space) out.push({ char: " ", text: ch === "‌" ? "" : " ", space: true });
+    const last = out[out.length - 1];
+    if (MARK.test(ch) && last && !last.space) last.text += ch;
+    else if (/\s|\u200c/.test(ch)) {
+      // Collapse runs of whitespace; a half-space shows as nothing but still separates words.
+      if (!last?.ws) out.push({ char: " ", text: ch === "\u200c" ? "" : " ", space: true, ws: true });
+      else if (ch !== "\u200c" && !last.text) last.text = " ";
     } else if (LETTER.test(ch)) out.push({ char: ch, text: ch });
-    else if (!/[‍]/.test(ch)) out.push({ char: ch, text: ch, space: true }); // punctuation: shown, not scored
+    else if (!/[\u200d]/.test(ch)) out.push({ char: ch, text: ch, space: true }); // punctuation: shown, not scored
   }
   return out;
 }
