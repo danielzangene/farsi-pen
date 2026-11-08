@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Headphones, Lightbulb, Mic, Repeat2, Volume2 } from "lucide-react";
-import { SOUND_BY_ID } from "@/content/sounds";
+import { SOUND_BY_ID, type Sound } from "@/content/sounds";
 import { joinedText, type LetterMark, type PhonicsResult, type SoundScore } from "@/lib/phonics";
 import { speak } from "@/lib/speech";
 import { useProgress } from "@/lib/store";
@@ -75,13 +75,14 @@ function ScoreRing({ value }: { value: number }) {
  * per sound, model / my voice / back-to-back playback, and a mouth diagram
  * with a tip for the sound that needs the most work.
  */
-export function PronunciationFeedback({ result, overall, model, audio }: { result: PhonicsResult; overall: number; model: string; audio: Blob | null }) {
-  const { settings } = useProgress();
+export function PronunciationFeedback({ result, overall, model, audio, focus }: { result: PhonicsResult; overall: number; model: string; audio: Blob | null; focus?: string }) {
   const weakest = useMemo(() => {
     const scored = result.sounds.filter((s) => s.score < 90);
+    const focused = scored.filter((s) => s.sound === focus).sort((a, b) => a.score - b.score)[0];
+    if (focused) return focused;
     const hard = scored.filter((s) => SOUND_BY_ID[s.sound]?.tip);
     return [...(hard.length ? hard : scored)].sort((a, b) => a.score - b.score)[0] ?? null;
-  }, [result]);
+  }, [result, focus]);
   const [picked, setPicked] = useState<SoundScore | null>(weakest);
   useEffect(() => setPicked(weakest), [weakest]);
 
@@ -182,38 +183,44 @@ export function PronunciationFeedback({ result, overall, model, audio }: { resul
         </p>
       )}
 
-      {picked && sound && (
-        <div className="animate-pop rounded-2xl border-2 border-line bg-paper p-4">
-          <div className="flex items-start gap-2">
-            <Lightbulb className="mt-0.5 size-5 shrink-0 text-saffron-ink" />
-            <div className="min-w-0">
-              <p className="font-extrabold">
-                {sound.letters.split(" ").map((l) => (
-                  <Fa key={l} className="me-1.5 inline-block min-w-5 rounded-md bg-card px-1 text-center font-bold">
-                    {l}
-                  </Fa>
-                ))}{" "}
-                {sound.name}
-                <span className={cx("ms-2 text-sm", tone(picked.score) === "pista" ? "text-pista-ink" : tone(picked.score) === "saffron" ? "text-saffron-ink" : "text-anar-ink")}>{picked.score}%</span>
-              </p>
-              <p className="text-sm font-semibold text-muted">Like {sound.like}</p>
-              {sound.tip && <p className="mt-2 font-semibold">{sound.tip}</p>}
-            </div>
-          </div>
-          {sound.mouth && <MouthDiagram mouth={sound.mouth} className="mt-3" />}
-          {sound.examples.length > 0 && (
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {sound.examples.map((e) => (
-                <li key={e.fa} className="flex items-center gap-1 rounded-xl border-2 border-line bg-card py-1 pe-1 ps-3">
-                  <Fa className="font-bold">{e.fa}</Fa>
-                  {!settings.scriptOnly && <span className="text-sm font-semibold text-muted">{e.tr}</span>}
-                  <span className="text-sm font-semibold text-muted">· {e.en}</span>
-                  <AudioButtons text={e.fa} compact />
-                </li>
-              ))}
-            </ul>
-          )}
+      {picked && sound && <SoundTipCard sound={sound} score={picked.score} />}
+    </div>
+  );
+}
+
+/** Tip card for one sound: how to make it, a mouth diagram, example words. */
+export function SoundTipCard({ sound, score, compact, className }: { sound: Sound; score?: number; compact?: boolean; className?: string }) {
+  const { settings } = useProgress();
+  return (
+    <div className={cx("animate-pop rounded-2xl border-2 border-line bg-paper p-4", className)}>
+      <div className="flex items-start gap-2">
+        <Lightbulb className="mt-0.5 size-5 shrink-0 text-saffron-ink" />
+        <div className="min-w-0">
+          <p className="font-extrabold">
+            {sound.letters.split(" ").map((l) => (
+              <Fa key={l} className="me-1.5 inline-block min-w-5 rounded-md bg-card px-1 text-center font-bold">
+                {l}
+              </Fa>
+            ))}{" "}
+            {sound.name}
+            {score !== undefined && <span className={cx("ms-2 text-sm", tone(score) === "pista" ? "text-pista-ink" : tone(score) === "saffron" ? "text-saffron-ink" : "text-anar-ink")}>{score}%</span>}
+          </p>
+          <p className="text-sm font-semibold text-muted">Like {sound.like}</p>
+          {sound.tip && <p className="mt-2 font-semibold">{sound.tip}</p>}
         </div>
+      </div>
+      {sound.mouth && <MouthDiagram mouth={sound.mouth} className={cx("mt-3", compact && "[&_svg]:max-w-44")} />}
+      {!compact && sound.examples.length > 0 && (
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {sound.examples.map((e) => (
+            <li key={e.fa} className="flex items-center gap-1 rounded-xl border-2 border-line bg-card py-1 pe-1 ps-3">
+              <Fa className="font-bold">{e.fa}</Fa>
+              {!settings.scriptOnly && <span className="text-sm font-semibold text-muted">{e.tr}</span>}
+              <span className="text-sm font-semibold text-muted">· {e.en}</span>
+              <AudioButtons text={e.fa} compact />
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

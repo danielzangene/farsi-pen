@@ -6,9 +6,11 @@ import { LETTERS } from "@/content/alphabet";
 import { GRAMMAR } from "@/content/grammar";
 import { LESSONS } from "@/content/lessons";
 import { MISSIONS } from "@/content/missions";
+import { SOUND_BY_ID } from "@/content/sounds";
 import { buildDeck } from "./flashcards";
 import { dayKey } from "./gamification";
 import { displayState } from "./mastery";
+import { pickSounds, soundLevel } from "./sound-workout";
 import type { ActivityKind, ProgressState } from "./store";
 
 export interface TodayStep {
@@ -83,7 +85,11 @@ export function planToday(s: ProgressState, now = new Date()): TodayStep[] {
     if (missionFirst) steps.splice(steps.length && steps[0].kind === "review" ? 1 : 0, 0, step);
     else steps.push(step);
   } else {
-    steps.push({ id: "speak", kind: "speak", emoji: "🎤", title: "Say your words out loud", detail: "Speaking practice with a match score", href: "/app/speak/", done: done.has("speak") });
+    // Once some sounds have been scored, the speaking step aims at the weak ones.
+    const weak = pickSounds(s.soundStats).filter((id) => soundLevel(s.soundStats?.[id]) === "weak" || soundLevel(s.soundStats?.[id]) === "ok");
+    if (weak.length)
+      steps.push({ id: "sounds", kind: "speak", emoji: "🗣️", title: "Sound workout", detail: `Work on ${weak.map((id) => SOUND_BY_ID[id].name).join(", ")}`, href: "/app/sounds/", done: done.has("speak") });
+    else steps.push({ id: "speak", kind: "speak", emoji: "🎤", title: "Say your words out loud", detail: "Speaking practice, sound by sound", href: "/app/speak/", done: done.has("speak") });
   }
 
   return steps.slice(0, 3);
