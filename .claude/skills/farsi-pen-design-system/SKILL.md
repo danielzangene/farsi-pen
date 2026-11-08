@@ -13,7 +13,7 @@ Source of truth in code:
 - Research notes and references: `docs/design-system.md`
 
 Specs and presentation:
-- UI kit (written specs): `docs/ui-kit/` — brand guide, `tokens.json` with Dark and Light values and usage notes, one guideline per component, screen specs, navigation, review checklist. Read the matching component guideline before changing a component, and update it (and `tokens.json`) in the same PR when you change one.
+- UI kit (written specs): `docs/ui-kit/` — brand guide (`README.md`), `tokens.json` with Dark and Light values and usage notes, one guideline per component (`components/<Name>/README.md`), screen specs, navigation, review checklist. Read the matching component guideline before changing a component, and update it (and `tokens.json`) in the same PR when you change one. Index of saved artifacts: `docs/artifacts/README.md`.
 - Live style guide: `/design/` (`src/app/design/page.tsx`) renders every token and component with the real code. Add new components there.
 - System design (architecture, phases): `public/present/system-design.html`.
 
@@ -135,4 +135,4 @@ Short, warm, encouraging, never scolding. Second person. Examples: "Nicely done!
 7. Copy follows §7; buttons uppercase via `btn`.
 8. No brand assets from other products (§1).
 9. Checked in Dark (default) and Light, and at 320px.
-10. New or changed component: guideline in `docs/ui-kit/components/` and a sample on `/design/` updated.
+10. New or changed component: guideline in `docs/ui-kit/components/<Name>/README.md` and a sample on `/design/` updated.
