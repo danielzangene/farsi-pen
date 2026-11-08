@@ -5,7 +5,7 @@ import { ArrowLeft, Check, CheckCircle2, CircleAlert, Headphones, Loader2, Mic, 
 import { CAST, castOf, isLine, playableParts, type CastId, type Scene } from "@/content/scenes";
 import { analyzeSpoken, type PhonicsResult } from "@/lib/phonics";
 import { checkSpoken, type SpeakVerdict } from "@/lib/pronounce";
-import { speak } from "@/lib/speech";
+import { speak, stopSpeaking } from "@/lib/speech";
 import { completeScene, recordSounds, useProgress } from "@/lib/store";
 import { listen, loadWhisper, resolveEngine, SttError, whisperLoaded, type Listening } from "@/lib/stt";
 import { cx } from "@/lib/util";
@@ -90,7 +90,13 @@ export function ScenePlayer({ scene }: { scene: Scene }) {
     setPhase("done");
   }, [phase, idx, script, part, takes, scene.id, engine]);
 
-  useEffect(() => () => live.current?.cancel(), []);
+  useEffect(
+    () => () => {
+      live.current?.cancel();
+      stopSpeaking();
+    },
+    [],
+  );
 
   const say = async () => {
     if (!engine || !item || !isLine(item)) return;
@@ -247,7 +253,10 @@ export function ScenePlayer({ scene }: { scene: Scene }) {
                 {speaker && <CastAvatar id={speaker} size="sm" />}
                 {paused ? "Paused" : speaker ? `${CAST[speaker].name} is speaking…` : "…"}
               </p>
-              <button type="button" className="btn-secondary btn-sm" onClick={() => setPaused(!paused)}>
+              <button type="button" className="btn-secondary btn-sm" onClick={() => {
+                  if (!paused) stopSpeaking();
+                  setPaused(!paused);
+                }}>
                 {paused ? <Play className="size-4" /> : <Pause className="size-4" />} {paused ? "Resume" : "Pause"}
               </button>
             </>

@@ -236,7 +236,7 @@ function Explore({ dueCount }: { dueCount: number }) {
     { href: "/app/practice/", title: "Daily Practice", text: "Type words from memory", status: Object.keys(s.cards).length === 0 ? "Unlocks after a lesson" : dueCount ? `${dueCount} ready` : "Nothing due", icon: Repeat, tone: "sky", badge: dueCount || undefined },
     { href: "/app/poetry/", title: "Poetry", text: "Fâl-e Hâfez, Saadi, Khayyam", status: "A new poem every day", icon: BookHeart, tone: "plum" },
     { href: "/app/bookmarks/", title: "My cards", text: "Words you saved", status: `${s.bookmarks.length} saved`, icon: Bookmark, tone: "saffron" },
-    { href: "/app/settings/", title: "Voice & speech", text: "Natural voice, recognition", status: voice.state === "ready" ? "Natural voice on" : "Online voice", icon: Volume2, tone: "firuze" },
+    { href: "/app/settings/", title: "Voice & speech", text: "Natural voice, recognition", status: voice.state === "ready" ? "Voice downloaded" : "Course audio recorded", icon: Volume2, tone: "firuze" },
   ];
 
   return (
