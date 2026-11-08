@@ -4,12 +4,10 @@ import Link from "next/link";
 import { ChevronRight, Mic, PartyPopper, Target, Zap } from "lucide-react";
 import { LESSONS } from "@/content/lessons";
 import { WORD_BY_ID, type Word } from "@/content/words";
-import { hasDeviceVoice } from "@/lib/speech";
 import { completeSpeaking, useHydrated, useProgress, type SessionSummary } from "@/lib/store";
 import { resolveEngine } from "@/lib/stt";
 import { shuffle } from "@/lib/util";
 import { SpeakRound } from "@/components/SpeakRound";
-import { useVoiceStatus, VoiceSetup } from "@/components/SpeechSetup";
 import { StatCard } from "@/components/ui";
 
 const SESSION = 8;
@@ -17,14 +15,11 @@ const SESSION = 8;
 export default function SpeakPage() {
   const s = useProgress();
   const hydrated = useHydrated();
-  const voice = useVoiceStatus();
-  const [deviceVoice, setDeviceVoice] = useState(true);
   const [source, setSource] = useState("mine");
   const [session, setSession] = useState<Word[] | null>(null);
   const [result, setResult] = useState<{ r: SessionSummary; xp: number } | null>(null);
   const [round, setRound] = useState(0);
   useEffect(() => {
-    setDeviceVoice(hasDeviceVoice());
     // Opened from the Word Library with a lesson filter: start with those words.
     const lesson = new URLSearchParams(window.location.search).get("lesson");
     if (lesson && LESSONS.some((l) => l.id === lesson)) setSource(lesson);
@@ -122,15 +117,6 @@ export default function SpeakPage() {
         <ChevronRight className="size-5 shrink-0 text-muted" />
       </Link>
 
-      {voice.state !== "ready" && (
-        <section className="card p-5">
-          <h2 className="eyebrow text-sky-ink">Hear a natural voice</h2>
-          <p className="mb-3 mt-1 text-sm font-semibold text-muted">
-            {deviceVoice ? "Your device has a Persian voice. For a clearer, more natural one that also works offline:" : "Words play with an online voice right now. Download a natural voice to hear them offline:"}
-          </p>
-          <VoiceSetup compact />
-        </section>
-      )}
     </div>
   );
 }
