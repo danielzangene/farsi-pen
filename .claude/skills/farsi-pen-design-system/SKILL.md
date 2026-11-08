@@ -12,6 +12,11 @@ Source of truth in code:
 - React primitives: `src/components/ui.tsx`
 - Research notes and references: `docs/design-system.md`
 
+Specs and presentation:
+- UI kit (written specs): `docs/ui-kit/` — brand guide (`README.md`), `tokens.json` with Dark and Light values and usage notes, one guideline per component (`components/<Name>/README.md`), screen specs, navigation, review checklist. Read the matching component guideline before changing a component, and update it (and `tokens.json`) in the same PR when you change one. Index of saved artifacts: `docs/artifacts/README.md`.
+- Live style guide: `/design/` (`src/app/design/page.tsx`) renders every token and component with the real code. Add new components there.
+- System design (architecture, phases): `public/present/system-design.html`.
+
 ## 1. Brand guardrails (non-negotiable)
 
 Spec §3 forbids copying another product's branding. So:
@@ -84,7 +89,7 @@ Don't restyle buttons ad hoc with colours/shadows; add a variant to globals.css 
 
 **Results** — centred celebration: big heading in saffron/firuze, row of `StatCard`s, primary Continue, secondary Review.
 
-**Path (lessons list)** — Unit banner (firuze block, white heading, `eyebrow` "UNIT 1" at 70% opacity, description) then lessons as 72px round 3D nodes with a deeper 6px lip (`0 6px 0` of the node's `-shadow` colour; press sinks 6px) in a gentle zig-zag. States: done = saffron + check; current = firuze + `Bubble` "START" bobbing above; locked = `line` grey with grey icon (still openable). Lesson title under each node.
+**Path (lessons list)** — Unit banner (firuze block, white heading, `eyebrow` "UNIT 1" at 70% opacity, description) then lessons as 72px round 3D nodes with a deeper 6px lip (`0 6px 0` of the node's `-shadow` colour; press sinks 6px) in a gentle zig-zag. States: done = saffron + check; current = firuze + `Bubble` "START" bobbing above; locked = `line` grey with grey icon (still openable). Lesson title under each node. Position the START bubble with its own absolutely placed wrapper, never by passing `absolute` to `Bubble` (its `relative` wins and stretches the ring).
 
 **App shell** — Desktop: left sidebar with large uppercase nav items (icon + label, active = sky-soft tile with sky border), grouped: the core loop (Home, Lessons, Missions, Words), a divider, extra practice (Speak, Daily Practice, Grammar, Alphabet, My cards), Settings at the bottom. Phone: five labelled tabs (Home, Lessons, Missions, Words, More); More opens a bottom sheet listing the rest with a one-line hint each, and is highlighted when you are on one of those pages. No unlabelled icon-only navigation. Mobile: top stat bar (streak flame anar, XP saffron) + bottom tab bar with icons and 11px sentence-case labels (uppercase labels collide at 320–375px with six tabs). Nothing may scroll sideways at 320px. Top/right stat chips everywhere: 🔥 streak, ⭐ XP.
 
@@ -116,6 +121,8 @@ Short, warm, encouraging, never scolding. Second person. Examples: "Nicely done!
 - Focus ring: 3px sky outline (global) — don't remove it.
 - State is never colour-only: correct/wrong also show an icon and text.
 - White text only on `firuze`, `pista`, `anar`, `sky`, `plum` fills at ≥ 15px bold (button labels qualify).
+- Known gap: in Light, white `on-accent` labels on fills are 3.1–4.1:1 and 2.0:1 on `saffron` (StatCard strip, done path nodes). Never put white text on saffron; prefer `saffron-ink` or a dark label. Dark passes everywhere.
+- Don't autofocus buttons when a page opens: the focus ring then reads as "selected". Autofocus only inside the FeedbackSheet (Enter continues) and dialogs.
 
 ## 10. Review checklist (use for PRs)
 
@@ -127,3 +134,5 @@ Short, warm, encouraging, never scolding. Second person. Examples: "Nicely done!
 6. Works at 375px wide with no horizontal scroll; bottom tab bar doesn't cover content.
 7. Copy follows §7; buttons uppercase via `btn`.
 8. No brand assets from other products (§1).
+9. Checked in Dark (default) and Light, and at 320px.
+10. New or changed component: guideline in `docs/ui-kit/components/<Name>/README.md` and a sample on `/design/` updated.

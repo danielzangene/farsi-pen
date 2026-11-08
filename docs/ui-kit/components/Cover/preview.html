@@ -1,0 +1,33 @@
+<!-- @dsCard height=300 -->
+<div class="cv">
+  <style>
+    .cv { position: relative; width: 960px; height: 300px; overflow: hidden; background: var(--card); }
+    .cv svg { position: absolute; inset: 0; }
+    .b-firuze { fill: var(--firuze); } .b-saffron { fill: var(--saffron); } .b-anar { fill: var(--anar); }
+    .b-sky { fill: var(--sky); } .b-tint { fill: var(--firuze-soft); }
+    .cut { fill: var(--card); } .lip { fill: var(--firuze-shadow); }
+    .ring { fill: none; stroke: var(--firuze-soft); stroke-width: 6px; }
+    .blk { rx: 16px; }
+    .cv .txt { position: absolute; left: 48px; bottom: 40px; max-width: 440px; }
+    .cv h1 { margin: 0; font-family: var(--font-sans); font-weight: 900; font-size: 80px; line-height: 0.95; letter-spacing: -0.02em; color: var(--ink); }
+    .cv p { margin: 14px 0 0; font-size: 14px; font-weight: 600; color: var(--muted); }
+  </style>
+  <!-- blocks: firuze slab 200×320 (radius-md), saffron 224×112, anar 104×104, sky 104×182 bleeding off the bottom, firuze-soft 104×62 tint
+       arrangement: one tall firuze slab with satellites stepped to its right, saffron bleeding off the top edge, 16px (space-4) gaps
+       pattern: the lesson path (literal motif) — 72px path-node discs (radius-full) cut from the firuze slab in a zig-zag, each on a 6px firuze-shadow lip (edge-node), the current one ringed in firuze-soft; chosen because the path of round nodes is what the app is remembered by
+       steps and radii: space-4 gaps, radius-md blocks, path-node 72px, edge-node 6px, ring 6px -->
+  <svg width="960" height="300" viewBox="0 0 960 300" aria-hidden="true">
+    <rect class="b-firuze blk" x="520" y="-16" width="200" height="332"/>
+    <rect class="b-saffron blk" x="736" y="-16" width="224" height="128"/>
+    <rect class="b-anar blk" x="736" y="128" width="104" height="104"/>
+    <rect class="b-sky blk" x="856" y="128" width="104" height="190"/>
+    <rect class="b-tint blk" x="736" y="248" width="104" height="62"/>
+    <circle class="lip" cx="584" cy="78" r="36"/><circle class="cut" cx="584" cy="72" r="36"/>
+    <circle class="ring" cx="652" cy="164" r="46"/><circle class="lip" cx="652" cy="170" r="36"/><circle class="cut" cx="652" cy="164" r="36"/>
+    <circle class="lip" cx="590" cy="262" r="36"/><circle class="cut" cx="590" cy="256" r="36"/>
+  </svg>
+  <div class="txt">
+    <h1>Farsi Pen<br>UI Kit</h1>
+    <p>Bright, kind and in Persian: tokens, components and screen specs.</p>
+  </div>
+</div>
