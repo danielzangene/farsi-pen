@@ -1,29 +1,31 @@
 name: Test and deploy to GitHub Pages
 
-# One Pages site serves both branches:
-#   main → https://<owner>.github.io/farsi-pen/
-#   dev  → https://<owner>.github.io/farsi-pen/dev/
-# Pages only deploys from main, so a push to dev asks main to redeploy, and
-# every main deploy builds both branches.
+# One Pages site serves main plus preview branches, each in its own folder:
+#   main   → https://<owner>.github.io/farsi-pen/
+#   dev    → https://<owner>.github.io/farsi-pen/dev/
+#   dev-ui → https://<owner>.github.io/farsi-pen/dev-ui/
+# Pages only deploys from main, so a push to a preview branch asks main to
+# redeploy, and every main deploy builds all of them.
+# To add a preview: add the branch to `push.branches` and to PREVIEWS below.
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, dev-ui]
   pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# Per-ref, so a PR or dev push never cancels a production deploy.
+# Per-ref, so a PR or preview push never cancels a production deploy.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # A push to dev: test it, then redeploy from main (which rebuilds dev too).
-  dev:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+  # A push to a preview branch: test it, then redeploy from main (which rebuilds every preview).
+  preview:
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -41,12 +43,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
   build:
-    if: github.ref != 'refs/heads/dev'
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       NEXT_TELEMETRY_DISABLED: 1
       BASE: /${{ github.event.repository.name }}
-      # Deploys (main) also build the dev branch; PRs only test their own code.
+      PREVIEWS: dev dev-ui
+      # Deploys (main) also build the preview branches; PRs only test their own code.
       DEPLOY: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
@@ -60,22 +63,23 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: ${{ env.BASE }}
 
-      - uses: actions/checkout@v4
+      - name: Build preview branches into their folders
         if: env.DEPLOY == 'true'
-        with:
-          ref: dev
-          path: dev-src
-      - name: Build dev branch into /dev
-        if: env.DEPLOY == 'true'
-        working-directory: dev-src
-        env:
-          NEXT_PUBLIC_BASE_PATH: ${{ env.BASE }}/dev
-          NEXT_PUBLIC_CHANNEL: dev
         run: |
-          npm ci
-          npm run build
-          rm -rf ../out/dev
-          cp -r out ../out/dev
+          for b in $PREVIEWS; do
+            if ! git ls-remote --exit-code --heads origin "$b" >/dev/null; then
+              echo "No branch $b, skipping"; continue
+            fi
+            git fetch --depth 1 origin "$b"
+            git worktree add --detach "../src-$b" FETCH_HEAD
+            (
+              cd "../src-$b"
+              npm ci
+              NEXT_PUBLIC_BASE_PATH="$BASE/$b" NEXT_PUBLIC_CHANNEL="$b" npm run build
+            )
+            rm -rf "out/$b"
+            cp -r "../src-$b/out" "out/$b"
+          done
 
       - run: touch out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
@@ -84,7 +88,7 @@ jobs:
           path: out
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     permissions:
