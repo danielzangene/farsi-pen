@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { AudioLines, BookHeart, Clapperboard, Headphones, Bookmark, BookOpen, Check, ChevronRight, Compass, Flame, GraduationCap, Layers, Mic, PenLine, Puzzle, Repeat, Star, Trophy, Volume2, X } from "lucide-react";
+import { AudioLines, BookHeart, BookOpenText, Clapperboard, Headphones, Bookmark, BookOpen, Check, ChevronRight, Compass, Flame, GraduationCap, Layers, Mic, PenLine, Puzzle, Repeat, Star, Trophy, Volume2, X } from "lucide-react";
 import { LESSONS } from "@/content/lessons";
 import { WORDS } from "@/content/words";
 import { MISSIONS } from "@/content/missions";
@@ -8,6 +8,7 @@ import { GRAMMAR } from "@/content/grammar";
 import { LETTERS } from "@/content/alphabet";
 import { HARD_SOUNDS } from "@/content/sounds";
 import { SCENES } from "@/content/scenes";
+import { READINGS } from "@/content/readings";
 import { soundLevel } from "@/lib/sound-workout";
 import { displayState } from "@/lib/mastery";
 import { buildDeck } from "@/lib/flashcards";
@@ -232,6 +233,7 @@ function Explore({ dueCount }: { dueCount: number }) {
     { href: "/app/scenes/", title: "Scenes", text: "Play Sara, Arash or Khale Mahin", status: `${Object.keys(s.scenes ?? {}).length}/${SCENES.length} episodes played`, icon: Clapperboard, tone: "sky" },
     { href: "/app/sounds/", title: "Sounds", text: "kh, gh, rolled r and the vowels English lacks", status: soundsTried ? `${soundsSolid}/${HARD_SOUNDS.length} sounds solid` : "Daily 3-minute workout", icon: AudioLines, tone: "saffron" },
     { href: "/app/lessons/", title: "Lessons", text: "Learn new words step by step", status: `${lessonsDone}/${LESSONS.length} done`, icon: BookOpen, tone: "saffron" },
+    { href: "/app/reading/", title: "Reading", text: "B1 texts about Iran: read, discuss, answer", status: `${Object.keys(s.readings ?? {}).length}/${READINGS.length} lessons done`, icon: BookOpenText, tone: "plum" },
     { href: "/app/grammar/", title: "Grammar", text: "A1 → B2, with exercises", status: `${grammarDone}/${GRAMMAR.length} concepts`, icon: Puzzle, tone: "plum" },
     { href: "/app/alphabet/", title: "Alphabet", text: "Letters, vowel signs, tracing", status: `${traced}/${LETTERS.length} traced`, icon: PenLine, tone: "pista" },
     { href: "/app/practice/", title: "Daily Practice", text: "Type words from memory", status: Object.keys(s.cards).length === 0 ? "Unlocks after a lesson" : dueCount ? `${dueCount} ready` : "Nothing due", icon: Repeat, tone: "sky", badge: dueCount || undefined },
