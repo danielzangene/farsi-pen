@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { AudioLines, Dumbbell, PartyPopper, Target, X, Zap } from "lucide-react";
+import { AudioLines, PartyPopper, Target, X, Zap } from "lucide-react";
 import { HARD_SOUNDS, SOUND_BY_ID, SOUNDS, type Sound } from "@/content/sounds";
 import { buildWorkout, pickSounds, soundLevel, wordsForSound, type WorkoutItem } from "@/lib/sound-workout";
 import { completeSpeaking, useHydrated, useProgress, type SessionSummary, type SoundStat } from "@/lib/store";
@@ -109,11 +109,8 @@ export default function SoundsPage() {
       <PageHeader title="Persian sounds" subtitle="The sounds English doesn't have, how to make them, and a short daily workout on the ones you find hardest." />
 
       <section className="card p-5 sm:p-6" aria-labelledby="workout-heading">
-        <div className="flex items-start gap-4">
-          <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-saffron-soft text-saffron-ink">
-            <Dumbbell className="size-7" />
-          </span>
-          <div className="min-w-0 flex-1">
+        <div>
+          <div>
             <h2 id="workout-heading" className="text-xl font-extrabold">
               {tried ? "Your sound workout" : "Start your first sound workout"}
             </h2>

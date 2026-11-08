@@ -83,3 +83,10 @@ describe("final he", () => {
     expect(analyzeSpoken([], "کوه").letters[2].sound).toBe("h");
   });
 });
+
+describe("punctuation", () => {
+  it("keeps the space after a full stop", () => {
+    const text = analyzeSpoken([], "سلام. یه نون").letters.map((l) => l.text).join("");
+    expect(text).toBe("سلام. یه نون");
+  });
+});
