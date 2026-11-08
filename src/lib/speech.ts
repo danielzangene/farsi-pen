@@ -164,3 +164,27 @@ export async function speak(text: string, slow = false): Promise<boolean> {
   }
   return false;
 }
+
+let enVoice: SpeechSynthesisVoice | null | undefined;
+/** Speaks English with the device's own voice (most devices have one). Resolves false if there is none. */
+export function speakEnglish(text: string): Promise<boolean> {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return Promise.resolve(false);
+  if (!enVoice) {
+    const voices = window.speechSynthesis.getVoices();
+    enVoice = voices.find((v) => v.lang === "en-US" && v.localService) ?? voices.find((v) => v.lang.startsWith("en")) ?? null;
+  }
+  if (!enVoice) return Promise.resolve(false);
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.voice = enVoice;
+  u.lang = enVoice.lang;
+  u.rate = 0.95;
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(true), 1500 + text.length * 120);
+    u.onend = u.onerror = () => {
+      clearTimeout(timer);
+      resolve(true);
+    };
+    window.speechSynthesis.speak(u);
+  });
+}
