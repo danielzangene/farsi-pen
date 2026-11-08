@@ -6,6 +6,7 @@ import { GRAMMAR } from "@/content/grammar";
 import { LESSONS } from "@/content/lessons";
 import { MISSIONS } from "@/content/missions";
 import * as poems from "@/content/poems";
+import { READINGS } from "@/content/readings";
 import { SCENES } from "@/content/scenes";
 import { SOUNDS } from "@/content/sounds";
 import { WORDS } from "@/content/words";
@@ -29,7 +30,7 @@ export function collectAudioTexts(): Record<string, string> {
 
   function walk(v: unknown, key = "") {
     if (v === null || typeof v !== "object") {
-      if (typeof v === "string" && ["fa", "char", "cue", "model"].includes(key))
+      if (typeof v === "string" && ["fa", "char", "cue", "model", "spoken"].includes(key))
         add(v);
       return;
     }
@@ -55,6 +56,7 @@ export function collectAudioTexts(): Record<string, string> {
     poems,
     SCENES,
     SOUNDS,
+    READINGS,
   ].forEach((m) => walk(m));
   add("سلام، حال شما چطور است؟"); // Settings voice test
 

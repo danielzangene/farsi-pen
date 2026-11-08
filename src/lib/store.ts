@@ -46,7 +46,7 @@ export interface Settings {
 export type Goal = "travel" | "family" | "heritage" | "curious";
 export type Reads = "yes" | "some" | "no";
 /** Kinds of practice logged per day, for the Today plan. */
-export type ActivityKind = "review" | "lesson" | "mission" | "grammar" | "alphabet" | "speak";
+export type ActivityKind = "review" | "lesson" | "mission" | "grammar" | "alphabet" | "speak" | "reading";
 
 export interface ProgressState {
   version: 1;
@@ -73,6 +73,8 @@ export interface ProgressState {
   soundStats: Record<string, SoundStat>;
   /** Scenes played (scene id → parts played and best score). */
   scenes: Record<string, SceneRecord>;
+  /** Reading lessons (id → best comprehension score and when finished). */
+  readings: Record<string, { best: number; doneAt: string }>;
 }
 
 export interface SceneRecord {
@@ -130,6 +132,7 @@ export const DEFAULT_STATE: ProgressState = {
   customWords: {},
   soundStats: {},
   scenes: {},
+  readings: {},
   settings: {
     name: "",
     dailyGoal: 10,
@@ -420,6 +423,18 @@ export function completeScene(sceneId: string, part: string | null, good: number
 export function completeHandsFree(items: number): number {
   const xp = Math.ceil(items / 2);
   if (items > 0) update((s) => logActivity(addActivity(s, 0, xp), "speak"));
+  return xp;
+}
+
+/** A finished reading lesson: 2 XP per question right, +10 the first time. */
+export function completeReading(id: string, correct: number, total: number): number {
+  let xp = 0;
+  update((s) => {
+    const prev = s.readings?.[id];
+    xp = correct * XP.perCorrect + (prev ? 0 : 10);
+    const best = Math.max(prev?.best ?? 0, total ? Math.round((correct / total) * 100) : 0);
+    return logActivity(addActivity({ ...s, readings: { ...(s.readings ?? {}), [id]: { best, doneAt: prev?.doneAt ?? dayKey() } } }, 0, xp), "reading");
+  });
   return xp;
 }
 
