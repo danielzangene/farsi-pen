@@ -69,6 +69,16 @@ export interface ProgressState {
   activity: Record<string, ActivityKind[]>;
   /** Words the learner added from the dictionary (id → entry). */
   customWords: Record<string, CustomWord>;
+  /** How each Persian sound has gone when speaking (sound id → running score). */
+  soundStats: Record<string, SoundStat>;
+}
+
+export interface SoundStat {
+  /** Times scored. */
+  n: number;
+  /** Running score 0–100, recent takes weigh most. */
+  avg: number;
+  last: string;
 }
 
 export interface CustomWord {
@@ -107,6 +117,7 @@ export const DEFAULT_STATE: ProgressState = {
   missions: {},
   activity: {},
   customWords: {},
+  soundStats: {},
   settings: {
     name: "",
     dailyGoal: 10,
@@ -403,6 +414,24 @@ export function recordTrace(letterId: string, score: number): number {
 
 function toggle(list: string[], id: string) {
   return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
+}
+
+/** Folds one spoken take's per-sound scores into the learner's sound stats. */
+export function recordSounds(scores: { sound: string; score: number }[]) {
+  if (!scores.length) return;
+  update((s) => {
+    const stats = { ...(s.soundStats ?? {}) };
+    const at = dayKey();
+    // One update per sound per take (average its letters).
+    const take = new Map<string, number[]>();
+    for (const { sound, score } of scores) take.set(sound, [...(take.get(sound) ?? []), score]);
+    take.forEach((xs, id) => {
+      const score = xs.reduce((a, b) => a + b, 0) / xs.length;
+      const prev = stats[id];
+      stats[id] = prev ? { n: prev.n + 1, avg: Math.round(prev.avg * 0.7 + score * 0.3), last: at } : { n: 1, avg: Math.round(score), last: at };
+    });
+    return { ...s, soundStats: stats };
+  });
 }
 
 /** Adds a dictionary word to My cards (and returns its id). */

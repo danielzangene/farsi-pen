@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_STATE, exportProgress, importProgress } from "./store";
+import { DEFAULT_STATE, exportProgress, importProgress, recordSounds } from "./store";
 
 describe("progress backup", () => {
   it("round-trips through export and import", () => {
@@ -14,5 +14,16 @@ describe("progress backup", () => {
   it("rejects files that aren't a backup", () => {
     expect(importProgress("not json")).toBe(false);
     expect(importProgress(JSON.stringify({ hello: "world" }))).toBe(false);
+  });
+});
+
+describe("recordSounds", () => {
+  it("keeps a running score per sound, one update per take", () => {
+    importProgress(JSON.stringify({ app: "farsi-pen", progress: DEFAULT_STATE }));
+    recordSounds([{ sound: "kh", score: 100 }, { sound: "kh", score: 0 }, { sound: "r", score: 100 }]);
+    recordSounds([{ sound: "kh", score: 100 }]);
+    const stats = JSON.parse(exportProgress()).progress.soundStats;
+    expect(stats.kh).toMatchObject({ n: 2, avg: 65 });
+    expect(stats.r).toMatchObject({ n: 1, avg: 100 });
   });
 });

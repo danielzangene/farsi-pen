@@ -59,11 +59,61 @@ export interface Listening {
   stop: () => void;
   cancel: () => void;
   result: Promise<string[]>;
+  /** The learner's own recording, for "My voice" — null where it can't be kept. */
+  audio: Promise<Blob | null>;
+}
+
+/**
+ * Phones' recognisers often lose the mic if the page records at the same
+ * time, so with the browser engine we only keep a copy on desktop.
+ */
+export function canRecordAlongside(): boolean {
+  if (!micSupported()) return false;
+  try {
+    if (localStorage.getItem("farsipen:noParallelRec")) return false;
+  } catch {}
+  return !/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) && !(navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+}
+
+/** Records the mic until `stop()`; `blob` resolves with the take (null if refused). */
+function sideRecorder(): { stop: () => void; blob: Promise<Blob | null> } {
+  let stopped = false;
+  let rec: MediaRecorder | null = null;
+  let stream: MediaStream | null = null;
+  const end = () => {
+    if (rec && rec.state !== "inactive") rec.stop();
+    stream?.getTracks().forEach((t) => t.stop());
+  };
+  const blob = (async () => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    } catch {
+      return null;
+    }
+    if (stopped) {
+      stream.getTracks().forEach((t) => t.stop());
+      return null;
+    }
+    const chunks: Blob[] = [];
+    rec = new MediaRecorder(stream);
+    rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+    const done = new Promise<void>((r) => rec!.addEventListener("stop", () => r()));
+    rec.start();
+    await done;
+    return chunks.length ? new Blob(chunks, { type: rec.mimeType }) : null;
+  })();
+  return {
+    stop: () => {
+      stopped = true;
+      end();
+    },
+    blob,
+  };
 }
 
 // ── Web Speech API ────────────────────────────────────────────────────────
 
-function listenBrowser(): Listening {
+function listenBrowser(record: boolean): Listening {
   const Ctor = recognitionCtor();
   if (!Ctor) throw new SttError("unsupported", "Speech recognition isn't available in this browser");
   const rec = new Ctor();
@@ -72,6 +122,7 @@ function listenBrowser(): Listening {
   rec.continuous = false;
   rec.maxAlternatives = 5;
   let cancelled = false;
+  const side = record ? sideRecorder() : null;
   const result = new Promise<string[]>((resolve, reject) => {
     const heard: string[] = [];
     rec.onresult = (e) => {
@@ -90,9 +141,16 @@ function listenBrowser(): Listening {
         "language-not-supported": "unsupported",
         aborted: "aborted",
       };
+      // The recogniser lost the mic to our recording: don't record alongside again.
+      if (side && e.error === "audio-capture") {
+        try {
+          localStorage.setItem("farsipen:noParallelRec", "1");
+        } catch {}
+      }
       reject(new SttError(map[e.error] ?? "failed", e.error));
     };
     rec.onend = () => {
+      side?.stop();
       if (cancelled) reject(new SttError("aborted", "cancelled"));
       else if (heard.length) resolve(heard);
       else reject(new SttError("no-speech", "Nothing heard"));
@@ -103,9 +161,11 @@ function listenBrowser(): Listening {
     stop: () => rec.stop(),
     cancel: () => {
       cancelled = true;
+      side?.stop();
       rec.abort();
     },
     result,
+    audio: side ? side.blob : Promise.resolve(null),
   };
 }
 
@@ -173,6 +233,8 @@ function listenWhisper(maxMs: number): Listening {
   let stream: MediaStream | null = null;
   let cancelled = false;
   let stopRequested = false;
+  let keep: (b: Blob | null) => void = () => {};
+  const audio = new Promise<Blob | null>((r) => (keep = r));
   const stopAll = () => {
     if (recorder && recorder.state !== "inactive") recorder.stop();
     stream?.getTracks().forEach((t) => t.stop());
@@ -196,14 +258,16 @@ function listenWhisper(maxMs: number): Listening {
     stream.getTracks().forEach((t) => t.stop());
     if (cancelled) throw new SttError("aborted", "cancelled");
     const blob = new Blob(chunks, { type: recorder.mimeType });
-    const audio = await toMono16k(blob);
-    if (audio.length < 16000 * 0.3) throw new SttError("no-speech", "Recording too short");
+    keep(blob);
+    const pcm = await toMono16k(blob);
+    if (pcm.length < 16000 * 0.3) throw new SttError("no-speech", "Recording too short");
     const asr = await model;
-    const out = await asr(audio, { language: "persian", task: "transcribe" });
+    const out = await asr(pcm, { language: "persian", task: "transcribe" });
     const text = (Array.isArray(out) ? out[0]?.text : out.text)?.trim() ?? "";
     if (!text) throw new SttError("no-speech", "Nothing heard");
     return [text];
   })();
+  result.catch(() => keep(null));
   return {
     stop: () => {
       stopRequested = true;
@@ -215,10 +279,11 @@ function listenWhisper(maxMs: number): Listening {
       stopAll();
     },
     result,
+    audio,
   };
 }
 
 /** Starts listening for one Persian utterance. */
-export function listen(engine: Engine, maxMs = 5000): Listening {
-  return engine === "browser" ? listenBrowser() : listenWhisper(maxMs);
+export function listen(engine: Engine, maxMs = 5000, opts: { record?: boolean } = {}): Listening {
+  return engine === "browser" ? listenBrowser(!!opts.record && canRecordAlongside()) : listenWhisper(maxMs);
 }
