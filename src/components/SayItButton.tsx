@@ -36,7 +36,7 @@ const ERRORS: Record<SttError["code"], string> = {
   failed: "Something went wrong — try again.",
 };
 
-function SayItDialog({ word, onClose }: { word: Word; onClose: () => void }) {
+export function SayItDialog({ word, onClose }: { word: Word; onClose: () => void }) {
   const { settings } = useProgress();
   const ref = useRef<HTMLDialogElement>(null);
   const live = useRef<Listening | null>(null);
@@ -109,9 +109,9 @@ function SayItDialog({ word, onClose }: { word: Word; onClose: () => void }) {
           </button>
         </div>
         <div className="flex flex-col items-center gap-3 text-center">
-          <FaWord word={word} settings={settings} size="lg" />
-          <p className="font-bold text-muted">{word.en}</p>
-          {!settings.scriptOnly && <p className="text-sm font-semibold text-muted">sounds like “{word.soundsLike}”</p>}
+          {word.tr ? <FaWord word={word} settings={settings} size="lg" /> : <Fa className="text-3xl font-bold leading-relaxed">{word.fa}</Fa>}
+          {word.en && <p className="font-bold text-muted">{word.en}</p>}
+          {!settings.scriptOnly && word.soundsLike && <p className="text-sm font-semibold text-muted">sounds like “{word.soundsLike}”</p>}
           <AudioButtons text={word.fa} />
         </div>
 
