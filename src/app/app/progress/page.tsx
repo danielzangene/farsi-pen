@@ -6,6 +6,7 @@ import { dayState, journey, monthGrid, soundTrends, xpByDay, xpByWeek, type Bar 
 import { currentStreak, useHydrated, useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { Fa, PageHeader, ProgressBar, Segmented } from "@/components/ui";
+import { BadgesCard, LevelCard } from "@/components/Achievements";
 
 export default function ProgressPage() {
   const s = useProgress();
@@ -22,10 +23,12 @@ export default function ProgressPage() {
         <Tile icon={<Zap className="size-5 fill-saffron text-saffron-shadow" />} value={s.xp} label="total XP" />
         <Tile icon={<Star className="size-5 fill-sky text-sky-ink" />} value={practisedDays} label="days practised" />
       </div>
+      <LevelCard />
       <StreakCalendar />
       <XpChart />
       <SoundsOverTime />
       <Journey />
+      <BadgesCard />
     </div>
   );
 }

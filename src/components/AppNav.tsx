@@ -1,39 +1,44 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AudioLines, Bookmark, GraduationCap, ChartColumn, BookOpenText, Clapperboard, Headphones, BookHeart, BookOpen, Compass, Flame, House, Layers, Menu, Mic, PenLine, Puzzle, Repeat, Settings, Star, X } from "lucide-react";
+import { AudioLines, Bookmark, BookHeart, BookOpen, BookOpenText, ChartColumn, CircleUserRound, Clapperboard, Compass, Flame, GraduationCap, Headphones, House, Layers, Mic, PenLine, Puzzle, Repeat, Route, Star } from "lucide-react";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
 
-type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean; hint?: string };
+type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean; hint?: string; parent?: number };
 
-/** The core loop: on the phone's tab bar and first in the sidebar. */
+/** The five tabs (phone tab bar; first group in the sidebar). */
 const PRIMARY: NavItem[] = [
   { href: "/app/", label: "Home", icon: House, tone: "firuze", exact: true },
-  { href: "/app/lessons/", label: "Lessons", icon: BookOpen, tone: "saffron" },
-  { href: "/app/missions/", label: "Missions", icon: Compass, tone: "firuze" },
-  { href: "/app/words/", label: "Words", icon: Layers, tone: "sky" },
+  { href: "/app/path/", label: "Path", icon: Route, tone: "saffron" },
+  { href: "/app/exams/", label: "Exams", icon: GraduationCap, tone: "plum" },
+  { href: "/app/progress/", label: "Progress", icon: ChartColumn, tone: "sky" },
+  { href: "/app/settings/", label: "Profile", icon: CircleUserRound, tone: "pista" },
 ];
+const HOME = 0;
+const PATH = 1;
+const EXAMS = 2;
+const PROFILE = 4;
 
-/** Extra practice and tools: under "More" on phones, a second group in the sidebar. */
+/** Every other page, grouped under the tab it belongs to (shown in the sidebar on desktop). */
 const SECONDARY: NavItem[] = [
-  { href: "/app/progress/", label: "Progress", icon: ChartColumn, tone: "saffron", hint: "Streak calendar, XP chart, your sounds" },
-  { href: "/app/speak/", label: "Speak", icon: Mic, tone: "anar", hint: "Say words, see each sound scored" },
-  { href: "/app/listen/", label: "Hands-free", icon: Headphones, tone: "firuze", hint: "Hear it, say it, repeat — eyes free" },
-  { href: "/app/scenes/", label: "Scenes", icon: Clapperboard, tone: "sky", hint: "Play a part in everyday sketches" },
-  { href: "/app/sounds/", label: "Sounds", icon: AudioLines, tone: "saffron", hint: "Hard Persian sounds and a daily workout" },
-  { href: "/app/practice/", label: "Daily Practice", icon: Repeat, tone: "sky", hint: "Type words from memory" },
-  { href: "/app/reading/", label: "Reading", icon: BookOpenText, tone: "plum", hint: "B1 texts about Iran, with tasks" },
-  { href: "/app/samfa/", label: "SAMFA exam", icon: GraduationCap, tone: "firuze", hint: "Prepare for the Persian proficiency test" },
-  { href: "/app/grammar/", label: "Grammar", icon: Puzzle, tone: "plum", hint: "A1 to B2, with exercises" },
-  { href: "/app/alphabet/", label: "Alphabet", icon: PenLine, tone: "pista", hint: "Letters, vowel signs, tracing" },
-  { href: "/app/poetry/", label: "Poetry", icon: BookHeart, tone: "plum", hint: "Fâl-e Hâfez and the poems everyone knows" },
-  { href: "/app/bookmarks/", label: "My cards", icon: Bookmark, tone: "saffron", hint: "Words you saved" },
+  { href: "/app/words/", label: "Words", icon: Layers, tone: "sky", parent: HOME },
+  { href: "/app/speak/", label: "Speak", icon: Mic, tone: "anar", parent: HOME },
+  { href: "/app/scenes/", label: "Scenes", icon: Clapperboard, tone: "sky", parent: HOME },
+  { href: "/app/listen/", label: "Hands-free", icon: Headphones, tone: "firuze", parent: HOME },
+  { href: "/app/practice/", label: "Daily Practice", icon: Repeat, tone: "sky", parent: HOME },
+  { href: "/app/sounds/", label: "Sounds", icon: AudioLines, tone: "saffron", parent: PATH },
+  { href: "/app/lessons/", label: "Lessons", icon: BookOpen, tone: "saffron", parent: PATH },
+  { href: "/app/missions/", label: "Missions", icon: Compass, tone: "firuze", parent: PATH },
+  { href: "/app/grammar/", label: "Grammar", icon: Puzzle, tone: "plum", parent: PATH },
+  { href: "/app/reading/", label: "Reading", icon: BookOpenText, tone: "plum", parent: PATH },
+  { href: "/app/alphabet/", label: "Alphabet", icon: PenLine, tone: "pista", parent: PATH },
+  { href: "/app/poetry/", label: "Poetry", icon: BookHeart, tone: "plum", parent: PATH },
+  { href: "/app/samfa/", label: "SAMFA", icon: GraduationCap, tone: "plum", parent: EXAMS },
+  { href: "/app/placement/", label: "Placement", icon: GraduationCap, tone: "plum", parent: EXAMS },
+  { href: "/app/bookmarks/", label: "My cards", icon: Bookmark, tone: "saffron", parent: PROFILE },
 ];
-
-const SETTINGS: NavItem = { href: "/app/settings/", label: "Settings", icon: Settings, hint: "Voice, speech, goals, theme" };
 
 /**
  * The "FA" monogram on a teal tile. Same paths as scripts/make-icons.mjs,
@@ -78,15 +83,11 @@ function StatChips({ streak, xp }: { streak: number; xp: number }) {
 export function AppNav() {
   const pathname = usePathname();
   const s = useProgress();
-  const [moreOpen, setMoreOpen] = useState(false);
   const isActive = (href: string, exact?: boolean) => (exact ? pathname === href || pathname === href.slice(0, -1) : pathname.startsWith(href.slice(0, -1)));
   const streak = currentStreak(s);
-  const moreActive = [...SECONDARY, SETTINGS].some((l) => isActive(l.href));
+  // The tab to highlight: the page's own tab, or the tab its section lives under.
   const primaryIndex = PRIMARY.findIndex((l) => isActive(l.href, l.exact));
-  const activeTab = moreOpen || moreActive ? PRIMARY.length : primaryIndex;
-
-  // Close the sheet whenever the route changes.
-  useEffect(() => setMoreOpen(false), [pathname]);
+  const activeTab = primaryIndex >= 0 ? primaryIndex : (SECONDARY.find((l) => isActive(l.href))?.parent ?? -1);
 
   return (
     <>
@@ -99,13 +100,14 @@ export function AppNav() {
           {PRIMARY.map((l) => (
             <SideLink key={l.href} item={l} on={isActive(l.href, l.exact)} />
           ))}
-          <hr className="mx-3 my-2 border-t border-line" />
-          {SECONDARY.map((l) => (
+          <p className="mx-3 mb-1 mt-4 text-xs font-semibold text-muted">Practice</p>
+          {SECONDARY.filter((l) => l.parent === HOME).map((l) => (
             <SideLink key={l.href} item={l} on={isActive(l.href)} />
           ))}
-          <div className="mt-auto pt-2">
-            <SideLink item={SETTINGS} on={isActive(SETTINGS.href)} />
-          </div>
+          <p className="mx-3 mb-1 mt-4 text-xs font-semibold text-muted">Course</p>
+          {SECONDARY.filter((l) => l.parent === PATH || l.parent === EXAMS).filter((l) => l.href !== "/app/placement/").map((l) => (
+            <SideLink key={l.href} item={l} on={isActive(l.href)} />
+          ))}
         </nav>
       </aside>
 
@@ -137,20 +139,9 @@ export function AppNav() {
           {PRIMARY.map((l, i) => (
             <TabLink key={l.href} href={l.href} label={l.label} icon={l.icon} on={activeTab === i} />
           ))}
-          <button
-            type="button"
-            onClick={() => setMoreOpen(true)}
-            aria-haspopup="dialog"
-            aria-expanded={moreOpen}
-            className={cx(TAB, activeTab === PRIMARY.length ? "text-sky" : "text-ink/70")}
-          >
-            <TabIcon icon={Menu} on={activeTab === PRIMARY.length} />
-            More
-          </button>
         </div>
       </nav>
 
-      {moreOpen && <MoreSheet onClose={() => setMoreOpen(false)} isActive={isActive} />}
     </>
   );
 }
@@ -196,53 +187,3 @@ function TabLink({ href, label, icon, on }: { href: string; label: string; icon:
   );
 }
 
-/** Bottom sheet listing everything that isn't on the tab bar, each with what it's for. */
-function MoreSheet({ onClose, isActive }: { onClose: () => void; isActive: (href: string) => boolean }) {
-  const ref = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    const d = ref.current;
-    if (d && !d.open) d.showModal();
-  }, []);
-  return (
-    <dialog
-      ref={ref}
-      onClose={onClose}
-      onClick={(e) => e.target === ref.current && onClose()}
-      aria-label="More"
-      className="app-nav fixed inset-x-0 bottom-0 top-auto m-0 w-full max-w-none animate-slide-up rounded-t-[1.75rem] bg-card p-0 pb-[env(safe-area-inset-bottom)] text-ink shadow-[0_-12px_40px_rgb(0_0_0/0.18)] backdrop:bg-black/40 lg:hidden"
-    >
-      <div className="mx-auto max-w-md px-4 pb-4 pt-2">
-        <div className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-line-strong" aria-hidden />
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-lg font-extrabold">More</h2>
-          <button type="button" className="btn-ghost btn-icon -mr-2" onClick={onClose} aria-label="Close" autoFocus>
-            <X className="size-6" />
-          </button>
-        </div>
-        <ul className="space-y-1">
-          {[...SECONDARY, SETTINGS].map((l) => {
-            const on = isActive(l.href);
-            return (
-              <li key={l.href}>
-                <Link
-                  href={l.href}
-                  onClick={onClose}
-                  aria-current={on ? "page" : undefined}
-                  className={cx("flex min-h-14 items-center gap-3 rounded-2xl px-3 py-2 transition-transform active:scale-[0.98]", on ? "bg-sky-soft" : "hover:bg-paper")}
-                >
-                  <span className={cx("grid size-10 shrink-0 place-items-center rounded-full", l.tone ? cx(TONE[l.tone].soft, TONE[l.tone].ink) : "bg-paper text-muted")}>
-                    <l.icon className="size-5" strokeWidth={2.2} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className={cx("block font-extrabold", on && "text-sky-ink")}>{l.label}</span>
-                    {l.hint && <span className="block text-sm font-semibold text-muted">{l.hint}</span>}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    </dialog>
-  );
-}

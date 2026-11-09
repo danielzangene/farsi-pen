@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronRight, Flame, Star, Zap } from "lucide-react";
+import { ArrowRight, AudioLines, Check, ChevronRight, Clapperboard, Flame, Headphones, Keyboard, Layers, Mic, Star, Zap } from "lucide-react";
+import { buildDeck } from "@/lib/flashcards";
 import { LESSONS } from "@/content/lessons";
 import { CAST, castOf, sceneOfTheDay } from "@/content/scenes";
 import { SOUND_BY_ID } from "@/content/sounds";
@@ -14,7 +15,7 @@ import { cx } from "@/lib/util";
 import { CastStack } from "../scene/Cast";
 import { SayItDialog } from "../SayItButton";
 import { useVoiceStatus } from "../SpeechSetup";
-import { Fa, ProgressBar, TONE } from "../ui";
+import { Fa, ProgressBar, TONE, type Tone } from "../ui";
 
 /** This week at a glance: a dot per day, the streak and today's XP. */
 export function WeekStrip() {
@@ -55,9 +56,13 @@ export function WeekStrip() {
           </li>
         ))}
       </ol>
-      <p className="mt-3 text-sm font-semibold text-muted">
-        {today.goal ? "Today's goal is done. See you tomorrow." : `Reach your daily goal of ${s.settings.dailyGoal} words to keep the flame.`}
-      </p>
+      <div className="mt-4 flex items-center gap-3">
+        <ProgressBar value={Math.min(1, (s.daily[today.key]?.words ?? 0) / s.settings.dailyGoal)} tone="anar" size="sm" className="flex-1" />
+        <span className="shrink-0 text-sm text-muted">
+          {Math.min(s.daily[today.key]?.words ?? 0, s.settings.dailyGoal)}/{s.settings.dailyGoal} words
+        </span>
+      </div>
+      <p className="mt-2 text-sm text-muted">{today.goal ? "Today's goal is done. See you tomorrow." : "Reach your daily goal to keep the flame."}</p>
     </section>
   );
 }
@@ -326,5 +331,42 @@ export function PlacementPrompt() {
       </span>
       <ChevronRight className="size-5 shrink-0 text-muted" />
     </Link>
+  );
+}
+
+/** Practice studio: every way to practise, one tap away. */
+export function PracticeStudio() {
+  const s = useProgress();
+  const due = buildDeck("today", s).ids.length;
+  const tools: { href: string; title: string; text: string; icon: typeof Mic; tone: Tone; badge?: number }[] = [
+    { href: "/app/words/", title: "Flashcards", text: due ? `${due} cards for today` : "Words and dictionary", icon: Layers, tone: "sky", badge: due || undefined },
+    { href: "/app/speak/", title: "Speak", text: "Say it, see each sound", icon: Mic, tone: "anar" },
+    { href: "/app/scenes/", title: "Scenes", text: "Play a part, line by line", icon: Clapperboard, tone: "plum" },
+    { href: "/app/listen/", title: "Hands-free", text: "Hear it, say it, repeat", icon: Headphones, tone: "firuze" },
+    { href: "/app/sounds/", title: "Sound workout", text: "Your weakest sounds", icon: AudioLines, tone: "saffron" },
+    { href: "/app/practice/", title: "Type from memory", text: "Spelling and recall", icon: Keyboard, tone: "pista" },
+  ];
+  return (
+    <section aria-labelledby="studio-heading">
+      <h2 id="studio-heading" className="mb-3 text-xl font-extrabold">
+        Practice studio
+      </h2>
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {tools.map((t) => (
+          <li key={t.href}>
+            <Link href={t.href} className="tile relative flex h-full flex-col gap-3 p-4">
+              <span className={cx("grid size-10 place-items-center rounded-xl text-on-accent", TONE[t.tone].bg)}>
+                <t.icon className="size-5" strokeWidth={2.2} />
+              </span>
+              <span>
+                <span className="block font-semibold leading-tight">{t.title}</span>
+                <span className="mt-0.5 block text-sm text-muted">{t.text}</span>
+              </span>
+              {t.badge && <span className={cx("chip absolute right-3 top-3", TONE[t.tone].soft, TONE[t.tone].ink)}>{t.badge}</span>}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
