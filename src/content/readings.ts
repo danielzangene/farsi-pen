@@ -686,6 +686,97 @@ export const READINGS: ReadingLesson[] = [
       ],
     },
   },
+  {
+    id: "tea",
+    number: 8,
+    level: "B1",
+    question: { en: "Tea or coffee — what do you drink in the morning?", fa: "صبح‌ها چای می‌خورید یا قهوه؟" },
+    topic: "A glass of tea",
+    keyWords: [
+      { fa: "نوشیدنی", tr: "nushidani", en: "drink" },
+      { fa: "مزرعه", tr: "mazra'e", en: "farm, plantation" },
+      { fa: "کاشته", tr: "kâshte", en: "planted" },
+      { fa: "استان", tr: "ostân", en: "province" },
+      { fa: "مهمان", tr: "mehmân", en: "guest" },
+      { fa: "قند", tr: "ghand", en: "sugar cube" },
+      { fa: "سماور", tr: "samâvar", en: "samovar" },
+      { fa: "قهوه‌خانه", tr: "ghahve-khâne", en: "teahouse" },
+      { fa: "رسم", tr: "rasm", en: "custom" },
+    ],
+    text: [
+      [
+        { fa: "چای محبوب‌ترین نوشیدنی ایرانیان است.", en: "Tea is Iranians' favourite drink." },
+        { fa: "حدود صد و بیست سال پیش، اولین مزرعه‌های چای در شمال ایران کاشته شد.", en: "About a hundred and twenty years ago, the first tea plantations were planted in northern Iran." },
+        { fa: "امروز بیشتر چای ایرانی در استان گیلان و مازندران تولید می‌شود.", en: "Today most Iranian tea is produced in the provinces of Gilan and Mazandaran." },
+      ],
+      [
+        { fa: "در خانه‌های ایرانی، چای اولین چیزی است که به مهمان تعارف می‌شود.", en: "In Iranian homes, tea is the first thing offered to a guest." },
+        { fa: "چای را معمولاً در استکان کمرباریک می‌ریزند و با قند می‌خورند.", en: "Tea is usually poured into a small narrow-waisted glass and drunk with a sugar cube." },
+        { fa: "خیلی‌ها قند را در دهان می‌گذارند و چای را از روی آن می‌نوشند.", en: "Many people put the sugar cube in their mouth and drink the tea through it." },
+      ],
+      [
+        { fa: "در گذشته در هر خانه یک سماور بود که از صبح تا شب روشن می‌ماند.", en: "In the past every home had a samovar that stayed on from morning till night." },
+        { fa: "جالب است که در ایران به چایخانه‌های قدیمی «قهوه‌خانه» می‌گویند.", en: "Interestingly, in Iran old teahouses are called “coffee houses”." },
+        { fa: "این اسم از زمانی مانده است که هنوز قهوه رسم بیشتری از چای داشت.", en: "The name is left over from a time when coffee was still more customary than tea." },
+      ],
+    ],
+    check: [
+      { prompt: "Where were the first tea plantations in Iran?", options: ["In the north", "In the south", "Near Tehran"], answer: "In the north" },
+      { prompt: "What is the first thing a guest is offered?", options: ["Tea", "Coffee", "Fruit"], answer: "Tea" },
+      { prompt: "How do many people drink tea with a sugar cube?", options: ["They hold it in their mouth and drink through it", "They stir it into the glass", "They eat it afterwards"], answer: "They hold it in their mouth and drink through it" },
+      { prompt: "Why are teahouses called “coffee houses”?", options: ["Coffee was once more common than tea", "They only serve coffee", "It's a mistake on the sign"], answer: "Coffee was once more common than tea" },
+    ],
+    spoken: [
+      { fa: "چای محبوب‌ترین نوشیدنی ایرانیان است.", spoken: "چایی محبوب‌ترین نوشیدنی ایرونیاس.", en: "Tea is Iranians' favourite drink." },
+      { fa: "چای را با قند می‌خورند.", spoken: "چایی رو با قند می‌خورن.", en: "They drink tea with a sugar cube." },
+      { fa: "چای اولین چیزی است که به مهمان تعارف می‌شود.", spoken: "اولین چیزی که به مهمون تعارف می‌کنن چاییه.", en: "Tea is the first thing they offer a guest." },
+      { fa: "یک سماور بود.", spoken: "یه سماور بود.", en: "There was a samovar." },
+    ],
+    spokenNote: "In speech tea is often «چایی» (châyi). â before n turns to u (ایرانی → irun-i, مهمان → mehmun), «را» becomes «رو», and spoken Persian prefers an active «they offer» to the written passive «is offered».",
+    grammar: {
+      conceptId: "passive",
+      note: "The text describes how things are done, not who does them, so it uses the passive: past participle + شدن. کاشته شد — was planted; تولید می‌شود — is produced; تعارف می‌شود — is offered.",
+      examples: ["اولین مزرعه‌های چای در شمال ایران کاشته شد.", "بیشتر چای ایرانی در استان گیلان و مازندران تولید می‌شود."],
+    },
+    news: {
+      topic: "Farming",
+      words: [
+        { fa: "برداشت", tr: "bardâsht", en: "harvest" },
+        { fa: "کشاورز", tr: "keshâvarz", en: "farmer" },
+        { fa: "محصول", tr: "mahsul", en: "crop, product" },
+        { fa: "صادرات", tr: "sâderât", en: "exports" },
+        { fa: "واردات", tr: "vâredât", en: "imports" },
+      ],
+      headlines: [
+        { fa: "برداشت برگ سبز چای در گیلان آغاز شد", en: "Green tea leaf harvest begins in Gilan" },
+        { fa: "کشاورزان شمال از کاهش باران نگران‌اند", en: "Northern farmers worried about falling rainfall" },
+      ],
+    },
+    culture: {
+      title: "Lahijan",
+      fa: "لاهیجان",
+      text: "Lahijan, a green town in Gilan near the Caspian, is the heart of Iranian tea country. Tea growing there began around 1900, when a diplomat brought seeds and know-how back from India; today the town has a small tea museum, and its hillsides are covered in neat rows of tea bushes.",
+      words: [
+        { fa: "بوته", tr: "bute", en: "bush" },
+        { fa: "تپه", tr: "tappe", en: "hill" },
+        { fa: "موزه", tr: "muze", en: "museum" },
+      ],
+    },
+    task: {
+      prompt: "Your turn: what do people in your country drink with guests, and how?",
+      phrases: [
+        { fa: "در کشور من", tr: "dar keshvar-e man", en: "in my country" },
+        { fa: "معمولاً", tr: "ma'mulan", en: "usually" },
+        { fa: "تعارف می‌کنند", tr: "ta'ârof mikonand", en: "they offer" },
+        { fa: "به جای", tr: "be jâ-ye", en: "instead of" },
+      ],
+      model: [
+        { fa: "در کشور من معمولاً به مهمان قهوه تعارف می‌کنند.", en: "In my country people usually offer guests coffee." },
+        { fa: "قهوه را با شیر و کیک می‌خوریم.", en: "We have it with milk and cake." },
+        { fa: "ولی من خودم به جای قهوه چای را ترجیح می‌دهم.", en: "But I myself prefer tea to coffee." },
+      ],
+    },
+  },
 ];
 
 export const READING_BY_ID: Record<string, ReadingLesson> = Object.fromEntries(READINGS.map((r) => [r.id, r]));

@@ -9,6 +9,7 @@
 import { LEVEL2 } from "./words/level2";
 import { LEVEL3 } from "./words/level3";
 import { LEVEL4 } from "./words/level4";
+import { LEVEL5 } from "./words/level5";
 
 export type Register = "colloquial" | "formal" | "both";
 export type Pos = "noun" | "verb" | "adjective" | "phrase" | "number" | "pronoun" | "interjection";
@@ -316,6 +317,6 @@ const LEVEL1_WORDS: Word[] = [
 ];
 
 /** Every word in the course: Level 1 above, Levels 2–4 from src/content/words/. */
-export const WORDS: Word[] = [...LEVEL1_WORDS, ...[...LEVEL2, ...LEVEL3, ...LEVEL4].flatMap((l) => l.words)];
+export const WORDS: Word[] = [...LEVEL1_WORDS, ...[...LEVEL2, ...LEVEL3, ...LEVEL4, ...LEVEL5].flatMap((l) => l.words)];
 
 export const WORD_BY_ID: Record<string, Word> = Object.fromEntries(WORDS.map((w) => [w.id, w]));

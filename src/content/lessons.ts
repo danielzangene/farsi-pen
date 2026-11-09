@@ -3,6 +3,7 @@ import type { LessonDraft } from "./words/define";
 import { LEVEL2 } from "./words/level2";
 import { LEVEL3 } from "./words/level3";
 import { LEVEL4 } from "./words/level4";
+import { LEVEL5 } from "./words/level5";
 
 export interface Lesson {
   id: string;
@@ -25,6 +26,8 @@ export const LEVELS = [
     description: "More verbs, feelings, weather, work, study, question words, family, travel and your phone." },
   { id: 4, name: "Level 4 · Conversations", nameFa: "گفت\u200cوگو", cefr: "A2",
     description: "Ta'ârof, opinions, free time, nature, celebrations, relationships, the kitchen, emergencies and describing things." },
+  { id: 5, name: "Level 5 · Independent", nameFa: "مستقل", cefr: "B1",
+    description: "News and society, character, renting and paperwork, and the words that link ideas." },
 ];
 
 export const LESSONS: Lesson[] = [
@@ -85,6 +88,7 @@ LESSONS.push(
 );
 LESSONS.push(...fromDrafts(LEVEL3, 3, "A2", LESSONS.length + 1));
 LESSONS.push(...fromDrafts(LEVEL4, 4, "A2", LESSONS.length + 1));
+LESSONS.push(...fromDrafts(LEVEL5, 5, "B1", LESSONS.length + 1));
 
 export const LESSON_BY_ID: Record<string, Lesson> = Object.fromEntries(LESSONS.map((l) => [l.id, l]));
 
