@@ -66,7 +66,8 @@ Rules:
 | `btn-sm`, `btn-lg`, `btn-icon` | Sizes; `btn-icon` is round. On a solid colour banner, use `btn` with `[--btn-bg:rgb(255_255_255/0.22)] [--btn-fg:var(--color-on-accent)]`. |
 | `card` | Grouped container: card colour, 20px radius, faint shadow, no border. |
 | `tile` | Tappable row/option: 1px hairline, 16px radius, scales on press. `data-state="selected|correct|wrong|current"`. |
-| `material` / `material-canvas` | Translucent blurred layer for floating chrome (tab bar, top bar, session header, bottom action bars). Content scrolls underneath. |
+| `material` / `material-canvas` | Translucent blurred layer for floating chrome (top bar, session header, bottom action bars). Content scrolls underneath. |
+| `glass` | Light Liquid Glass for floating controls: the mobile tab bar (a capsule above the bottom edge with a glass pill that slides to the current tab) and the lesson action bar. Mostly opaque (`--glass-opacity` 62% / 66%) with a bright top edge and soft shadow, so text stays legible. |
 | `chip`, `input`, `eyebrow` | Pills; text fields (1px field edge, focus ring); section headers. |
 | `animate-pop`, `animate-slide-up`, `animate-shake` | Appear (scale 0.96â†’1, no overshoot); sheet entrance (iOS sheet curve); wrong answer (small shake). |
 
@@ -83,7 +84,8 @@ Borders are hairlines: use `border` (1px), not `border-2`. No `shadow-[0_Npx_0_â
 
 ## 7. Materials, depth and dialogs
 
-- Floating chrome is translucent (`material*`), never an opaque strip. Heavier/structural regions (sidebar) are solid `card`.
+- Floating chrome is translucent (`material*`, `glass`), never an opaque strip. Heavier/structural regions (sidebar) are solid `card`.
+- The phone tab bar floats: `inset-x-3`, `bottom: max(0.75rem, safe area)`, `rounded-[1.75rem]`. Page content keeps `pb-[calc(7.5rem+safe area)]` so nothing hides under it; anything sticky above it sits at `bottom-[calc(5.25rem+safe area)]`.
 - Don't stack a translucent surface on another translucent one.
 - Modal dialogs dim and blur the background (`backdrop:bg-black/40` + global backdrop blur), use `!rounded-[1.75rem]`, and pop in from 0.96. Bottom sheets slide up with the sheet curve and show a grabber.
 - `prefers-reduced-transparency` makes materials solid; `prefers-contrast: more` turns separators into the field edge.

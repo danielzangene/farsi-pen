@@ -83,7 +83,7 @@ export function LessonSession({ lesson }: { lesson: Lesson }) {
               <li>Typos are fine — you’ll see “almost” and a spelling tip instead of a red cross.</li>
             </ul>
           </details>
-          <div className="sticky bottom-20 z-20 -mx-4 mt-6 border-t border-line material-canvas px-4 py-3 sm:bottom-0">
+          <div className="sticky bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-20 mt-6 rounded-[1.5rem] glass px-3 py-2.5 lg:bottom-4">
             <div className="flex gap-3 sm:justify-end">
               <button type="button" className="btn-secondary flex-1 sm:flex-none" onClick={() => setPhase({ name: "recognition" })}>
                 Skip to quiz
