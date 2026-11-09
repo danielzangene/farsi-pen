@@ -1,15 +1,36 @@
 "use client";
-import { useRef, useState } from "react";
-import { BellRing, CheckCircle2, Download, Upload } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { BellOff, BellRing, CalendarPlus, CheckCircle2, Download, Upload } from "lucide-react";
 import { reminderIcs } from "@/lib/reminder";
-import { importProgress } from "@/lib/store";
+import { importProgress, updateSettings, useProgress } from "@/lib/store";
 import { downloadBackup } from "./TodayPlan";
 
 /** Settings: back up / restore progress and a daily reminder. */
 export function ProgressTools() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [time, setTime] = useState("19:00");
+  const s = useProgress();
+  const on = !!s.settings.reminder;
+  const [time, setTime] = useState(s.settings.reminder ?? "19:00");
+  const [perm, setPerm] = useState<NotificationPermission | "unsupported">("default");
+  useEffect(() => setPerm(typeof Notification === "undefined" ? "unsupported" : Notification.permission), []);
+  useEffect(() => {
+    if (s.settings.reminder) setTime(s.settings.reminder);
+  }, [s.settings.reminder]);
+
+  const changeTime = (t: string) => {
+    setTime(t);
+    if (on) updateSettings({ reminder: t, remindedOn: null });
+  };
+  const toggleNotify = async () => {
+    if (on) return updateSettings({ reminder: null });
+    let p = perm;
+    if (p === "default") {
+      p = await Notification.requestPermission();
+      setPerm(p);
+    }
+    if (p === "granted") updateSettings({ reminder: time, remindedOn: null });
+  };
 
   const onFile = async (f: File | undefined) => {
     if (!f) return;
@@ -55,16 +76,29 @@ export function ProgressTools() {
 
       <div className="pt-4">
         <p className="font-bold">Daily reminder</p>
-        <p className="mt-1 text-sm font-semibold text-muted">Adds a repeating event with an alert to your phone or computer calendar, with a link back here.</p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <label className="flex items-center gap-2 text-sm font-bold">
-            At
-            <input type="time" className="input !w-auto !py-1.5 !text-base" value={time} onChange={(e) => setTime(e.target.value || "19:00")} />
-          </label>
+        <p className="mt-1 text-sm font-semibold text-muted">
+          Pick a time. A calendar event reminds you even when the app is closed; a notification works while Farsi Pen is open in the background, and only if you haven&apos;t practised yet that day.
+        </p>
+        <label className="mt-3 flex items-center gap-2 text-sm font-bold">
+          At
+          <input type="time" className="input !w-auto !py-1.5 !text-base" value={time} onChange={(e) => changeTime(e.target.value || "19:00")} />
+        </label>
+        <div className="mt-3 flex flex-wrap gap-2">
           <button type="button" className="btn-secondary btn-sm" onClick={addReminder}>
-            <BellRing className="size-4" /> Add to calendar
+            <CalendarPlus className="size-4" /> Add to calendar
           </button>
+          {perm !== "unsupported" && perm !== "denied" && (
+            <button type="button" className={on ? "btn-ghost btn-sm" : "btn-secondary btn-sm"} onClick={toggleNotify} aria-pressed={on}>
+              {on ? <BellOff className="size-4" /> : <BellRing className="size-4" />} {on ? "Turn off notifications" : "Notify me in this browser"}
+            </button>
+          )}
         </div>
+        {on && perm === "granted" && (
+          <p role="status" className="mt-2 flex items-center gap-1.5 text-sm font-bold text-pista-ink">
+            <CheckCircle2 className="size-4" /> Notifications on for {s.settings.reminder}.
+          </p>
+        )}
+        {perm === "denied" && <p className="mt-2 text-sm font-semibold text-muted">Notifications are blocked for this site in your browser settings. The calendar reminder still works.</p>}
       </div>
     </div>
   );

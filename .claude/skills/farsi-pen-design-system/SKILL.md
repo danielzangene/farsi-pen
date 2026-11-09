@@ -34,7 +34,7 @@ Source of truth in code:
 | `card` | #ffffff | #1c1c1e | Raised surfaces |
 | `paper` | grey 12% (translucent) | grey 24% | Fills: insets, segmented track, disabled buttons, progress track |
 | `line` / `line-strong` | translucent separators | translucent | Hairline borders, dividers |
-| `ink` / `muted` / `faint` | #1d1d1f / #6e6e73 / #a1a1a6 | #f5f5f7 / #a1a1a6 / #636366 | Text: primary / secondary / decorative only |
+| `ink` / `muted` / `faint` | #1d1d1f / #5e5e63 / #a1a1a6 | #f5f5f7 / #a1a1a6 / #636366 | Text: primary / secondary / decorative only |
 | `field-edge` | #8e8e93 | #7c7c80 | Input borders (3:1, WCAG 1.4.11) |
 | `firuze` `pista` `anar` `saffron` `sky` `plum` | base fills | brighter fills | Accents |
 | `-soft` | colour mixed 13–18% with transparent | same | Tinted backgrounds (adapts to any surface) |
@@ -63,7 +63,7 @@ Rules:
 | `btn-sky`, `btn-plum` | Audio buttons; grammar CTAs. |
 | `btn-secondary` | Tinted (firuze-soft fill, firuze-ink label): second action. |
 | `btn-ghost` | Plain: icon actions, back, skip. |
-| `btn-sm`, `btn-lg`, `btn-icon` | Sizes; `btn-icon` is round. On a solid colour banner, use `btn` with `[--btn-bg:rgb(255_255_255/0.22)] [--btn-fg:var(--color-on-accent)]`. |
+| `btn-sm`, `btn-lg`, `btn-icon` | Sizes; `btn-icon` is round. On a solid colour banner, use `btn` with `[--btn-bg:rgb(0_0_0/0.2)] [--btn-fg:var(--color-on-accent)]`. |
 | `card` | Grouped container: card colour, 20px radius, faint shadow, no border. |
 | `tile` | Tappable row/option: 1px hairline, 16px radius, scales on press. `data-state="selected|correct|wrong|current"`. |
 | `material` / `material-canvas` | Translucent blurred layer for floating chrome (top bar, session header, bottom action bars). Content scrolls underneath. |

@@ -25,7 +25,7 @@ export function CastAvatar({ id, size = "md", speaking, className }: { id: CastI
 
 export function CastStack({ ids }: { ids: CastId[] }) {
   return (
-    <span className="flex -space-x-2" aria-label={`With ${ids.map((i) => CAST[i].name).join(", ")}`}>
+    <span className="flex -space-x-2" role="img" aria-label={`With ${ids.map((i) => CAST[i].name).join(", ")}`}>
       {ids.map((id) => (
         <CastAvatar key={id} id={id} size="sm" className="ring-2 ring-card" />
       ))}

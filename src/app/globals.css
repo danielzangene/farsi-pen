@@ -30,7 +30,7 @@
   --color-line: rgb(60 60 67 / 0.16);
   --color-line-strong: rgb(60 60 67 / 0.29);
   --color-faint: #a1a1a6;
-  --color-muted: #6e6e73;
+  --color-muted: #5e5e63;
   /* Edge of inputs and selects: 3:1 against the card (WCAG 1.4.11). */
   --color-field-edge: #8e8e93;
   --color-ink: #1d1d1f;
@@ -44,14 +44,14 @@
   --glass-pill: rgb(0 0 0 / 0.06);
 
   /* Brand: firuze (turquoise) — primary actions, current progress */
-  --color-firuze: #0b8f82;
-  --color-firuze-shadow: #087268;
+  --color-firuze: #0a8276;
+  --color-firuze-shadow: #076a61;
   --color-firuze-soft: color-mix(in srgb, var(--color-firuze) 14%, transparent);
-  --color-firuze-ink: #08766b;
+  --color-firuze-ink: #066a60;
 
   /* Correct / success */
-  --color-pista: #248a3d;
-  --color-pista-shadow: #1b6b2f;
+  --color-pista: #1f7f37;
+  --color-pista-shadow: #18652c;
   --color-pista-soft: color-mix(in srgb, var(--color-pista) 14%, transparent);
   --color-pista-ink: #1d7232;
 
@@ -68,10 +68,10 @@
   --color-saffron-ink: #8f5300;
 
   /* Selection, audio, info */
-  --color-sky: #007aff;
-  --color-sky-shadow: #0062cc;
+  --color-sky: #006ee6;
+  --color-sky-shadow: #0059b8;
   --color-sky-soft: color-mix(in srgb, var(--color-sky) 13%, transparent);
-  --color-sky-ink: #0062cc;
+  --color-sky-ink: #0059b8;
 
   /* Grammar accent */
   --color-plum: #9b51e0;

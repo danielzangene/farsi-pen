@@ -41,6 +41,10 @@ export interface Settings {
   onboarded: boolean;
   /** Last day (dayKey) we suggested backing up progress, so it's asked once. */
   backupNudge: string | null;
+  /** Daily reminder time ("HH:MM"), or null when off. */
+  reminder: string | null;
+  /** Last day a reminder notification was shown, so it fires once a day. */
+  remindedOn: string | null;
 }
 
 export type Goal = "travel" | "family" | "heritage" | "curious";
@@ -183,6 +187,8 @@ export const DEFAULT_STATE: ProgressState = {
     reads: null,
     onboarded: false,
     backupNudge: null,
+    reminder: null,
+    remindedOn: null,
   },
 };
 

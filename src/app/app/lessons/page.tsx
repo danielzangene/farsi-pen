@@ -36,7 +36,7 @@ export default function LessonsPage() {
               </h2>
               <p className="mt-1 text-[15px] font-bold">{level.description}</p>
             </div>
-            <Link href="/app/words/" className="btn btn-sm shrink-0 [--btn-bg:rgb(255_255_255/0.22)] [--btn-fg:var(--color-on-accent)]">
+            <Link href="/app/words/" className="btn btn-sm shrink-0 [--btn-bg:rgb(0_0_0/0.2)] [--btn-fg:var(--color-on-accent)]">
               <Library className="size-4" strokeWidth={2.5} /> Word list
             </Link>
           </div>
