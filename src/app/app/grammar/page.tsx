@@ -17,6 +17,9 @@ export default function GrammarPage() {
   // Open on the first level that still has concepts to learn.
   useEffect(() => {
     if (!hydrated) return;
+    // A link can ask for a level (?level=B1), e.g. from the Path.
+    const asked = new URLSearchParams(window.location.search).get("level");
+    if (asked && GRAMMAR_LEVELS.some((l) => l.id === asked)) return setLevel(asked as GrammarLevel);
     const next = GRAMMAR.find((g) => !s.grammar[g.id]?.passed);
     if (next) setLevel(next.level);
     // eslint-disable-next-line react-hooks/exhaustive-deps
