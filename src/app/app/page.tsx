@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { AudioLines, BookHeart, BookOpenText, Clapperboard, Headphones, Bookmark, BookOpen, Check, ChevronRight, Compass, Flame, GraduationCap, Layers, Mic, PenLine, Puzzle, Repeat, Star, Trophy, Volume2, X } from "lucide-react";
 import { LESSONS } from "@/content/lessons";
@@ -31,6 +32,17 @@ export default function Dashboard() {
   const stats = badgeStats(s);
   const goalPct = Math.min(1, day.words / s.settings.dailyGoal);
   const streak = currentStreak(s);
+  const [allBadges, setAllBadges] = useState(false);
+  // Earned first, then the closest to being earned.
+  const badgeOrder = [...BADGES].sort((a, b) => {
+    const ea = s.earnedBadges.includes(a.id) ? 1 : 0;
+    const eb = s.earnedBadges.includes(b.id) ? 1 : 0;
+    if (ea !== eb) return eb - ea;
+    const [ha, na] = a.progress(stats);
+    const [hb, nb] = b.progress(stats);
+    return (nb ? hb / nb : 0) - (na ? ha / na : 0);
+  });
+  const shownBadges = allBadges ? badgeOrder : badgeOrder.slice(0, 4);
 
   return (
     <div
@@ -140,7 +152,7 @@ export default function Dashboard() {
             </span>
           </div>
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2">
-            {BADGES.map((b) => {
+            {shownBadges.map((b) => {
               const earned = s.earnedBadges.includes(b.id);
               const [have, need] = b.progress(stats);
               return (
@@ -164,6 +176,9 @@ export default function Dashboard() {
               );
             })}
           </ul>
+          <button type="button" className="btn-ghost btn-sm mt-3 w-full" onClick={() => setAllBadges(!allBadges)} aria-expanded={allBadges}>
+            {allBadges ? "Show fewer" : `Show all ${BADGES.length} badges`}
+          </button>
         </section>
       </aside>
     </div>
@@ -269,17 +284,20 @@ function Explore({ dueCount }: { dueCount: number }) {
       <h2 id="explore-heading" className="eyebrow mb-3 text-muted">
         Everything in Farsi Pen
       </h2>
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {/* A grouped list, like iOS Settings: icon, name, live status, chevron. */}
+      <ul className="card divide-y divide-line overflow-hidden !p-0 sm:grid sm:grid-cols-2 sm:divide-y-0">
         {features.map((f) => (
-          <li key={f.href}>
-            <Link href={f.href} className="tile relative flex h-full flex-col p-3.5 sm:p-4">
-              {f.badge && <span className={cx("chip absolute right-2.5 top-2.5", TONE[f.tone].soft, TONE[f.tone].ink)}>{f.badge}</span>}
-              <span className={cx("grid size-10 place-items-center rounded-full", TONE[f.tone].soft, TONE[f.tone].ink)}>
-                <f.icon className="size-5" strokeWidth={2.5} />
+          <li key={f.href} className="sm:border-b sm:border-line sm:odd:border-e">
+            <Link href={f.href} className="flex min-h-[3.75rem] items-center gap-3 px-4 py-2.5 transition-colors hover:bg-paper active:bg-paper">
+              <span className={cx("grid size-9 shrink-0 place-items-center rounded-[0.625rem] text-on-accent", TONE[f.tone].bg)}>
+                <f.icon className="size-[18px]" strokeWidth={2.2} />
               </span>
-              <span className="mt-3 block font-extrabold leading-tight">{f.title}</span>
-              <span className="mt-0.5 block text-xs font-semibold text-muted sm:text-sm">{f.text}</span>
-              <span className={cx("mt-auto block pt-2 text-xs font-bold", TONE[f.tone].ink)}>{f.status}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold leading-tight">{f.title}</span>
+                <span className="block truncate text-[13px] text-muted">{f.status}</span>
+              </span>
+              {f.badge && <span className={cx("chip", TONE[f.tone].soft, TONE[f.tone].ink)}>{f.badge}</span>}
+              <ChevronRight className="size-4 shrink-0 text-faint" strokeWidth={2.5} />
             </Link>
           </li>
         ))}
