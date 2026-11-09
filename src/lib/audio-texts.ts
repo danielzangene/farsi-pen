@@ -7,6 +7,7 @@ import { LESSONS } from "@/content/lessons";
 import { MISSIONS } from "@/content/missions";
 import * as poems from "@/content/poems";
 import { READINGS } from "@/content/readings";
+import { CONNECTORS, SPEAKING_TASKS, WRITING_TASKS } from "@/content/samfa";
 import { SCENES } from "@/content/scenes";
 import { SOUNDS } from "@/content/sounds";
 import { WORDS } from "@/content/words";
@@ -57,6 +58,9 @@ export function collectAudioTexts(): Record<string, string> {
     SCENES,
     SOUNDS,
     READINGS,
+    WRITING_TASKS,
+    SPEAKING_TASKS,
+    CONNECTORS,
   ].forEach((m) => walk(m));
   add("سلام، حال شما چطور است؟"); // Settings voice test
 

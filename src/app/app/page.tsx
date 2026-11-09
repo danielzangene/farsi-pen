@@ -254,6 +254,7 @@ function Explore({ dueCount }: { dueCount: number }) {
     { href: "/app/scenes/", title: "Scenes", text: "Play Sara, Arash or Khale Mahin", status: `${Object.keys(s.scenes ?? {}).length}/${SCENES.length} episodes played`, icon: Clapperboard, tone: "sky" },
     { href: "/app/sounds/", title: "Sounds", text: "kh, gh, rolled r and the vowels English lacks", status: soundsTried ? `${soundsSolid}/${HARD_SOUNDS.length} sounds solid` : "Daily 3-minute workout", icon: AudioLines, tone: "saffron" },
     { href: "/app/lessons/", title: "Lessons", text: "Learn new words step by step", status: `${lessonsDone}/${LESSONS.length} done`, icon: BookOpen, tone: "saffron" },
+    { href: "/app/samfa/", title: "SAMFA exam", text: "Practise all four parts, take a mini mock", status: s.samfa?.mocks?.length ? `Last mock ${s.samfa.mocks[s.samfa.mocks.length - 1].total}/240` : "Mini mock out of 240", icon: GraduationCap, tone: "firuze" },
     { href: "/app/reading/", title: "Reading", text: "B1 texts about Iran: read, discuss, answer", status: `${Object.keys(s.readings ?? {}).length}/${READINGS.length} lessons done`, icon: BookOpenText, tone: "plum" },
     { href: "/app/grammar/", title: "Grammar", text: "A1 → B2, with exercises", status: `${grammarDone}/${GRAMMAR.length} concepts`, icon: Puzzle, tone: "plum" },
     { href: "/app/alphabet/", title: "Alphabet", text: "Letters, vowel signs, tracing", status: `${traced}/${LETTERS.length} traced`, icon: PenLine, tone: "pista" },

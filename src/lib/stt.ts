@@ -113,19 +113,27 @@ function sideRecorder(): { stop: () => void; blob: Promise<Blob | null> } {
 
 // ── Web Speech API ────────────────────────────────────────────────────────
 
-function listenBrowser(record: boolean): Listening {
+function listenBrowser(record: boolean, continuous = false, maxMs = 5000): Listening {
   const Ctor = recognitionCtor();
   if (!Ctor) throw new SttError("unsupported", "Speech recognition isn't available in this browser");
   const rec = new Ctor();
   rec.lang = "fa-IR";
   rec.interimResults = false;
-  rec.continuous = false;
-  rec.maxAlternatives = 5;
+  rec.continuous = continuous;
+  // Long answers: one best guess per phrase, joined; short ones: every alternative.
+  rec.maxAlternatives = continuous ? 1 : 5;
   let cancelled = false;
   const side = record ? sideRecorder() : null;
   const result = new Promise<string[]>((resolve, reject) => {
     const heard: string[] = [];
     rec.onresult = (e) => {
+      if (continuous) {
+        const parts: string[] = [];
+        for (let i = 0; i < e.results.length; i++) if (e.results[i][0]?.transcript.trim()) parts.push(e.results[i][0].transcript.trim());
+        heard.length = 0;
+        if (parts.length) heard.push(parts.join(" "));
+        return;
+      }
       for (let i = 0; i < e.results.length; i++) {
         const alts = e.results[i];
         for (let j = 0; j < alts.length; j++) if (alts[j].transcript.trim()) heard.push(alts[j].transcript.trim());
@@ -157,6 +165,8 @@ function listenBrowser(record: boolean): Listening {
     };
   });
   rec.start();
+  const timer = continuous ? setTimeout(() => rec.stop(), maxMs) : null;
+  void result.finally(() => timer && clearTimeout(timer)).catch(() => {});
   return {
     stop: () => rec.stop(),
     cancel: () => {
@@ -284,6 +294,6 @@ function listenWhisper(maxMs: number): Listening {
 }
 
 /** Starts listening for one Persian utterance. */
-export function listen(engine: Engine, maxMs = 5000, opts: { record?: boolean } = {}): Listening {
-  return engine === "browser" ? listenBrowser(!!opts.record && canRecordAlongside()) : listenWhisper(maxMs);
+export function listen(engine: Engine, maxMs = 5000, opts: { record?: boolean; continuous?: boolean } = {}): Listening {
+  return engine === "browser" ? listenBrowser(!!opts.record && canRecordAlongside(), !!opts.continuous, maxMs) : listenWhisper(maxMs);
 }
