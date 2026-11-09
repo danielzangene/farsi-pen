@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, AudioLines, Check, ChevronRight, Clapperboard, Flame, Headphones, Keyboard, Layers, Mic, Star, Zap } from "lucide-react";
+import { hasBackend } from "@/lib/backend";
+import { ArrowRight, AudioLines, Check, ChevronRight, Clapperboard, Flame, Headphones, Keyboard, Layers, MessagesSquare, Mic, Star, Zap } from "lucide-react";
 import { buildDeck } from "@/lib/flashcards";
 import { LESSONS } from "@/content/lessons";
 import { CAST, castOf, sceneOfTheDay } from "@/content/scenes";
@@ -345,6 +346,7 @@ export function PracticeStudio() {
     { href: "/app/listen/", title: "Hands-free", text: "Hear it, say it, repeat", icon: Headphones, tone: "firuze" },
     { href: "/app/sounds/", title: "Sound workout", text: "Your weakest sounds", icon: AudioLines, tone: "saffron" },
     { href: "/app/practice/", title: "Type from memory", text: "Spelling and recall", icon: Keyboard, tone: "pista" },
+    ...(hasBackend ? [{ href: "/app/tutor/", title: "AI tutor", text: "Chat in Persian", icon: MessagesSquare, tone: "sky" as Tone }] : []),
   ];
   return (
     <section aria-labelledby="studio-heading">

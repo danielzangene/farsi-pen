@@ -8,6 +8,8 @@ import { CardControls } from "@/components/CardControls";
 import { PageHeader, Segmented } from "@/components/ui";
 import { RecognitionSetup, VoiceSetup } from "@/components/SpeechSetup";
 import { ProgressTools } from "@/components/ProgressTools";
+import { SyncCard } from "@/components/SyncCard";
+import { FeedbackCard } from "@/components/FeedbackCard";
 
 export default function SettingsPage() {
   const s = useProgress();
@@ -169,6 +171,8 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      <SyncCard />
+
       <section className="card p-5">
         <h2 className="eyebrow mb-4 text-muted">Your progress</h2>
         <ProgressTools />
@@ -180,6 +184,8 @@ export default function SettingsPage() {
           </Link>
         </div>
       </section>
+
+      <FeedbackCard />
 
       <section className="card p-5">
         <h2 className="eyebrow text-anar-ink">Reset progress</h2>

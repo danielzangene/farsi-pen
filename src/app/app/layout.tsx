@@ -1,4 +1,5 @@
 import { AppNav } from "@/components/AppNav";
+import { AutoSync } from "@/components/AutoSync";
 import { ReminderWatcher } from "@/components/ReminderWatcher";
 
 export const metadata = { title: { absolute: "Dashboard · Farsi Pen", template: "%s · Farsi Pen" } };
@@ -9,6 +10,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="lg:pl-64 [body[data-focus]_&]:pl-0">
       <AppNav />
       <ReminderWatcher />
+      <AutoSync />
       <main className="mx-auto w-full max-w-5xl px-4 pb-[calc(7.5rem+env(safe-area-inset-bottom))] pt-6 lg:pb-12 [body[data-focus]_&]:pb-6">{children}</main>
     </div>
   );

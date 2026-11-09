@@ -1,0 +1,18 @@
+# Farsi Pen API: AI tutor proxy (NVIDIA), device sync and feedback.
+# Deploy:   npx wrangler deploy
+# Secrets:  npx wrangler secret put NVIDIA_API_KEY
+name = "farsi-pen-api"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+[vars]
+# Comma-separated origins allowed to call the API.
+ALLOWED_ORIGINS = "https://danielzangene.github.io,http://localhost:3000,http://localhost:4321"
+MODEL = "meta/llama-3.3-70b-instruct"
+# Tutor turns per visitor per day, and for everyone together per day.
+TUTOR_PER_DAY = "40"
+TUTOR_GLOBAL_PER_DAY = "3000"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"

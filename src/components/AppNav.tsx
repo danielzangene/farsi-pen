@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AudioLines, Bookmark, BookHeart, BookOpen, BookOpenText, ChartColumn, CircleUserRound, Clapperboard, Compass, Flame, GraduationCap, Headphones, House, Layers, Mic, PenLine, Puzzle, Repeat, Route, Star } from "lucide-react";
+import { AudioLines, Bookmark, BookHeart, BookOpen, BookOpenText, ChartColumn, CircleUserRound, Clapperboard, Compass, Flame, GraduationCap, Headphones, House, Layers, MessagesSquare, Mic, PenLine, Puzzle, Repeat, Route, Star } from "lucide-react";
+import { hasBackend } from "@/lib/backend";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
@@ -28,6 +29,7 @@ const SECONDARY: NavItem[] = [
   { href: "/app/scenes/", label: "Scenes", icon: Clapperboard, tone: "sky", parent: HOME },
   { href: "/app/listen/", label: "Hands-free", icon: Headphones, tone: "firuze", parent: HOME },
   { href: "/app/practice/", label: "Daily Practice", icon: Repeat, tone: "sky", parent: HOME },
+  ...(hasBackend ? [{ href: "/app/tutor/", label: "AI tutor", icon: MessagesSquare, tone: "sky" as const, parent: HOME }] : []),
   { href: "/app/sounds/", label: "Sounds", icon: AudioLines, tone: "saffron", parent: PATH },
   { href: "/app/lessons/", label: "Lessons", icon: BookOpen, tone: "saffron", parent: PATH },
   { href: "/app/missions/", label: "Missions", icon: Compass, tone: "firuze", parent: PATH },

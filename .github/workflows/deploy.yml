@@ -59,6 +59,7 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: ${{ env.BASE }}
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
 
       - uses: actions/checkout@v4
         if: env.DEPLOY == 'true'
@@ -71,6 +72,7 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: ${{ env.BASE }}/dev
           NEXT_PUBLIC_CHANNEL: dev
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
         run: |
           npm ci
           npm run build
