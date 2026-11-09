@@ -15,7 +15,7 @@ let index: Map<string, Word[]> | null = null;
 
 // Persian script leaves vowels ambiguous (initial ا can be a, e or o), so a
 // word only practises a vowel if its transliteration has it there too.
-const VOWEL_IN_TR: Record<string, RegExp> = { aa: /â/, a: /^'?a/, u: /u/, i: /i/, o: /o/, e: /e/ };
+export const VOWEL_IN_TR: Record<string, RegExp> = { aa: /â/, a: /^'?a/, u: /u/, i: /i/, o: /o/, e: /e/ };
 
 /** Sounds the recogniser can't score (the light glottal catch is folded away). */
 const UNSCORED = new Set(["glottal"]);

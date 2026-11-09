@@ -2,14 +2,17 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { AudioLines, PartyPopper, Target, X, Zap } from "lucide-react";
+import { AudioLines, PartyPopper, Star, Target, X, Zap } from "lucide-react";
 import { HARD_SOUNDS, SOUND_BY_ID, SOUNDS, type Sound } from "@/content/sounds";
+import type { Word } from "@/content/words";
 import { buildWorkout, pickSounds, soundLevel, wordsForSound, type WorkoutItem } from "@/lib/sound-workout";
-import { completeSpeaking, useHydrated, useProgress, type SessionSummary, type SoundStat } from "@/lib/store";
+import { passedTestOut, stageCount, stageItems, starsFor, testOutItems } from "@/lib/sound-path";
+import { completeSoundStage, completeSpeaking, useHydrated, useProgress, type SessionSummary, type SoundStat } from "@/lib/store";
 import { resolveEngine } from "@/lib/stt";
 import { cx } from "@/lib/util";
 import { SoundTipCard } from "@/components/PronunciationFeedback";
 import { SayItButton } from "@/components/SayItButton";
+import { NextUpCard, SoundPathList, type PathPlay } from "@/components/SoundPath";
 import { SpeakRound } from "@/components/SpeakRound";
 import { AudioButtons, Fa, PageHeader, ProgressBar, StatCard } from "@/components/ui";
 
@@ -29,6 +32,8 @@ export default function SoundsPage() {
   const [round, setRound] = useState(0);
   const [result, setResult] = useState<{ r: SessionSummary; xp: number } | null>(null);
   const [open, setOpen] = useState<Sound | null>(null);
+  const [path, setPath] = useState<(PathPlay & { words: Word[] }) | null>(null);
+  const [pathResult, setPathResult] = useState<{ xp: number; stars: number; correct: number; total: number; passed: boolean } | null>(null);
 
   const stats = s.soundStats ?? {};
   const next = pickSounds(stats);
@@ -41,7 +46,72 @@ export default function SoundsPage() {
     setRound((n) => n + 1);
   };
 
+  const playPath = (p: PathPlay) => {
+    const rec = s.soundPath?.[p.unit.id];
+    const words = p.stage === "test" ? testOutItems(p.unit) : stageItems(p.unit, p.stage, rec);
+    setPathResult(null);
+    setPath({ ...p, words });
+    setRound((n) => n + 1);
+  };
+
   if (!hydrated) return null;
+
+  if (path && !pathResult)
+    return (
+      <div className="mx-auto max-w-3xl">
+        <SpeakRound
+          key={round}
+          words={path.words}
+          focus={Object.fromEntries(path.words.map((w) => [w.id, path.unit.sounds[0]]))}
+          exitHref="/app/sounds/"
+          onDone={(r) => {
+            const stars = starsFor(r.correct, r.total);
+            const passed = path.stage === "test" && passedTestOut(r.correct, r.total);
+            const xp = completeSoundStage(path.unit.id, path.stage, r.outcomes, stars, passed);
+            setPathResult({ xp, stars, correct: r.correct, total: r.total, passed });
+          }}
+        />
+      </div>
+    );
+
+  if (path && pathResult) {
+    const test = path.stage === "test";
+    const n = stageCount(path.unit);
+    const nextStage = typeof path.stage === "number" && path.stage < n ? path.stage + 1 : null;
+    return (
+      <div className="mx-auto flex max-w-xl flex-col items-center pt-6 text-center sm:pt-12">
+        <Fa className="text-5xl font-bold">{path.unit.badge}</Fa>
+        <h1 className="mt-4 text-3xl font-extrabold">
+          {test ? (pathResult.passed ? "Tested out!" : "Not yet") : path.stage === n ? "Review done" : `Stage ${(path.stage as number) + 1} done`}
+        </h1>
+        <p className="mt-2 font-semibold text-muted">
+          {test
+            ? pathResult.passed
+              ? `You can already say ${path.unit.title.toLowerCase()} — the next unit is open.`
+              : "Worth working through the stages — they're short."
+            : `${pathResult.correct} of ${pathResult.total} said well.`}
+        </p>
+        {!test && (
+          <span className="mt-5 flex gap-2" aria-label={`${pathResult.stars} of 3 stars`}>
+            {[1, 2, 3].map((i) => (
+              <Star key={i} className={cx("size-12 animate-pop", i <= pathResult.stars ? "fill-saffron text-saffron" : "text-line-strong")} strokeWidth={2} />
+            ))}
+          </span>
+        )}
+        <p className="mt-4 font-extrabold text-saffron-ink">+{pathResult.xp} XP</p>
+        <div className="mt-8 flex w-full max-w-md flex-col gap-3">
+          {nextStage !== null && nextStage <= n && (
+            <button type="button" className="btn-primary btn-lg" onClick={() => playPath({ unit: path.unit, stage: nextStage })} autoFocus>
+              {nextStage === n ? "Go to the review" : `Stage ${nextStage + 1}`}
+            </button>
+          )}
+          <button type="button" className={nextStage !== null && nextStage <= n ? "btn-secondary btn-lg" : "btn-primary btn-lg"} onClick={() => setPath(null)}>
+            Back to the path
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (session && !result)
     return (
@@ -106,16 +176,25 @@ export default function SoundsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
-      <PageHeader title="Persian sounds" subtitle="The sounds English doesn't have, how to make them, and a short daily workout on the ones you find hardest." />
+      <PageHeader title="Persian sounds" subtitle="The sounds English doesn't have: a path of short stages, a guide to making each one, and a daily workout on your weakest." />
+
+      <NextUpCard all={s.soundPath ?? {}} onPlay={playPath} disabled={!engine} />
+
+      <section aria-labelledby="path-heading">
+        <h2 id="path-heading" className="mb-3 text-lg font-extrabold">
+          The sound path
+        </h2>
+        <SoundPathList all={s.soundPath ?? {}} onPlay={playPath} onInfo={(u) => setOpen(SOUND_BY_ID[u.sounds[0]])} disabled={!engine} />
+      </section>
 
       <section className="card p-5 sm:p-6" aria-labelledby="workout-heading">
         <div>
           <div>
             <h2 id="workout-heading" className="text-xl font-extrabold">
-              {tried ? "Your sound workout" : "Start your first sound workout"}
+              Quick workout
             </h2>
             <p className="mt-1 font-semibold text-muted">
-              {tried ? "Picked from your weakest sounds." : "Three sounds, three words each — about three minutes."} {next.length * 3} words.
+              {tried ? "Three minutes on your weakest sounds, from anywhere on the path." : "Three sounds, three words each — about three minutes."} {next.length * 3} words.
             </p>
             <ul className="mt-3 flex flex-wrap gap-2">
               {next.map((id) => (
@@ -142,7 +221,7 @@ export default function SoundsPage() {
 
       <section aria-labelledby="hard-heading">
         <h2 id="hard-heading" className="eyebrow mb-3 text-muted">
-          Sounds to practise
+          Sound guide
         </h2>
         <ul className="grid gap-3 sm:grid-cols-2">
           {HARD_SOUNDS.map((snd) => {

@@ -75,6 +75,16 @@ export interface ProgressState {
   scenes: Record<string, SceneRecord>;
   /** Reading lessons (id → best comprehension score and when finished). */
   readings: Record<string, { best: number; doneAt: string }>;
+  /** The sound path (unit id → stars per stage, tested out). */
+  soundPath: Record<string, SoundPathRecord>;
+}
+
+export interface SoundPathRecord {
+  /** Stars (1–3) per stage played, in order; the last stage is the review. */
+  stars: number[];
+  testedOut?: boolean;
+  /** 0–100 per word, from its latest take, for the review. */
+  wordScores?: Record<string, number>;
 }
 
 export interface SceneRecord {
@@ -133,6 +143,7 @@ export const DEFAULT_STATE: ProgressState = {
   soundStats: {},
   scenes: {},
   readings: {},
+  soundPath: {},
   settings: {
     name: "",
     dailyGoal: 10,
@@ -434,6 +445,33 @@ export function completeReading(id: string, correct: number, total: number): num
     xp = correct * XP.perCorrect + (prev ? 0 : 10);
     const best = Math.max(prev?.best ?? 0, total ? Math.round((correct / total) * 100) : 0);
     return logActivity(addActivity({ ...s, readings: { ...(s.readings ?? {}), [id]: { best, doneAt: prev?.doneAt ?? dayKey() } } }, 0, xp), "reading");
+  });
+  return xp;
+}
+
+/**
+ * A stage of the sound path (or its test-out). `stage` is the stage index,
+ * or "test". Returns XP and, for the test, whether you tested out.
+ */
+export function completeSoundStage(unitId: string, stage: number | "test", outcomes: Record<string, Outcome>, stars: number, passed = false): number {
+  let xp = 0;
+  update((s) => {
+    const prev = s.soundPath?.[unitId] ?? { stars: [] };
+    const good = Object.values(outcomes).filter((o) => o !== "again").length;
+    const wordScores = { ...(prev.wordScores ?? {}) };
+    for (const [id, o] of Object.entries(outcomes)) wordScores[id] = o === "good" ? 100 : o === "hard" ? 60 : 20;
+    let rec: SoundPathRecord = { ...prev, wordScores };
+    if (stage === "test") {
+      xp = passed && !prev.testedOut ? 15 : good;
+      if (passed) rec = { ...rec, testedOut: true };
+    } else {
+      const starsList = [...prev.stars];
+      const first = starsList[stage] === undefined;
+      starsList[stage] = Math.max(starsList[stage] ?? 0, stars);
+      rec = { ...rec, stars: starsList };
+      xp = good * XP.speakPerCorrect + (first ? 3 : 0);
+    }
+    return logActivity(addActivity({ ...s, soundPath: { ...(s.soundPath ?? {}), [unitId]: rec } }, 0, xp), "speak");
   });
   return xp;
 }
