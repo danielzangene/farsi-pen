@@ -31,7 +31,7 @@ export function ProgressTools() {
   };
 
   return (
-    <div className="divide-y-2 divide-line">
+    <div className="divide-y divide-line">
       <div className="pb-4">
         <p className="font-bold">Back up your progress</p>
         <p className="mt-1 text-sm font-semibold text-muted">

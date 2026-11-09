@@ -200,7 +200,7 @@ export function ScenePlayer({ scene }: { scene: Scene }) {
           const isCurrent = i === idx;
           if (!isLine(x))
             return (
-              <li key={i} ref={isCurrent ? current : undefined} className="animate-pop border-y-2 border-dashed border-line py-2 text-center text-sm font-semibold italic text-muted">
+              <li key={i} ref={isCurrent ? current : undefined} className="animate-pop border-y border-dashed border-line py-2 text-center text-sm font-semibold italic text-muted">
                 {x.stage}
               </li>
             );
@@ -245,7 +245,7 @@ export function ScenePlayer({ scene }: { scene: Scene }) {
       </ol>
 
       <div className="h-48" aria-hidden />
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-line bg-card pb-[env(safe-area-inset-bottom)]">
+      <div className="material fixed inset-x-0 bottom-0 z-40 border-t border-line pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:py-5">
           {!mine ? (
             <>

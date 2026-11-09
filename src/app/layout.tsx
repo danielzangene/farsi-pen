@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/nunito";
 import "./globals.css";
 import { asset, IS_DEV_SITE, STORAGE_KEY } from "@/lib/util";
 

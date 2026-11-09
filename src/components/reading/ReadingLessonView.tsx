@@ -76,7 +76,7 @@ export function ReadingLessonView({ lesson }: { lesson: ReadingLesson }) {
       </div>
 
       <div className="h-32" aria-hidden />
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-line bg-card pb-[env(safe-area-inset-bottom)]">
+      <div className="material fixed inset-x-0 bottom-0 z-40 border-t border-line pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-4">
           <button type="button" className="btn-ghost" onClick={() => setStep(step - 1)} disabled={step === 0}>
             <ArrowLeft className="size-4" /> Back
@@ -99,7 +99,7 @@ export function ReadingLessonView({ lesson }: { lesson: ReadingLesson }) {
 function WordList({ words }: { words: FaItem[] }) {
   const { settings } = useProgress();
   return (
-    <ul className="divide-y-2 divide-line rounded-2xl border-2 border-line">
+    <ul className="divide-y divide-line rounded-2xl border border-line">
       {words.map((w) => (
         <li key={w.fa} className="flex items-center gap-3 py-2 pe-1 ps-4">
           <Fa className="text-xl font-bold">{w.fa}</Fa>
@@ -117,7 +117,7 @@ function WordList({ words }: { words: FaItem[] }) {
 function BeforeYouRead({ lesson }: { lesson: ReadingLesson }) {
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border-2 border-line p-5">
+      <div className="rounded-2xl border border-line p-5">
         <p className="text-xl font-extrabold">{lesson.question.en}</p>
         <p className="mt-2 flex items-center gap-1">
           <Fa className="text-xl font-bold leading-relaxed">{lesson.question.fa}</Fa>
@@ -212,7 +212,7 @@ function ReadText({ lesson }: { lesson: ReadingLesson }) {
       ) : (
         <ol className="space-y-3">
           {sentences.map((s, i) => (
-            <li key={i} className={cx("flex items-start gap-2 rounded-2xl border-2 p-3", playing === i ? "border-sky bg-sky-soft" : "border-line")}>
+            <li key={i} className={cx("flex items-start gap-2 rounded-2xl border p-3", playing === i ? "border-sky bg-sky-soft" : "border-line")}>
               <button type="button" className="btn-ghost btn-icon shrink-0 !text-sky-ink" onClick={() => (stop(), void playAll(i))} aria-label={`Play sentence ${i + 1}`}>
                 <Volume2 className="size-5" />
               </button>
@@ -251,7 +251,7 @@ function Gloss({ word, glossary, onClose }: { word: string; glossary: Map<string
   const added = !!found && s.bookmarks.includes(id);
   return (
     <div role="status" className="fixed inset-x-0 bottom-20 z-40 px-4">
-      <div className="mx-auto flex max-w-3xl items-start gap-3 rounded-2xl border-2 border-sky bg-card p-4 shadow-lg">
+      <div className="mx-auto flex max-w-3xl items-start gap-3 rounded-2xl border border-sky bg-card p-4 shadow-lg">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1">
             <Fa className="text-2xl font-bold">{found?.fa ?? plain}</Fa>
@@ -310,7 +310,7 @@ function SpokenStep({ lesson }: { lesson: ReadingLesson }) {
       <p className="font-semibold">{lesson.spokenNote}</p>
       <ul className="space-y-3">
         {lesson.spoken.map((p) => (
-          <li key={p.fa} className="rounded-2xl border-2 border-line p-4">
+          <li key={p.fa} className="rounded-2xl border border-line p-4">
             <p className="text-sm font-semibold text-muted">{p.en}</p>
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
               <div>
@@ -445,7 +445,7 @@ function TaskStep({ lesson }: { lesson: ReadingLesson }) {
           {lesson.task.phrases.map((p) => {
             const on = used.includes(p);
             return (
-              <li key={p.fa} className={cx("flex items-center gap-1 rounded-xl border-2 py-1 pe-1 ps-3", on ? "border-pista bg-pista-soft text-pista-ink" : "border-line")}>
+              <li key={p.fa} className={cx("flex items-center gap-1 rounded-xl border py-1 pe-1 ps-3", on ? "border-pista bg-pista-soft text-pista-ink" : "border-line")}>
                 {on && <Check className="size-4" />}
                 <Fa className="font-bold">{p.fa}</Fa>
                 <span className="text-sm font-semibold text-muted">· {p.en}</span>

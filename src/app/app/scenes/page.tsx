@@ -21,7 +21,7 @@ export default function ScenesPage() {
       <PageHeader title="Scenes" subtitle="Short everyday sketches with the same family. Pick a part, the others are read for you, and you say your lines." />
 
       <section aria-labelledby="today-scene" className="card overflow-hidden">
-        <div className="border-b-2 border-line bg-paper px-5 py-2 text-sm font-extrabold text-muted">Today&apos;s scene</div>
+        <div className="border-b border-line bg-paper px-5 py-2 text-sm font-extrabold text-muted">Today&apos;s scene</div>
         <div className="p-5 sm:p-6">
           <p className="text-sm font-bold text-muted">Episode {today.episode}</p>
           <h2 id="today-scene" className="text-2xl font-extrabold">

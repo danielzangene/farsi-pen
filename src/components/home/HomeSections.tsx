@@ -41,7 +41,7 @@ export function WeekStrip() {
             </span>
             <span
               className={cx(
-                "grid size-9 place-items-center rounded-full border-2 sm:size-10",
+                "grid aspect-square w-full max-w-10 place-items-center rounded-full border",
                 d.goal ? "border-transparent bg-anar text-on-accent" : d.practised ? "border-anar bg-anar-soft text-anar-ink" : "border-line bg-paper",
                 d.today && !d.goal && "ring-[3px] ring-sky/60",
               )}
@@ -149,7 +149,7 @@ export function WeakSounds() {
       {weak.length ? (
         <ul className="mb-3 flex flex-wrap gap-2">
           {weak.map(([id, st]) => (
-            <li key={id} className="flex items-center gap-2 rounded-full border-2 border-line py-1 pe-3 ps-1">
+            <li key={id} className="flex items-center gap-2 rounded-full border border-line py-1 pe-3 ps-1">
               <span className="grid size-8 place-items-center rounded-full bg-paper">
                 <Fa className="font-bold">{SOUND_BY_ID[id].letters.split(" ")[0]}</Fa>
               </span>

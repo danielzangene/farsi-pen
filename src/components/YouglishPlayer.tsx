@@ -62,7 +62,7 @@ export function YouglishPlayer({ query }: { query: string }) {
 
   return (
     <div className="space-y-3">
-      <div className="relative overflow-hidden rounded-2xl border-2 border-line bg-paper">
+      <div className="relative overflow-hidden rounded-2xl border border-line bg-paper">
         <div ref={hostRef} className={status === "ready" ? "" : "pointer-events-none h-0 overflow-hidden opacity-0"} />
         {status === "loading" && (
           <p role="status" className="flex items-center justify-center gap-2 px-4 py-10 font-bold text-muted">
@@ -127,7 +127,7 @@ export function YouglishDialog({ query, label, onClose }: { query: string; label
       ref={ref}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="card m-auto w-[min(48rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] animate-pop overflow-y-auto p-0 text-ink backdrop:bg-black/50"
+      className="card m-auto !rounded-[1.75rem] w-[min(48rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] animate-pop overflow-y-auto p-0 text-ink backdrop:bg-black/40"
       aria-label="Hear it in real videos"
     >
       <div className="p-4 sm:p-5">

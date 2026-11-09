@@ -214,7 +214,7 @@ function Checklist() {
             <Link href={x.href} className={cx("flex min-h-11 items-center gap-3 rounded-xl px-2 py-1.5 text-sm font-bold hover:bg-paper", x.done ? "text-muted line-through" : "text-ink")}>
               <span
                 className={cx(
-                  "grid size-7 shrink-0 place-items-center rounded-full border-2",
+                  "grid size-7 shrink-0 place-items-center rounded-full border",
                   x.done ? "border-saffron-shadow bg-saffron text-on-accent" : "border-line-strong bg-card",
                 )}
               >

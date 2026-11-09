@@ -39,11 +39,9 @@ export function ProgressBar({ value, tone = "firuze", size = "md", className }: 
       aria-valuenow={pct}
       aria-valuemin={0}
       aria-valuemax={100}
-      className={cx("relative overflow-hidden rounded-full bg-line", size === "sm" ? "h-2.5" : "h-4", className)}
+      className={cx("relative overflow-hidden rounded-full bg-paper", size === "sm" ? "h-1.5" : "h-2.5", className)}
     >
-      <div className={cx("relative h-full rounded-full transition-[width] duration-500 ease-out", TONE[tone].bg)} style={{ width: `${pct}%`, minWidth: pct ? (size === "sm" ? "0.625rem" : "1rem") : 0 }}>
-        {size === "md" && pct > 0 && <span className="absolute inset-x-2 top-1 h-1 rounded-full bg-white/30" />}
-      </div>
+      <div className={cx("h-full rounded-full transition-[width] duration-500 ease-[var(--ease-spring)]", TONE[tone].bg)} style={{ width: `${pct}%`, minWidth: pct ? (size === "sm" ? "0.375rem" : "0.625rem") : 0 }} />
     </div>
   );
 }
@@ -162,7 +160,7 @@ export function Segmented<T extends string>({
   label: string;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex max-w-full overflow-x-auto rounded-2xl border-2 border-line bg-paper p-1 text-xs font-extrabold">
+    <div role="radiogroup" aria-label={label} className="inline-flex max-w-full overflow-x-auto rounded-2xl border border-line bg-paper p-1 text-xs font-extrabold">
       {options.map((o) => (
         <button
           key={o.value}
@@ -172,7 +170,7 @@ export function Segmented<T extends string>({
           onClick={() => onChange(o.value)}
           className={cx(
             "min-h-10 shrink-0 whitespace-nowrap rounded-xl px-3 py-1.5 transition",
-            value === o.value ? "bg-card text-sky-ink shadow-[0_2px_0_var(--color-line)]" : "text-muted hover:text-ink",
+            value === o.value ? "bg-card text-sky-ink" : "text-muted hover:text-ink",
           )}
         >
           {o.label}
@@ -211,7 +209,7 @@ export function FocusMode() {
 /** Session header: close (X), progress bar, optional right-hand slot. */
 export function SessionHeader({ exitHref, onExit, progress, right }: { exitHref: string; onExit?: () => void; progress: number; right?: React.ReactNode }) {
   return (
-    <div className="sticky top-0 z-30 -mx-4 mb-6 bg-card/95 px-4 py-3 backdrop-blur">
+    <div className="sticky top-0 z-30 -mx-4 mb-6 material-canvas px-4 py-3">
       <FocusMode />
       <div className="mx-auto flex max-w-3xl items-center gap-3">
         {onExit ? (
@@ -262,15 +260,16 @@ export function FeedbackSheet({
       <div
         role={answered ? "status" : undefined}
         className={cx(
-          "fixed inset-x-0 bottom-0 z-40 border-t-2 pb-[env(safe-area-inset-bottom)]",
-          answered ? cx(TONE[tone].soft, "animate-slide-up border-transparent") : "border-line bg-card",
+          "fixed inset-x-0 bottom-0 z-40 pb-[env(safe-area-inset-bottom)]",
+          answered ? "animate-slide-up rounded-t-[1.75rem] shadow-[0_-12px_40px_rgb(0_0_0/0.14)]" : "material border-t border-line",
         )}
+        style={answered ? { background: `color-mix(in srgb, var(--color-${tone}) 14%, var(--color-card))` } : undefined}
       >
         <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:py-7">
           {answered ? (
             <>
               <div className={cx("flex min-w-0 items-start gap-3", TONE[tone].ink)}>
-                <span className="grid size-12 shrink-0 animate-pop place-items-center rounded-full bg-card">
+                <span className="grid size-11 shrink-0 animate-pop place-items-center rounded-full bg-card">
                   {good ? <CheckCircle2 className="size-8" /> : <XCircle className="size-8" />}
                 </span>
                 <div className="min-w-0">
@@ -291,12 +290,12 @@ export function FeedbackSheet({
   );
 }
 
-/** Result card: coloured frame with an uppercase label and a white value box. */
+/** Result tile: a small label over a large value, tinted by tone. */
 export function StatCard({ label, value, tone = "saffron", icon }: { label: string; value: React.ReactNode; tone?: Tone; icon?: React.ReactNode }) {
   return (
-    <div className={cx("animate-pop overflow-hidden rounded-2xl border-2", TONE[tone].border, TONE[tone].bg)}>
-      <p className="eyebrow py-1 text-center text-on-accent">{label}</p>
-      <div className={cx("m-0.5 mt-0 flex items-center justify-center gap-1.5 rounded-[0.8rem] bg-card px-3 py-3 text-xl font-extrabold", TONE[tone].ink)}>
+    <div className="card animate-pop px-3 py-3.5 text-center">
+      <p className="text-xs font-semibold text-muted">{label}</p>
+      <div className={cx("mt-1 flex items-center justify-center gap-1.5 text-2xl font-bold tracking-tight", TONE[tone].ink)}>
         {icon}
         {value}
       </div>
@@ -309,8 +308,8 @@ export function Bubble({ children, className }: { children: React.ReactNode; cla
   return (
     <span
       className={cx(
-        "eyebrow relative inline-block rounded-xl border-2 border-line bg-card px-3 py-1.5 text-firuze-ink",
-        "after:absolute after:left-1/2 after:top-full after:-mt-[5px] after:size-2.5 after:-translate-x-1/2 after:rotate-45 after:border-b-2 after:border-r-2 after:border-line after:bg-card",
+        "eyebrow relative inline-block rounded-xl border border-line bg-card px-3 py-1.5 text-firuze-ink",
+        "after:absolute after:left-1/2 after:top-full after:-mt-[5px] after:size-2.5 after:-translate-x-1/2 after:rotate-45 after:border-b after:border-r after:border-line after:bg-card",
         className,
       )}
     >

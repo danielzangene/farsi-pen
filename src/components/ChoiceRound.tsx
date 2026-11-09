@@ -148,7 +148,7 @@ export function ChoiceRound({
                 checked && state === "idle" && "opacity-50",
               )}
             >
-              <span className={cx("grid size-8 shrink-0 place-items-center rounded-lg border-2 text-sm font-extrabold", BADGE[state])}>
+              <span className={cx("grid size-8 shrink-0 place-items-center rounded-lg border text-sm font-extrabold", BADGE[state])}>
                 {state === "correct" ? (
                   <Check className="size-4" strokeWidth={3} aria-label="Correct" />
                 ) : state === "wrong" ? (

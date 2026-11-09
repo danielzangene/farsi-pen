@@ -11,96 +11,131 @@
 
 /*
  * Farsi Pen design tokens — see .claude/skills/farsi-pen-design-system.
- * Style: flat, bright colours; every interactive colour has a darker
- * "shadow" partner used for the 3D bottom edge; 2px borders; big radii;
- * rounded, heavy type. Brand colours are Farsi Pen's own (firuze, saffron,
- * anar), not another product's.
+ * Style: Apple's interface principles on the web. Grouped surfaces on a
+ * soft canvas, hairline separators, translucent materials for floating
+ * chrome, the system font for Latin text (Yekan Bakh for Persian), weight
+ * and size for hierarchy, instant press feedback and critically damped
+ * motion. Brand colours stay Farsi Pen's own: firuze, saffron, anar.
+ *
+ * Neutral fills and separators are translucent (like iOS system fills), so
+ * they read correctly on the canvas, on a card and in dark mode. Each
+ * colour's "-soft" tint is mixed from the colour itself, so only the base
+ * colours change between themes.
  */
 @theme {
   /* Neutrals */
+  --color-canvas: #f2f2f7;
   --color-card: #ffffff;
-  --color-paper: #f7f7f7;
-  --color-line: #e5e5e5;
-  --color-line-strong: #cecece;
-  --color-faint: #afafaf;
-  --color-muted: #737373;
+  --color-paper: rgb(118 118 128 / 0.12);
+  --color-line: rgb(60 60 67 / 0.16);
+  --color-line-strong: rgb(60 60 67 / 0.29);
+  --color-faint: #a1a1a6;
+  --color-muted: #6e6e73;
   /* Edge of inputs and selects: 3:1 against the card (WCAG 1.4.11). */
-  --color-field-edge: #8a8a8a;
-  --color-ink: #3c3c3c;
+  --color-field-edge: #8e8e93;
+  --color-ink: #1d1d1f;
 
   /* Brand: firuze (turquoise) — primary actions, current progress */
-  --color-firuze: #12a594;
-  --color-firuze-shadow: #0c7f72;
-  --color-firuze-soft: #ddf5f1;
-  --color-firuze-ink: #0b7a6e;
+  --color-firuze: #0b8f82;
+  --color-firuze-shadow: #087268;
+  --color-firuze-soft: color-mix(in srgb, var(--color-firuze) 14%, transparent);
+  --color-firuze-ink: #08766b;
 
   /* Correct / success */
-  --color-pista: #46a21c;
-  --color-pista-shadow: #36800f;
-  --color-pista-soft: #e3f6d5;
-  --color-pista-ink: #2e7a0c;
+  --color-pista: #248a3d;
+  --color-pista-shadow: #1b6b2f;
+  --color-pista-soft: color-mix(in srgb, var(--color-pista) 14%, transparent);
+  --color-pista-ink: #1d7232;
 
   /* Incorrect / danger (anar = pomegranate) */
-  --color-anar: #e5484d;
-  --color-anar-shadow: #c0353a;
-  --color-anar-soft: #ffe5e5;
-  --color-anar-ink: #c0353a;
+  --color-anar: #d93a30;
+  --color-anar-shadow: #b02a22;
+  --color-anar-soft: color-mix(in srgb, var(--color-anar) 13%, transparent);
+  --color-anar-ink: #c0281f;
 
   /* Rewards: XP, badges, done lessons (saffron) */
-  --color-saffron: #f5a623;
-  --color-saffron-shadow: #d38a0e;
-  --color-saffron-soft: #fff3d6;
-  --color-saffron-ink: #9a5b00;
+  --color-saffron: #f09a0a;
+  --color-saffron-shadow: #c97c00;
+  --color-saffron-soft: color-mix(in srgb, var(--color-saffron) 18%, transparent);
+  --color-saffron-ink: #8f5300;
 
   /* Selection, audio, info */
-  --color-sky: #1e9be0;
-  --color-sky-shadow: #1679b2;
-  --color-sky-soft: #ddf1fc;
-  --color-sky-ink: #12669a;
+  --color-sky: #007aff;
+  --color-sky-shadow: #0062cc;
+  --color-sky-soft: color-mix(in srgb, var(--color-sky) 13%, transparent);
+  --color-sky-ink: #0062cc;
 
   /* Grammar accent */
-  --color-plum: #9b5de5;
-  --color-plum-shadow: #7a3fc2;
-  --color-plum-soft: #f1e8fc;
-  --color-plum-ink: #6d35b3;
+  --color-plum: #9b51e0;
+  --color-plum-shadow: #7a35bf;
+  --color-plum-soft: color-mix(in srgb, var(--color-plum) 14%, transparent);
+  --color-plum-ink: #7a35bf;
 
   /* Text and icons on a solid colour fill (buttons, banners, badges). */
   --color-on-accent: #ffffff;
 
-  --font-sans: "Nunito Variable", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
-  --font-display: "Nunito Variable", ui-rounded, system-ui, sans-serif;
+  /* Latin text: the platform's system font (SF on Apple devices). */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
   --font-fa: "Yekan Bakh", Tahoma, sans-serif;
 
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-sheet: cubic-bezier(0.35, 1.5, 0.45, 0.9);
+  /* Hierarchy from weight: titles 700, headlines 600, emphasis 500, body 400. */
+  --font-weight-semibold: 500;
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 700;
+
+  /* Critically damped (no overshoot) for UI; the iOS sheet curve for sheets. */
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --radius-card: 1.25rem;
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   /* Safety net against sideways scrolling on narrow phones (never overflow: hidden, which breaks sticky). */
   html,
   body {
     overflow-x: clip;
   }
-  /* Headings wrap evenly instead of leaving one word alone on the last line. */
+  /* Headings wrap evenly; tracking tightens and leading closes up as type grows. */
   h1,
   h2,
   h3 {
     text-wrap: balance;
+    font-family: var(--font-display);
+    line-height: 1.2;
+  }
+  h1 {
+    letter-spacing: -0.022em;
+    line-height: 1.12;
+  }
+  h2 {
+    letter-spacing: -0.012em;
   }
   p {
     text-wrap: pretty;
   }
   body {
-    background: var(--color-card);
+    background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-weight: 500;
+    font-weight: 400;
+    line-height: 1.5;
+    font-optical-sizing: auto;
+    /* Ease light ↔ dark instead of an abrupt brightness jump. */
+    transition: background-color 300ms ease;
+  }
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
   }
   :focus-visible {
-    outline: 3px solid var(--color-sky);
+    outline: 3px solid color-mix(in srgb, var(--color-sky) 70%, transparent);
     outline-offset: 2px;
   }
   [lang="fa"] {
@@ -125,133 +160,117 @@
 }
 
 /*
- * Dark theme. Like the reference app: dark blue-grey surfaces (not black),
- * lighter and softer fills, dark labels on those fills. Applied when
- * <html data-theme="dark">, or by the system setting when the learner chose
- * "Auto" (no data-theme). Contrast checked like the light theme.
+ * Dark theme: true black canvas with raised grey surfaces, brighter fills
+ * and dark labels on them. Applied when <html data-theme="dark">, or by the
+ * system setting when the learner chose "Auto" (no data-theme).
  */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --color-card: #131f24;
-  --color-paper: #202f36;
-  --color-line: #37464f;
-  --color-line-strong: #4b5e68;
-  --color-faint: #52656d;
-  --color-muted: #9db0ba;
-  --color-field-edge: #62798a;
-  --color-ink: #f1f7fb;
-  --color-firuze: #2cc5b1;
-  --color-firuze-shadow: #1a9384;
-  --color-firuze-soft: #16383a;
-  --color-firuze-ink: #6be3d3;
-  --color-pista: #79c83c;
-  --color-pista-shadow: #5a9d26;
-  --color-pista-soft: #1d3a24;
-  --color-pista-ink: #a1e070;
-  --color-anar: #f26b6f;
-  --color-anar-shadow: #c94549;
-  --color-anar-soft: #3e2228;
-  --color-anar-ink: #ff9fa2;
-  --color-saffron: #ffb636;
-  --color-saffron-shadow: #d48f17;
-  --color-saffron-soft: #3a3020;
-  --color-saffron-ink: #ffcf70;
-  --color-sky: #49c0f8;
-  --color-sky-shadow: #1899d6;
-  --color-sky-soft: #163545;
-  --color-sky-ink: #86d6fb;
-  --color-plum: #c08af0;
-  --color-plum-shadow: #9563cc;
-  --color-plum-soft: #2d2640;
-  --color-plum-ink: #dbbcff;
-  --color-on-accent: #131f24;
+  --color-canvas: #000000;
+  --color-card: #1c1c1e;
+  --color-paper: rgb(118 118 128 / 0.24);
+  --color-line: rgb(84 84 88 / 0.65);
+  --color-line-strong: rgb(120 120 128 / 0.6);
+  --color-faint: #636366;
+  --color-muted: #a1a1a6;
+  --color-field-edge: #7c7c80;
+  --color-ink: #f5f5f7;
+  --color-firuze: #33d1c2;
+  --color-firuze-shadow: #22a99c;
+  --color-firuze-ink: #6ae6da;
+  --color-pista: #30d158;
+  --color-pista-shadow: #22a845;
+  --color-pista-ink: #6fe28c;
+  --color-anar: #ff453a;
+  --color-anar-shadow: #d6342b;
+  --color-anar-ink: #ff8a82;
+  --color-saffron: #ffb340;
+  --color-saffron-shadow: #d99420;
+  --color-saffron-ink: #ffcf7a;
+  --color-sky: #0a84ff;
+  --color-sky-shadow: #0071e3;
+  --color-sky-ink: #6cb4ff;
+  --color-plum: #bf5af2;
+  --color-plum-shadow: #9d3fd0;
+  --color-plum-ink: #dc9cf9;
+  --color-on-accent: #000000;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --color-card: #131f24;
-    --color-paper: #202f36;
-    --color-line: #37464f;
-    --color-line-strong: #4b5e68;
-    --color-faint: #52656d;
-    --color-muted: #9db0ba;
-  --color-field-edge: #62798a;
-    --color-ink: #f1f7fb;
-    --color-firuze: #2cc5b1;
-    --color-firuze-shadow: #1a9384;
-    --color-firuze-soft: #16383a;
-    --color-firuze-ink: #6be3d3;
-    --color-pista: #79c83c;
-    --color-pista-shadow: #5a9d26;
-    --color-pista-soft: #1d3a24;
-    --color-pista-ink: #a1e070;
-    --color-anar: #f26b6f;
-    --color-anar-shadow: #c94549;
-    --color-anar-soft: #3e2228;
-    --color-anar-ink: #ff9fa2;
-    --color-saffron: #ffb636;
-    --color-saffron-shadow: #d48f17;
-    --color-saffron-soft: #3a3020;
-    --color-saffron-ink: #ffcf70;
-    --color-sky: #49c0f8;
-    --color-sky-shadow: #1899d6;
-    --color-sky-soft: #163545;
-    --color-sky-ink: #86d6fb;
-    --color-plum: #c08af0;
-    --color-plum-shadow: #9563cc;
-    --color-plum-soft: #2d2640;
-    --color-plum-ink: #dbbcff;
-    --color-on-accent: #131f24;
+    --color-canvas: #000000;
+    --color-card: #1c1c1e;
+    --color-paper: rgb(118 118 128 / 0.24);
+    --color-line: rgb(84 84 88 / 0.65);
+    --color-line-strong: rgb(120 120 128 / 0.6);
+    --color-faint: #636366;
+    --color-muted: #a1a1a6;
+    --color-field-edge: #7c7c80;
+    --color-ink: #f5f5f7;
+    --color-firuze: #33d1c2;
+    --color-firuze-shadow: #22a99c;
+    --color-firuze-ink: #6ae6da;
+    --color-pista: #30d158;
+    --color-pista-shadow: #22a845;
+    --color-pista-ink: #6fe28c;
+    --color-anar: #ff453a;
+    --color-anar-shadow: #d6342b;
+    --color-anar-ink: #ff8a82;
+    --color-saffron: #ffb340;
+    --color-saffron-shadow: #d99420;
+    --color-saffron-ink: #ffcf7a;
+    --color-sky: #0a84ff;
+    --color-sky-shadow: #0071e3;
+    --color-sky-ink: #6cb4ff;
+    --color-plum: #bf5af2;
+    --color-plum-shadow: #9d3fd0;
+    --color-plum-ink: #dc9cf9;
+    --color-on-accent: #000000;
   }
 }
 
 /* ── Buttons ────────────────────────────────────────────────────────────
-   3D buttons: solid fill + a darker bottom edge (box-shadow) that the
-   button "sinks into" when pressed. Variants only set the colour vars. */
+   Flat fills with instant press feedback: the button scales down on
+   pointer-down (not on release). Variants only set the colour vars. */
 @utility btn {
   --btn-bg: var(--color-firuze);
-  --btn-shadow: var(--color-firuze-shadow);
   --btn-fg: var(--color-on-accent);
-  --btn-border: transparent;
-  --btn-depth: 4px;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 3rem;
+  min-height: 2.875rem;
   padding: 0 1.25rem;
-  border-radius: 1rem;
-  border: 2px solid var(--btn-border);
+  border-radius: 0.875rem;
+  border: 0;
   background: var(--btn-bg);
   color: var(--btn-fg);
-  box-shadow: 0 var(--btn-depth) 0 var(--btn-shadow);
-  font-size: 0.9375rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  line-height: 1.1;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
   white-space: nowrap;
   user-select: none;
   cursor: pointer;
+  touch-action: manipulation;
   transition:
-    transform 100ms ease-out,
-    box-shadow 100ms ease-out,
-    filter 150ms;
+    transform 160ms var(--ease-spring),
+    background-color 160ms ease,
+    filter 160ms ease;
   &:hover:not(:disabled) {
     filter: brightness(1.06);
   }
   &:active:not(:disabled) {
-    transform: translateY(var(--btn-depth));
-    box-shadow: 0 0 0 var(--btn-shadow);
+    transform: scale(0.97);
+    filter: brightness(0.94);
+    transition-duration: 60ms;
   }
   &:disabled,
   &[aria-disabled="true"] {
-    --btn-bg: var(--color-line);
-    --btn-shadow: var(--color-line);
+    --btn-bg: var(--color-paper);
     /* muted (not faint): a disabled label must still be readable. */
     --btn-fg: var(--color-muted);
-    --btn-border: transparent;
     cursor: not-allowed;
     filter: none;
   }
@@ -262,41 +281,34 @@
 @utility btn-success {
   @apply btn;
   --btn-bg: var(--color-pista);
-  --btn-shadow: var(--color-pista-shadow);
 }
 @utility btn-danger {
   @apply btn;
   --btn-bg: var(--color-anar);
-  --btn-shadow: var(--color-anar-shadow);
 }
 @utility btn-sky {
   @apply btn;
   --btn-bg: var(--color-sky);
-  --btn-shadow: var(--color-sky-shadow);
 }
 @utility btn-plum {
   @apply btn;
   --btn-bg: var(--color-plum);
-  --btn-shadow: var(--color-plum-shadow);
 }
+/* Tinted: a soft fill in the brand colour, for the second action. */
 @utility btn-secondary {
   @apply btn;
-  --btn-bg: var(--color-card);
-  --btn-border: var(--color-line);
-  --btn-shadow: var(--color-line);
+  --btn-bg: var(--color-firuze-soft);
   --btn-fg: var(--color-firuze-ink);
   &:hover:not(:disabled) {
     filter: none;
-    --btn-bg: var(--color-paper);
+    --btn-bg: color-mix(in srgb, var(--color-firuze) 20%, transparent);
   }
 }
-/* Flat text button for low-emphasis actions (skip, back, icon actions). */
+/* Plain: no fill, for low-emphasis actions (skip, back, icon actions). */
 @utility btn-ghost {
   @apply btn;
   --btn-bg: transparent;
-  --btn-shadow: transparent;
   --btn-fg: var(--color-muted);
-  --btn-depth: 0px;
   &:hover:not(:disabled) {
     filter: none;
     --btn-bg: var(--color-paper);
@@ -304,75 +316,98 @@
   }
   &:disabled {
     --btn-bg: transparent;
-    --btn-fg: var(--color-line-strong);
+    --btn-fg: var(--color-faint);
   }
 }
 @utility btn-sm {
   min-height: 2.25rem;
   padding: 0 0.875rem;
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
-  --btn-depth: 3px;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
 }
 @utility btn-lg {
-  min-height: 3.5rem;
+  min-height: 3.25rem;
   padding: 0 1.75rem;
-  font-size: 1rem;
+  border-radius: 1rem;
+  font-size: 1.0625rem;
 }
-/* Square icon-only button; pair with btn-ghost / btn-secondary. */
+/* Round icon-only button; pair with btn-ghost / btn-secondary. */
 @utility btn-icon {
-  min-height: 2.5rem;
-  width: 2.5rem;
+  min-height: 2.75rem;
+  width: 2.75rem;
   padding: 0;
-  border-radius: 0.75rem;
+  border-radius: 9999px;
   letter-spacing: 0;
 }
 
 /* ── Surfaces ───────────────────────────────────────────────────────── */
-/* Static container: 2px border, no depth. */
+/* Grouped container on the canvas: raised, no border in light mode. */
 @utility card {
-  border-radius: 1rem;
-  border: 2px solid var(--color-line);
+  border-radius: var(--radius-card);
   background: var(--color-card);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-ink) 4%, transparent),
+    0 1px 2px rgb(0 0 0 / 0.04),
+    0 4px 16px rgb(0 0 0 / 0.03);
 }
-/* Tappable surface with a thicker bottom edge (options, list rows, cards
-   that navigate). State via data-state: selected | correct | wrong. */
+/* Tappable surface (options, list rows, cards that navigate): scales on
+   press. State via data-state: selected | correct | wrong | current. */
 @utility tile {
   display: block;
   border-radius: 1rem;
-  border: 2px solid var(--color-line);
-  border-bottom-width: 4px;
+  border: 1px solid var(--color-line);
   background: var(--color-card);
+  touch-action: manipulation;
   transition:
-    transform 100ms ease-out,
-    border-color 150ms,
-    background-color 150ms;
+    transform 180ms var(--ease-spring),
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
   &:is(a, button):hover:not(:disabled) {
-    background: var(--color-paper);
+    background: color-mix(in srgb, var(--color-card) 94%, var(--color-ink));
   }
   &:is(a, button):active:not(:disabled) {
-    transform: translateY(2px);
-    border-bottom-width: 2px;
-    margin-bottom: 2px;
+    transform: scale(0.98);
+    transition-duration: 60ms;
+  }
+  &:is(a, button):disabled {
+    cursor: not-allowed;
   }
   &[data-state="selected"] {
     border-color: var(--color-sky);
+    box-shadow: inset 0 0 0 1px var(--color-sky);
     background: var(--color-sky-soft);
     color: var(--color-sky-ink);
   }
   &[data-state="correct"] {
     border-color: var(--color-pista);
+    box-shadow: inset 0 0 0 1px var(--color-pista);
     background: var(--color-pista-soft);
     color: var(--color-pista-ink);
   }
   &[data-state="wrong"] {
     border-color: var(--color-anar);
+    box-shadow: inset 0 0 0 1px var(--color-anar);
     background: var(--color-anar-soft);
     color: var(--color-anar-ink);
   }
   &[data-state="current"] {
     border-color: var(--color-firuze);
+    box-shadow: inset 0 0 0 1px var(--color-firuze);
   }
+}
+
+/* Translucent material for floating chrome (bars, sheets): content scrolls
+   underneath, blurred. Heavier for structural bars, lighter for chips. */
+@utility material {
+  background: color-mix(in srgb, var(--color-card) 72%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+@utility material-canvas {
+  background: color-mix(in srgb, var(--color-canvas) 78%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
 }
 
 @utility chip {
@@ -382,40 +417,62 @@
   border-radius: 9999px;
   padding: 0.125rem 0.625rem;
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 @utility input {
   width: 100%;
-  border-radius: 1rem;
-  border: 2px solid var(--color-field-edge);
-  background: var(--color-paper);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-field-edge);
+  background: var(--color-card);
   padding: 0.75rem 1rem;
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: 1.0625rem;
+  font-weight: 400;
   outline: none;
-  transition: border-color 150ms;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
   &:focus {
     border-color: var(--color-sky);
-    background: var(--color-card);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-sky) 22%, transparent);
   }
   &::placeholder {
     color: var(--color-faint);
   }
 }
 
-/* Small heavy uppercase label used above sections and in stat cards. */
+/* Small section label (like a grouped list's header). */
 @utility eyebrow {
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-/* ── Motion ─────────────────────────────────────────────────────────── */
+/* Accessibility: solid surfaces when transparency is reduced, defined
+   edges when more contrast is asked for. */
+@media (prefers-reduced-transparency: reduce) {
+  .material,
+  .material-canvas {
+    background: var(--color-card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  :root {
+    --color-line: var(--color-field-edge);
+  }
+  .card {
+    box-shadow: 0 0 0 1px var(--color-field-edge);
+  }
+}
+
+/* ── Motion ─────────────────────────────────────────────────────────────
+   Critically damped: things that appear settle without overshoot. */
 @keyframes pop-in {
   0% {
-    transform: scale(0.85);
+    transform: scale(0.96);
     opacity: 0;
   }
   100% {
@@ -438,33 +495,31 @@
   }
   20%,
   60% {
-    transform: translateX(-6px);
+    transform: translateX(-5px);
   }
   40%,
   80% {
-    transform: translateX(6px);
-  }
-}
-@keyframes bob {
-  0%,
-  100% {
-    transform: translate(-50%, 0);
-  }
-  50% {
-    transform: translate(-50%, -4px);
+    transform: translateX(5px);
   }
 }
 @utility animate-pop {
-  animation: pop-in 250ms var(--ease-spring) both;
+  animation: pop-in 280ms var(--ease-spring) both;
 }
 @utility animate-slide-up {
-  animation: slide-up 220ms var(--ease-sheet) both;
+  animation: slide-up 420ms var(--ease-sheet) both;
 }
 @utility animate-shake {
-  animation: shake 350ms ease-in-out;
+  animation: shake 320ms ease-in-out;
 }
+/* Formerly a looping bob; slow loops are avoided, so it only centres. */
 @utility animate-bob {
-  animation: bob 1.6s ease-in-out infinite;
+  transform: translateX(-50%);
+}
+
+/* Dialogs dim and blur what's behind them, and arrive as a material. */
+dialog::backdrop {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }
 
 /* Faint dot pattern used behind hero areas. */

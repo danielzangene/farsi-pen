@@ -142,7 +142,7 @@ export function PronunciationFeedback({ result, overall, model, audio, focus }: 
                     onClick={() => setPicked(on ? null : s)}
                     aria-pressed={on}
                     aria-label={`${s.label}: ${s.score}%${SOUND_BY_ID[s.sound]?.tip ? ", show tip" : ""}`}
-                    className={cx("flex min-h-11 min-w-14 flex-col items-center rounded-xl border-2 px-2 py-1 transition-transform active:translate-y-0.5", TILE[t], on && "ring-[3px] ring-sky")}
+                    className={cx("flex min-h-11 min-w-14 flex-col items-center rounded-xl border px-2 py-1 transition-transform active:translate-y-0.5", TILE[t], on && "ring-[3px] ring-sky")}
                   >
                     <Fa className="text-lg font-bold leading-tight">{s.char}</Fa>
                     <span dir="ltr" className="text-xs font-extrabold">
@@ -192,7 +192,7 @@ export function PronunciationFeedback({ result, overall, model, audio, focus }: 
 export function SoundTipCard({ sound, score, compact, className }: { sound: Sound; score?: number; compact?: boolean; className?: string }) {
   const { settings } = useProgress();
   return (
-    <div className={cx("animate-pop rounded-2xl border-2 border-line bg-paper p-4", className)}>
+    <div className={cx("animate-pop rounded-2xl border border-line bg-paper p-4", className)}>
       <div>
         <div className="min-w-0">
           <p className="font-extrabold">
@@ -212,7 +212,7 @@ export function SoundTipCard({ sound, score, compact, className }: { sound: Soun
       {!compact && sound.examples.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-2">
           {sound.examples.map((e) => (
-            <li key={e.fa} className="flex items-center gap-1 rounded-xl border-2 border-line bg-card py-1 pe-1 ps-3">
+            <li key={e.fa} className="flex items-center gap-1 rounded-xl border border-line bg-card py-1 pe-1 ps-3">
               <Fa className="font-bold">{e.fa}</Fa>
               {!settings.scriptOnly && <span className="text-sm font-semibold text-muted">{e.tr}</span>}
               <span className="text-sm font-semibold text-muted">· {e.en}</span>

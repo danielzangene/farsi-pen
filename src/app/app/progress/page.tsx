@@ -149,7 +149,7 @@ function XpChart() {
       </div>
       <div className="relative mt-6" aria-hidden>
         <span className="absolute -top-4 start-0 text-xs font-bold text-muted">{max} XP</span>
-        <div className="flex h-44 items-end gap-1.5 border-b-2 border-line pt-2 sm:gap-3">
+        <div className="flex h-44 items-end gap-1.5 border-b border-line pt-2 sm:gap-3">
           {bars.map((b) => (
             <BarMark key={b.key} bar={b} max={max} />
           ))}
@@ -191,7 +191,7 @@ function BarMark({ bar, max }: { bar: Bar; max: number }) {
     >
       <div className={cx("w-full rounded-t-[4px]", bar.current ? "bg-saffron" : "bg-saffron/60", hover && "bg-saffron")} style={{ height: `${h}%` }} />
       {hover && (
-        <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded-lg border-2 border-line bg-card px-2 py-1 text-xs font-extrabold shadow">
+        <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded-lg border border-line bg-card px-2 py-1 text-xs font-extrabold shadow">
           {bar.label}: {bar.value} XP
         </span>
       )}
@@ -232,7 +232,7 @@ function SoundsOverTime() {
       {trends.length === 0 ? (
         <p className="mt-4 font-semibold text-muted">Say some words out loud in Speak, Sounds or Scenes and they'll show up here.</p>
       ) : (
-        <ul className="mt-4 divide-y-2 divide-line">
+        <ul className="mt-4 divide-y divide-line">
           {trends.map((t) => (
             <li key={t.sound.id} className="flex items-center gap-3 py-3">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-paper">

@@ -98,7 +98,7 @@ export function SayItDialog({ word, onClose }: { word: Word; onClose: () => void
       ref={ref}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="card m-auto max-h-[calc(100dvh-2rem)] w-[min(32rem,calc(100vw-2rem))] animate-pop overflow-y-auto p-0 text-ink backdrop:bg-black/50"
+      className="card m-auto !rounded-[1.75rem] max-h-[calc(100dvh-2rem)] w-[min(32rem,calc(100vw-2rem))] animate-pop overflow-y-auto p-0 text-ink backdrop:bg-black/40"
       aria-label="Say it"
     >
       <div className="p-5">

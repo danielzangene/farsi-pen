@@ -41,7 +41,7 @@ const SETTINGS: NavItem = { href: "/app/settings/", label: "Settings", icon: Set
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <span className={cx("grid size-9 shrink-0 place-items-center rounded-xl bg-firuze text-on-accent shadow-[0_3px_0_var(--color-firuze-shadow)]", className)}>
+    <span className={cx("grid size-9 shrink-0 place-items-center rounded-xl bg-firuze text-on-accent", className)}>
       <svg viewBox="0 0 64 64" className="size-[78%]" fill="none" stroke="currentColor" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d="M14 46V18h14M14 31h11M34 46l8-28 8 28M37 37h10" />
       </svg>
@@ -89,7 +89,7 @@ export function AppNav() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="app-nav fixed inset-y-0 left-0 z-30 hidden w-64 flex-col gap-6 border-r-2 border-line bg-card px-4 py-6 lg:flex">
+      <aside className="app-nav fixed inset-y-0 left-0 z-30 hidden w-64 flex-col gap-6 border-r border-line bg-card px-3 py-6 lg:flex">
         <div className="px-3">
           <Logo />
         </div>
@@ -97,7 +97,7 @@ export function AppNav() {
           {PRIMARY.map((l) => (
             <SideLink key={l.href} item={l} on={isActive(l.href, l.exact)} />
           ))}
-          <hr className="mx-3 my-2 border-t-2 border-line" />
+          <hr className="mx-3 my-2 border-t border-line" />
           {SECONDARY.map((l) => (
             <SideLink key={l.href} item={l} on={isActive(l.href)} />
           ))}
@@ -108,7 +108,7 @@ export function AppNav() {
       </aside>
 
       {/* Mobile top bar: brand and progress only. On desktop only the stat chips, top right of the content column. */}
-      <header className="app-nav sticky top-0 z-30 border-b-2 border-line bg-card/95 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:backdrop-blur-none">
+      <header className="app-nav max-lg:material-canvas sticky top-0 z-30 border-b border-line lg:static lg:border-0">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4 lg:h-auto lg:justify-end lg:pt-5">
           <div className="mr-auto lg:hidden">
             <Logo />
@@ -118,7 +118,7 @@ export function AppNav() {
       </header>
 
       {/* Mobile bottom tab bar: the core loop + More */}
-      <nav className="app-nav fixed inset-x-0 bottom-0 z-30 border-t-2 border-line bg-card pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
+      <nav className="app-nav material fixed inset-x-0 bottom-0 z-30 border-t border-line pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
         <div className="mx-auto flex max-w-md justify-around gap-0.5 px-1 py-1.5">
           {PRIMARY.map((l) => (
             <TabLink key={l.href} href={l.href} label={l.label} icon={l.icon} on={isActive(l.href, l.exact) && !moreOpen} />
@@ -128,7 +128,7 @@ export function AppNav() {
             onClick={() => setMoreOpen(true)}
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
-            className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-extrabold", moreActive || moreOpen ? "text-sky-ink" : "text-muted")}
+            className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-semibold transition-colors", moreActive || moreOpen ? "text-sky" : "text-muted")}
           >
             <TabIcon icon={Menu} on={moreActive || moreOpen} />
             More
@@ -147,12 +147,12 @@ function SideLink({ item: l, on }: { item: NavItem; on: boolean }) {
       href={l.href}
       aria-current={on ? "page" : undefined}
       className={cx(
-        "flex items-center gap-4 rounded-xl border-2 px-3 py-2 text-[15px] font-extrabold uppercase tracking-wider transition-colors",
-        on ? "border-sky bg-sky-soft text-sky-ink" : "border-transparent text-muted hover:bg-paper",
+        "flex items-center gap-3 rounded-xl px-3 py-2 text-[15px] font-semibold transition-colors active:scale-[0.98]",
+        on ? "bg-sky-soft text-sky-ink" : "text-ink hover:bg-paper",
       )}
     >
       <span className={cx("grid size-8 shrink-0 place-items-center", on ? "text-sky-ink" : l.tone ? TONE[l.tone].ink : "text-muted")}>
-        <l.icon className="size-6" strokeWidth={2.5} />
+        <l.icon className="size-[22px]" strokeWidth={2} />
       </span>
       {l.label}
     </Link>
@@ -161,8 +161,8 @@ function SideLink({ item: l, on }: { item: NavItem; on: boolean }) {
 
 function TabIcon({ icon: Icon, on }: { icon: typeof House; on: boolean }) {
   return (
-    <span className={cx("grid h-9 w-12 place-items-center rounded-xl border-2 transition-colors", on ? "border-sky bg-sky-soft" : "border-transparent")}>
-      <Icon className="size-[26px]" strokeWidth={2.5} />
+    <span className="grid h-8 w-12 place-items-center">
+      <Icon className="size-[25px]" strokeWidth={on ? 2.4 : 1.9} />
     </span>
   );
 }
@@ -172,7 +172,7 @@ function TabLink({ href, label, icon, on }: { href: string; label: string; icon:
     <Link
       href={href}
       aria-current={on ? "page" : undefined}
-      className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-extrabold", on ? "text-sky-ink" : "text-muted")}
+      className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-semibold transition-colors", on ? "text-sky" : "text-muted")}
     >
       <TabIcon icon={icon} on={on} />
       {label}
@@ -193,9 +193,10 @@ function MoreSheet({ onClose, isActive }: { onClose: () => void; isActive: (href
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
       aria-label="More"
-      className="app-nav fixed inset-x-0 bottom-0 top-auto m-0 w-full max-w-none animate-slide-up rounded-t-3xl border-t-2 border-line bg-card p-0 pb-[env(safe-area-inset-bottom)] text-ink backdrop:bg-black/50 lg:hidden"
+      className="app-nav fixed inset-x-0 bottom-0 top-auto m-0 w-full max-w-none animate-slide-up rounded-t-[1.75rem] bg-card p-0 pb-[env(safe-area-inset-bottom)] text-ink shadow-[0_-12px_40px_rgb(0_0_0/0.18)] backdrop:bg-black/40 lg:hidden"
     >
-      <div className="mx-auto max-w-md px-4 pb-4 pt-3">
+      <div className="mx-auto max-w-md px-4 pb-4 pt-2">
+        <div className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-line-strong" aria-hidden />
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-lg font-extrabold">More</h2>
           <button type="button" className="btn-ghost btn-icon -mr-2" onClick={onClose} aria-label="Close" autoFocus>
@@ -211,10 +212,10 @@ function MoreSheet({ onClose, isActive }: { onClose: () => void; isActive: (href
                   href={l.href}
                   onClick={onClose}
                   aria-current={on ? "page" : undefined}
-                  className={cx("flex min-h-14 items-center gap-3 rounded-2xl border-2 px-3 py-2", on ? "border-sky bg-sky-soft" : "border-transparent hover:bg-paper")}
+                  className={cx("flex min-h-14 items-center gap-3 rounded-2xl px-3 py-2 transition-transform active:scale-[0.98]", on ? "bg-sky-soft" : "hover:bg-paper")}
                 >
                   <span className={cx("grid size-10 shrink-0 place-items-center rounded-full", l.tone ? cx(TONE[l.tone].soft, TONE[l.tone].ink) : "bg-paper text-muted")}>
-                    <l.icon className="size-5" strokeWidth={2.5} />
+                    <l.icon className="size-5" strokeWidth={2.2} />
                   </span>
                   <span className="min-w-0">
                     <span className={cx("block font-extrabold", on && "text-sky-ink")}>{l.label}</span>

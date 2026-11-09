@@ -169,7 +169,7 @@ function LetterDetail({ letter }: { letter: Letter }) {
         </p>
       )}
 
-      <div className="mt-5 border-t-2 border-line pt-4">
+      <div className="mt-5 border-t border-line pt-4">
         <div className="mb-3 flex items-center justify-between gap-2">
           <h3 className="font-extrabold">
             Trace it <span className="text-sm font-semibold text-muted">({FORM_LABELS[form].toLowerCase()} form)</span>

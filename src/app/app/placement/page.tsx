@@ -149,7 +149,7 @@ export default function PlacementPage() {
         ))}
       </div>
       <div className="h-32" aria-hidden />
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-line bg-card pb-[env(safe-area-inset-bottom)]">
+      <div className="material fixed inset-x-0 bottom-0 z-40 border-t border-line pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex max-w-3xl justify-end px-4 py-4">
           <button type="button" className="btn-primary btn-lg w-full sm:w-auto sm:min-w-44" disabled={picked === null} onClick={next}>
             Next

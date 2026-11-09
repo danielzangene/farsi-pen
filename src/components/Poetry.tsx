@@ -40,7 +40,7 @@ export function PoemCard({ poem, showOmen, className }: { poem: Couplet; showOme
         <p className="text-sm font-bold text-muted">Words to know</p>
         <ul className="mt-2 flex flex-wrap gap-2">
           {poem.words.map((w) => (
-            <li key={w.fa} className="flex items-center gap-1 rounded-xl border-2 border-line py-1 pe-1 ps-3">
+            <li key={w.fa} className="flex items-center gap-1 rounded-xl border border-line py-1 pe-1 ps-3">
               <Fa className="font-bold">{w.fa}</Fa>
               <span className="text-sm font-semibold text-muted">
                 {w.tr} · {w.en}
@@ -99,7 +99,7 @@ export function FullPoem({ path }: { path: string }) {
   for (const v of state.verses) couplets.set(v.CoupletIndex, [...(couplets.get(v.CoupletIndex) ?? []), v]);
 
   return (
-    <div className="mt-5 border-t-2 border-line pt-5">
+    <div className="mt-5 border-t border-line pt-5">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-semibold text-muted">Tap any word to look it up.</p>
         <button type="button" className="btn-ghost btn-sm" onClick={() => setExplain(!explain)} aria-pressed={explain}>
@@ -158,7 +158,7 @@ function WordLookup({ word, onClose }: { word: string; onClose: () => void }) {
   const id = `custom:${plain}`;
   const added = s.bookmarks.includes(id) || (entry?.course && s.bookmarks.includes(entry.course.id));
   return (
-    <div role="status" className="sticky top-16 z-10 mb-4 flex items-start gap-3 rounded-2xl border-2 border-sky bg-sky-soft p-3 text-sky-ink shadow-lg">
+    <div role="status" className="sticky top-16 z-10 mb-4 flex items-start gap-3 rounded-2xl border border-sky bg-sky-soft p-3 text-sky-ink shadow-lg">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1">
           <Fa className="text-xl font-bold">{word}</Fa>

@@ -41,7 +41,7 @@ function HeroVisual() {
         <div className="mt-4 grid grid-cols-2 gap-2.5">
           {QUIZ_OPTIONS.map((o, i) => (
             <div key={o} className="tile flex items-center gap-2 px-3 py-2.5 text-sm font-bold" data-state={i === 0 ? "correct" : undefined}>
-              <span className="grid size-6 shrink-0 place-items-center rounded-lg border-2 border-current text-xs font-extrabold opacity-70">
+              <span className="grid size-6 shrink-0 place-items-center rounded-lg border border-current text-xs font-extrabold opacity-70">
                 {i === 0 ? <Check className="size-3.5" strokeWidth={4} /> : i + 1}
               </span>
               {o}
@@ -52,10 +52,10 @@ function HeroVisual() {
 
       <div className="absolute -right-1 top-0 flex rotate-6 flex-col items-center sm:-right-6">
         <Bubble>Start</Bubble>
-        <span className="mt-3 grid size-16 place-items-center rounded-full bg-firuze text-3xl shadow-[0_6px_0_var(--color-firuze-shadow)]">👋</span>
+        <span className="mt-3 grid size-16 place-items-center rounded-full bg-firuze text-3xl">👋</span>
       </div>
 
-      <span className="absolute -left-2 bottom-0 flex -rotate-6 items-center gap-1 rounded-2xl border-2 border-saffron bg-saffron-soft px-3 py-1.5 text-base font-extrabold text-saffron-ink sm:-left-6">
+      <span className="absolute -left-2 bottom-0 flex -rotate-6 items-center gap-1 rounded-2xl border border-saffron bg-saffron-soft px-3 py-1.5 text-base font-extrabold text-saffron-ink sm:-left-6">
         <Star className="size-5 fill-saffron text-saffron-shadow" /> +2 XP
       </span>
     </div>
@@ -65,7 +65,7 @@ function HeroVisual() {
 export default function Home() {
   return (
     <div className="min-h-dvh bg-card">
-      <header className="border-b-2 border-line">
+      <header className="border-b border-line">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4">
           <Logo />
           <Link href="/app/" className="btn-secondary btn-sm">
@@ -95,7 +95,7 @@ export default function Home() {
         <HeroVisual />
       </section>
 
-      <div className="overflow-hidden border-y-2 border-line bg-paper py-3" aria-hidden>
+      <div className="overflow-hidden border-y border-line bg-paper py-3" aria-hidden>
         <p lang="fa" dir="rtl" className="whitespace-nowrap text-center text-2xl tracking-[0.5em] text-firuze-ink/60">
           {LETTER_STRIP.join(" ")}
         </p>
@@ -131,7 +131,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-t-2 border-line px-4 py-6 text-center text-sm font-semibold text-muted">
+      <footer className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-t border-line px-4 py-6 text-center text-sm font-semibold text-muted">
         <LogoMark className="size-7 rounded-lg" />
         Farsi Pen · free, no sign-up · Spotted a mistake? Every word and exercise has a report button.
       </footer>

@@ -10,9 +10,9 @@ import { Bubble, Fa, PageHeader } from "@/components/ui";
 const ZIGZAG = [0, 44, 66, 44, 0, -44, -66, -44];
 
 const NODE = {
-  done: "bg-saffron text-on-accent shadow-[0_6px_0_var(--color-saffron-shadow)]",
-  current: "bg-firuze text-on-accent shadow-[0_6px_0_var(--color-firuze-shadow)]",
-  locked: "bg-line text-faint shadow-[0_6px_0_var(--color-line-strong)]",
+  done: "bg-saffron text-on-accent",
+  current: "bg-firuze text-on-accent",
+  locked: "bg-line text-faint",
 };
 
 export default function LessonsPage() {
@@ -36,7 +36,7 @@ export default function LessonsPage() {
               </h2>
               <p className="mt-1 text-[15px] font-bold">{level.description}</p>
             </div>
-            <Link href="/app/words/" className="btn-secondary btn-sm shrink-0">
+            <Link href="/app/words/" className="btn btn-sm shrink-0 [--btn-bg:rgb(255_255_255/0.22)] [--btn-fg:var(--color-on-accent)]">
               <Library className="size-4" strokeWidth={2.5} /> Word list
             </Link>
           </div>

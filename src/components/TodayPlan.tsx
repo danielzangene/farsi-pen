@@ -118,7 +118,7 @@ export function TodayPlan() {
             <li key={x.id}>
               <Link
                 href={x.href}
-                className={cx("flex items-center gap-3 rounded-2xl border-2 p-3 transition-colors", current ? "border-firuze bg-firuze-soft" : "border-line hover:bg-paper")}
+                className={cx("flex items-center gap-3 rounded-2xl border p-3 transition-colors", current ? "border-firuze bg-firuze-soft" : "border-line hover:bg-paper")}
                 aria-current={current ? "step" : undefined}
               >
                 <span

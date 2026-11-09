@@ -84,7 +84,7 @@ export function GrammarLesson({ concept }: { concept: GrammarConcept }) {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b-2 border-line bg-paper">
+              <tr className="border-b border-line bg-paper">
                 {concept.table.columns.map((c) => (
                   <th key={c} className="eyebrow px-4 py-2.5 text-muted">
                     {c}
@@ -94,7 +94,7 @@ export function GrammarLesson({ concept }: { concept: GrammarConcept }) {
             </thead>
             <tbody>
               {concept.table.rows.map((row, i) => (
-                <tr key={i} className="border-b-2 border-line last:border-0">
+                <tr key={i} className="border-b border-line last:border-0">
                   {row.map((cell, j) => (
                     <td key={j} className="px-4 py-2.5 font-semibold">
                       {/[؀-ۿ]/.test(cell) ? <Fa className="text-lg">{cell}</Fa> : j === 1 ? <strong className="font-extrabold text-plum-ink">{cell}</strong> : cell}
@@ -267,7 +267,7 @@ function Exercises({ exercises, onDone }: { exercises: Exercise[]; onDone: (corr
                   onClick={() => setSelected(o)}
                   className={cx("tile flex items-center gap-3 px-4 py-3.5 text-left font-bold", state === "wrong" && "animate-shake")}
                 >
-                  <span className={cx("grid size-7 shrink-0 place-items-center rounded-lg border-2 text-xs font-extrabold", BADGE[state ?? "idle"])}>{i + 1}</span>
+                  <span className={cx("grid size-7 shrink-0 place-items-center rounded-lg border text-xs font-extrabold", BADGE[state ?? "idle"])}>{i + 1}</span>
                   {o}
                 </button>
               );
