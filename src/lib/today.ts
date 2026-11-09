@@ -10,6 +10,7 @@ import { SOUND_BY_ID } from "@/content/sounds";
 import { buildDeck } from "./flashcards";
 import { dayKey } from "./gamification";
 import { displayState } from "./mastery";
+import { levelRank } from "./placement";
 import { pickSounds, soundLevel } from "./sound-workout";
 import type { ActivityKind, ProgressState } from "./store";
 
@@ -29,8 +30,11 @@ function nextLetter(s: ProgressState) {
   return LETTERS.find((l) => (s.traced[l.id] ?? 0) < TRACE_PASS);
 }
 
+// After a placement test, lessons and grammar below the learner's level are optional.
+const below = (s: ProgressState, level: string) => levelRank(level) < levelRank(s.placement?.level);
+
 function nextLesson(s: ProgressState) {
-  return LESSONS.find((l) => !s.lessons[l.id]?.completedAt);
+  return LESSONS.find((l) => !s.lessons[l.id]?.completedAt && !below(s, l.cefr));
 }
 
 function nextMission(s: ProgressState, now: Date) {
@@ -38,7 +42,7 @@ function nextMission(s: ProgressState, now: Date) {
 }
 
 function nextGrammar(s: ProgressState) {
-  return GRAMMAR.find((g) => !s.grammar[g.id]?.passed);
+  return GRAMMAR.find((g) => !s.grammar[g.id]?.passed && !below(s, g.level));
 }
 
 /** Builds today's steps (at most three). */

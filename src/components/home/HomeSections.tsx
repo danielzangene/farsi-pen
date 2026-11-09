@@ -313,3 +313,18 @@ export function OwnSentence() {
     </section>
   );
 }
+
+/** Shown until the learner has taken the placement test (and isn't far along already). */
+export function PlacementPrompt() {
+  const s = useProgress();
+  if (s.placement || s.xp > 300) return null;
+  return (
+    <Link href="/app/placement/" className="tile flex items-center gap-4 p-4">
+      <span className="min-w-0 flex-1">
+        <span className="block font-extrabold">Already know some Persian?</span>
+        <span className="block text-sm font-semibold text-muted">Take the placement test (3–6 minutes) and start at your level.</span>
+      </span>
+      <ChevronRight className="size-5 shrink-0 text-muted" />
+    </Link>
+  );
+}

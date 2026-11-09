@@ -46,3 +46,13 @@ describe("today plan", () => {
   });
 });
 
+
+describe("after a placement test", () => {
+  it("skips lessons and grammar below the level found", () => {
+    const s: ProgressState = { ...DEFAULT_STATE, placement: { level: "B1", at: "x", correct: 12, total: 15 }, settings: { ...DEFAULT_STATE.settings, goal: "curious", reads: "yes" } };
+    const steps = planToday(s);
+    expect(steps.some((x) => x.kind === "lesson")).toBe(false);
+    const g = steps.find((x) => x.kind === "grammar");
+    expect(g?.detail).toContain("B1");
+  });
+});
