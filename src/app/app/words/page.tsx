@@ -81,7 +81,7 @@ function DeckPicker({ onStart }: { onStart: (deck: Deck, title: string) => void 
   const byLesson = buildDeck("lesson", s, lesson);
   const due = today.ids.filter((id) => s.cards[id]).length;
   const fresh = today.ids.length - due;
-  const select = "min-h-12 w-full cursor-pointer rounded-2xl border border-field-edge bg-paper px-3 text-sm font-bold text-ink transition-colors focus:border-sky focus:bg-card";
+  const select = "select w-full";
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
@@ -192,7 +192,7 @@ function Browse() {
   // Real-world pronunciation: a Persian query as typed, otherwise the best match's Farsi.
   const spoken = hasPersianScript(q) ? q.trim() : q.trim() && results.length > 0 ? results[0].fa : "";
 
-  const select = "min-h-12 min-w-0 flex-1 cursor-pointer rounded-2xl border border-field-edge bg-paper px-3 text-sm font-bold text-ink transition-colors focus:border-sky focus:bg-card sm:flex-none";
+  const select = "select min-w-0 flex-1 basis-[calc(50%-0.25rem)] sm:basis-auto sm:flex-none";
 
   return (
     <div>
