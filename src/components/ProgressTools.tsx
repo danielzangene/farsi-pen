@@ -56,7 +56,7 @@ export function ProgressTools() {
       <div className="pb-4">
         <p className="font-bold">Back up your progress</p>
         <p className="mt-1 text-sm font-semibold text-muted">
-          Progress is saved in this browser only. Save a file to keep your streak and reviews safe, or to move to another device.
+          Progress is saved in this browser. Save a file to keep your streak and reviews safe, or to move to another device.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button type="button" className="btn-secondary btn-sm" onClick={downloadBackup}>

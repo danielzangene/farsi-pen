@@ -226,6 +226,17 @@ export function applyTheme(theme: Theme) {
   else root.dataset.theme = theme;
 }
 
+/** Called after every local save (used by device sync). */
+export function onSave(cb: () => void): () => void {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+}
+
+/** The current saved progress. */
+export function currentProgress(): ProgressState {
+  return load();
+}
+
 function update(fn: (s: ProgressState) => ProgressState) {
   save(withBadges(fn(load())));
 }
