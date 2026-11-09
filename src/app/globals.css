@@ -36,6 +36,12 @@
   --color-ink: #1d1d1f;
   /* The selected segment of a segmented control (raised above the track). */
   --color-raised: #ffffff;
+  /* Glass layer: mostly opaque on purpose, so it never hurts legibility. */
+  --glass-opacity: 62%;
+  --glass-edge: rgb(255 255 255 / 0.6);
+  --glass-highlight: rgb(255 255 255 / 0.75);
+  --glass-shadow: 0.12;
+  --glass-pill: rgb(0 0 0 / 0.06);
 
   /* Brand: firuze (turquoise) — primary actions, current progress */
   --color-firuze: #0b8f82;
@@ -184,6 +190,11 @@
   --color-field-edge: #7c7c80;
   --color-ink: #f5f5f7;
   --color-raised: #636366;
+  --glass-opacity: 66%;
+  --glass-edge: rgb(255 255 255 / 0.1);
+  --glass-highlight: rgb(255 255 255 / 0.12);
+  --glass-shadow: 0.5;
+  --glass-pill: rgb(255 255 255 / 0.1);
   --color-firuze: #33d1c2;
   --color-firuze-shadow: #22a99c;
   --color-firuze-ink: #6ae6da;
@@ -217,6 +228,11 @@
     --color-field-edge: #7c7c80;
     --color-ink: #f5f5f7;
     --color-raised: #636366;
+    --glass-opacity: 66%;
+    --glass-edge: rgb(255 255 255 / 0.1);
+    --glass-highlight: rgb(255 255 255 / 0.12);
+    --glass-shadow: 0.5;
+    --glass-pill: rgb(255 255 255 / 0.1);
     --color-firuze: #33d1c2;
     --color-firuze-shadow: #22a99c;
     --color-firuze-ink: #6ae6da;
@@ -429,6 +445,20 @@
   backdrop-filter: blur(20px) saturate(180%);
 }
 
+/* Liquid glass (light touch): a floating control layer that refracts what's
+   behind it a little — mostly opaque, so text stays easy to read. A bright
+   top edge catches the light; a soft shadow lifts it off the content. */
+@utility glass {
+  background: color-mix(in srgb, var(--color-card) var(--glass-opacity), transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid var(--glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 8px 28px rgb(0 0 0 / var(--glass-shadow)),
+    0 1px 4px rgb(0 0 0 / calc(var(--glass-shadow) / 2));
+}
+
 @utility chip {
   display: inline-flex;
   align-items: center;
@@ -499,11 +529,20 @@
 /* Accessibility: solid surfaces when transparency is reduced, defined
    edges when more contrast is asked for. */
 @media (prefers-reduced-transparency: reduce) {
+  .glass,
   .material,
   .material-canvas {
     background: var(--color-card);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+}
+/* No blur support: never leave text over unblurred content. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .material,
+  .material-canvas {
+    background: var(--color-card);
   }
 }
 @media (prefers-contrast: more) {

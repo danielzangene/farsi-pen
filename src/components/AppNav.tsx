@@ -82,6 +82,8 @@ export function AppNav() {
   const isActive = (href: string, exact?: boolean) => (exact ? pathname === href || pathname === href.slice(0, -1) : pathname.startsWith(href.slice(0, -1)));
   const streak = currentStreak(s);
   const moreActive = [...SECONDARY, SETTINGS].some((l) => isActive(l.href));
+  const primaryIndex = PRIMARY.findIndex((l) => isActive(l.href, l.exact));
+  const activeTab = moreOpen || moreActive ? PRIMARY.length : primaryIndex;
 
   // Close the sheet whenever the route changes.
   useEffect(() => setMoreOpen(false), [pathname]);
@@ -117,20 +119,32 @@ export function AppNav() {
         </div>
       </header>
 
-      {/* Mobile bottom tab bar: the core loop + More */}
-      <nav className="app-nav material fixed inset-x-0 bottom-0 z-30 border-t border-line pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
-        <div className="mx-auto flex max-w-md justify-around gap-0.5 px-1 py-1.5">
-          {PRIMARY.map((l) => (
-            <TabLink key={l.href} href={l.href} label={l.label} icon={l.icon} on={isActive(l.href, l.exact) && !moreOpen} />
+      {/* Mobile tab bar: a floating glass capsule; a glass pill slides to the current tab. */}
+      <nav
+        className="app-nav glass fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 mx-auto max-w-md rounded-[1.75rem] p-1 lg:hidden"
+        aria-label="Main"
+      >
+        <div className="relative flex">
+          {activeTab >= 0 && (
+            <span
+              aria-hidden
+              className="absolute inset-y-0 left-0 w-1/5 p-0 transition-transform duration-[420ms] ease-[var(--ease-spring)] motion-reduce:transition-none"
+              style={{ transform: `translateX(${activeTab * 100}%)` }}
+            >
+              <span className="block size-full rounded-[1.5rem] bg-[var(--glass-pill)] shadow-[inset_0_1px_0_var(--glass-highlight)]" />
+            </span>
+          )}
+          {PRIMARY.map((l, i) => (
+            <TabLink key={l.href} href={l.href} label={l.label} icon={l.icon} on={activeTab === i} />
           ))}
           <button
             type="button"
             onClick={() => setMoreOpen(true)}
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
-            className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-semibold transition-colors", moreActive || moreOpen ? "text-sky" : "text-muted")}
+            className={cx(TAB, activeTab === PRIMARY.length ? "text-sky" : "text-ink/70")}
           >
-            <TabIcon icon={Menu} on={moreActive || moreOpen} />
+            <TabIcon icon={Menu} on={activeTab === PRIMARY.length} />
             More
           </button>
         </div>
@@ -159,10 +173,12 @@ function SideLink({ item: l, on }: { item: NavItem; on: boolean }) {
   );
 }
 
+const TAB = "relative z-[1] flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-[1.5rem] pb-1.5 pt-2 text-[10px] font-semibold transition-[color,transform] duration-200 active:scale-95";
+
 function TabIcon({ icon: Icon, on }: { icon: typeof House; on: boolean }) {
   return (
-    <span className="grid h-8 w-12 place-items-center">
-      <Icon className="size-[25px]" strokeWidth={on ? 2.4 : 1.9} />
+    <span className="grid h-6 place-items-center">
+      <Icon className="size-6" strokeWidth={on ? 2.3 : 1.9} />
     </span>
   );
 }
@@ -172,7 +188,7 @@ function TabLink({ href, label, icon, on }: { href: string; label: string; icon:
     <Link
       href={href}
       aria-current={on ? "page" : undefined}
-      className={cx("flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl py-1 text-[11px] font-semibold transition-colors", on ? "text-sky" : "text-muted")}
+      className={cx(TAB, on ? "text-sky" : "text-ink/70")}
     >
       <TabIcon icon={icon} on={on} />
       {label}
