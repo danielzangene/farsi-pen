@@ -70,9 +70,14 @@ export default function Dashboard() {
         {!s.settings.checklistHidden && <Checklist />}
 
         <section aria-labelledby="stats-heading">
-          <h2 id="stats-heading" className="eyebrow mb-3 text-muted">
-            Your stats
-          </h2>
+          <div className="mb-3 flex items-baseline justify-between gap-2">
+            <h2 id="stats-heading" className="eyebrow text-muted">
+              Your stats
+            </h2>
+            <Link href="/app/progress/" className="text-sm font-bold text-sky-ink">
+              All progress
+            </Link>
+          </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
             <Stat icon={<Star className="size-5 fill-saffron text-saffron-shadow" />} label="Total XP" value={s.xp} />
             <Stat icon={<Flame className="size-5 fill-anar text-anar-ink" />} label="Record streak" value={`${s.streak.record} days`} />
