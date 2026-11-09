@@ -36,6 +36,20 @@ export function canSpeak(): boolean {
 
 // ── Recorded clips ───────────────────────────────────────────────────────
 
+// Recordings by native speakers (scripts/apply-review.mjs) win over the synthetic clips.
+let humanIndex: Promise<Set<string>> | null = null;
+function humanClips(): Promise<Set<string>> {
+  if (!humanIndex)
+    humanIndex = fetch(asset("/audio/human/index.json"))
+      .then((r) => (r.ok ? r.json() : []))
+      .then((keys: string[]) => new Set(keys))
+      .catch(() => {
+        humanIndex = null;
+        return new Set<string>();
+      });
+  return humanIndex;
+}
+
 let clipIndex: Promise<Set<string>> | null = null;
 function clips(): Promise<Set<string>> {
   if (!clipIndex)
@@ -77,11 +91,11 @@ if (typeof window !== "undefined") {
 // Settles the clip that is playing now, so a new one never leaves an earlier caller waiting.
 let settle: ((ok: boolean) => void) | null = null;
 
-function playClip(key: string, slow: boolean): Promise<boolean> {
+function playClip(key: string, slow: boolean, human = false): Promise<boolean> {
   const p = getPlayer();
   settle?.(false);
   p.pause();
-  p.src = asset(`/audio/${key}.mp3`);
+  p.src = asset(human ? `/audio/human/${key}.mp3` : `/audio/${key}.mp3`);
   p.playbackRate = slow ? 0.75 : 1;
   (p as HTMLAudioElement & { webkitPreservesPitch?: boolean }).webkitPreservesPitch = true;
   p.preservesPitch = true;
@@ -133,6 +147,7 @@ export async function speak(text: string, slow = false): Promise<boolean> {
   const t = text.trim();
   if (!t) return false;
   const key = audioKey(t);
+  if ((await humanClips()).has(key) && (await playClip(key, slow, true))) return true;
   if ((await clips()).has(key) && (await playClip(key, slow))) return true;
   if (natural()) {
     try {

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { Bookmark, ChartColumn, ChevronRight, CircleUserRound, Info, ShieldCheck } from "lucide-react";
+import { Bookmark, ChartColumn, ClipboardCheck, ChevronRight, CircleUserRound, Info, ShieldCheck } from "lucide-react";
 import { levelFor } from "@/lib/gamification";
 import { currentStreak, resetProgress, updateSettings, useProgress } from "@/lib/store";
 import { CardControls } from "@/components/CardControls";
@@ -37,6 +37,7 @@ export default function SettingsPage() {
           { href: "/app/bookmarks/", title: "My cards", text: `${s.bookmarks.length} saved`, icon: Bookmark },
           { href: "/app/progress/", title: "Progress", text: "Calendar, charts and badges", icon: ChartColumn },
           { href: "/app/privacy/", title: "Privacy", text: "What's stored and where", icon: ShieldCheck },
+          { href: "/app/review/", title: "Check the content", text: "For native speakers: review and record", icon: ClipboardCheck },
         ].map((x) => (
           <li key={x.href}>
             <Link href={x.href} className="flex min-h-[3.75rem] items-center gap-3 px-4 py-2.5 hover:bg-paper active:bg-paper">
