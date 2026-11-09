@@ -20,6 +20,7 @@ import { isDue } from "@/lib/srs";
 import { cx } from "@/lib/util";
 import { Fa, ProgressBar, TONE } from "@/components/ui";
 import { BackupNudge, Onboarding, TodayPlan } from "@/components/TodayPlan";
+import { DailyQuests, OwnSentence, SceneOfTheDay, SoundLessons, SpeakByTopic, WeakSounds, WeekStrip } from "@/components/home/HomeSections";
 
 export default function Dashboard() {
   const s = useProgress();
@@ -49,6 +50,20 @@ export default function Dashboard() {
         {/* The one main action: today's path (or two quick questions the first time). */}
         {s.settings.onboarded ? <TodayPlan /> : <Onboarding />}
         <BackupNudge />
+
+        {s.settings.onboarded && (
+          <>
+            <div className="grid gap-6 xl:grid-cols-2">
+              <WeekStrip />
+              <DailyQuests />
+            </div>
+            <SceneOfTheDay />
+            <WeakSounds />
+            <SoundLessons />
+            <SpeakByTopic />
+            <OwnSentence />
+          </>
+        )}
 
         <Explore dueCount={dueCount} />
 

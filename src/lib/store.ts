@@ -55,7 +55,7 @@ export interface ProgressState {
   cards: Record<string, StoredCard>;
   bookmarks: string[];
   hidden: string[];
-  daily: Record<string, { words: number; xp: number }>;
+  daily: Record<string, DayRecord>;
   streak: Streak;
   grammar: Record<string, { best: number; passed: boolean }>;
   traced: Record<string, number>;
@@ -77,6 +77,15 @@ export interface ProgressState {
   readings: Record<string, { best: number; doneAt: string }>;
   /** The sound path (unit id → stars per stage, tested out). */
   soundPath: Record<string, SoundPathRecord>;
+}
+
+export interface DayRecord {
+  words: number;
+  xp: number;
+  /** Takes spoken into the mic today. */
+  spoken?: number;
+  /** Daily quests collected today. */
+  quests?: string[];
 }
 
 export interface SoundPathRecord {
@@ -285,7 +294,7 @@ export function markActivity(kind: ActivityKind) {
 function addActivity(s: ProgressState, words: number, xp: number): ProgressState {
   const key = dayKey();
   const day = s.daily[key] ?? { words: 0, xp: 0 };
-  const nextDay = { words: day.words + words, xp: day.xp + xp };
+  const nextDay = { ...day, words: day.words + words, xp: day.xp + xp };
   const goalMet = nextDay.words >= s.settings.dailyGoal;
   return {
     ...s,
@@ -518,8 +527,25 @@ export function recordSounds(scores: { sound: string; score: number }[]) {
       const prev = stats[id];
       stats[id] = prev ? { n: prev.n + 1, avg: Math.round(prev.avg * 0.7 + score * 0.3), last: at } : { n: 1, avg: Math.round(score), last: at };
     });
-    return { ...s, soundStats: stats };
+    const key = dayKey();
+    const day = s.daily[key] ?? { words: 0, xp: 0 };
+    return { ...s, soundStats: stats, daily: { ...s.daily, [key]: { ...day, spoken: (day.spoken ?? 0) + 1 } } };
   });
+}
+
+/** Collects a finished daily quest's bonus XP (once per quest per day). */
+export function claimQuest(id: string, xp: number): boolean {
+  let ok = false;
+  update((s) => {
+    const key = dayKey();
+    const day = s.daily[key] ?? { words: 0, xp: 0 };
+    if (day.quests?.includes(id)) return s;
+    ok = true;
+    const next = addActivity(s, 0, xp);
+    const d = next.daily[key];
+    return { ...next, daily: { ...next.daily, [key]: { ...d, quests: [...(d.quests ?? []), id] } } };
+  });
+  return ok;
 }
 
 /** Adds a dictionary word to My cards (and returns its id). */
