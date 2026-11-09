@@ -1,6 +1,6 @@
 ---
 name: design-system-reviewer
-description: Reviews Farsi Pen UI code and screens against the Farsi Pen design system (tokens, 3D buttons, tiles, session layout, copy, accessibility, RTL, brand guardrails). Read-only; returns prioritised findings. Use after UI changes and before merging.
+description: Reviews Farsi Pen UI code and screens against the Farsi Pen design system (tokens, Apple-style materials and motion, tiles, session layout, typography, accessibility, RTL, brand guardrails). Read-only; returns prioritised findings. Use after UI changes and before merging.
 tools: Read, Grep, Glob, Bash
 ---
 

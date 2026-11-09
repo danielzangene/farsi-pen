@@ -43,7 +43,7 @@ export function Bubble({ line, name, showEn, compact }: { line: Omit<Line, "who"
   const you = line.who === "you";
   return (
     <div className={cx("flex", you ? "justify-end" : "justify-start")}>
-      <div className={cx("max-w-[85%] rounded-2xl border-2 p-3.5", you ? "border-firuze bg-firuze-soft" : "border-line bg-card")}>
+      <div className={cx("max-w-[85%] rounded-2xl border p-3.5", you ? "border-firuze bg-firuze-soft" : "border-line bg-card")}>
         <div className="mb-1 flex items-center gap-2">
           <span className={cx("eyebrow", you ? "text-firuze-ink" : "text-muted")}>{you ? "You" : (name ?? "")}</span>
           <RegisterTag register={line.register ?? "both"} />
@@ -185,7 +185,7 @@ export function GrammarStep({ mission, onNext }: { mission: Mission; onNext: () 
             </thead>
             <tbody>
               {g.table.rows.map((r) => (
-                <tr key={r.join()} className="border-t-2 border-line">
+                <tr key={r.join()} className="border-t border-line">
                   {r.map((c, i) => (
                     <td key={i} className={cx("px-4 py-3", i === 0 ? "font-extrabold text-plum-ink" : "font-semibold")}>
                       {c}

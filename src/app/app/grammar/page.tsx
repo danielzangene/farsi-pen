@@ -70,7 +70,7 @@ export default function GrammarPage() {
                       <span
                         className={cx(
                           "grid size-12 shrink-0 place-items-center rounded-2xl text-base font-extrabold text-on-accent",
-                          rec?.passed ? "bg-pista shadow-[0_4px_0_var(--color-pista-shadow)]" : "bg-plum shadow-[0_4px_0_var(--color-plum-shadow)]",
+                          rec?.passed ? "bg-pista" : "bg-plum",
                         )}
                         aria-label={rec?.passed ? "Learned" : undefined}
                       >

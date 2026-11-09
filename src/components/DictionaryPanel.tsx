@@ -143,7 +143,7 @@ function EntryView({ entry, inCards }: { entry: DictEntry; inCards: (id: string)
         <div className="space-y-2">
           <p className="text-sm font-bold text-muted">In a sentence</p>
           {entry.examples.slice(0, 2).map(([en, fa]) => (
-            <div key={en} className="rounded-2xl border-2 border-line p-3">
+            <div key={en} className="rounded-2xl border border-line p-3">
               <div className="flex items-start justify-between gap-2">
                 <Fa className="block text-lg leading-relaxed">{fa}</Fa>
                 <AudioButtons text={fa} compact />

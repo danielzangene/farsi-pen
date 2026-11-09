@@ -89,7 +89,7 @@ export function ListeningPractice({ lesson, onDone }: { lesson: ReadingLesson; o
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border-2 border-line p-5 text-center">
+      <div className="rounded-2xl border border-line p-5 text-center">
         <p className="font-semibold text-muted">Listen to the passage — you can play it twice. Read the questions first.</p>
         <button type="button" className="btn-sky btn-lg mt-4" onClick={() => (at === null ? void play() : stop())} disabled={at === null && plays >= 2}>
           {at === null ? <Play className="size-5 fill-current" /> : <Pause className="size-5 fill-current" />}
@@ -234,7 +234,7 @@ export function WritingPractice({ task, onDone }: { task: WritingTask; onDone: (
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl border-2 border-line p-5">
+      <div className="rounded-2xl border border-line p-5">
         <p className="flex items-start gap-1">
           <Fa className="flex-1 text-xl font-bold leading-relaxed">{task.prompt.fa}</Fa>
           <AudioButtons text={task.prompt.fa} compact />
@@ -256,7 +256,7 @@ export function WritingPractice({ task, onDone }: { task: WritingTask; onDone: (
         <p className="mb-2 text-sm font-extrabold text-muted">Linking words — tap to add</p>
         <div className="flex flex-wrap gap-2">
           {CONNECTORS.map((c) => (
-            <button key={c.fa} type="button" className={cx("rounded-xl border-2 px-3 py-1", used.includes(c) ? "border-pista bg-pista-soft text-pista-ink" : "border-line")} onClick={() => insert(c.fa)} title={c.en} disabled={finished}>
+            <button key={c.fa} type="button" className={cx("rounded-xl border px-3 py-1", used.includes(c) ? "border-pista bg-pista-soft text-pista-ink" : "border-line")} onClick={() => insert(c.fa)} title={c.en} disabled={finished}>
               <Fa className="font-bold">{c.fa}</Fa> <span className="text-xs font-semibold text-muted">{c.en}</span>
             </button>
           ))}
@@ -301,7 +301,7 @@ export function WritingPractice({ task, onDone }: { task: WritingTask; onDone: (
         </div>
       )}
       {lex && (
-        <div className="rounded-2xl border-2 border-line p-4">
+        <div className="rounded-2xl border border-line p-4">
           {unknown.length === 0 ? (
             <p className="font-bold text-pista-ink">No unusual spellings found.</p>
           ) : (
@@ -389,7 +389,7 @@ export function SpeakingPractice({ task, onDone }: { task: SpeakingTask; onDone:
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl border-2 border-line p-5">
+      <div className="rounded-2xl border border-line p-5">
         <p className="flex items-start gap-1">
           <Fa className="flex-1 text-xl font-bold leading-relaxed">{task.prompt.fa}</Fa>
           <AudioButtons text={task.prompt.fa} compact />
@@ -400,7 +400,7 @@ export function SpeakingPractice({ task, onDone }: { task: SpeakingTask; onDone:
         <p className="mb-2 text-sm font-extrabold text-muted">Useful phrases</p>
         <ul className="flex flex-wrap gap-2">
           {task.phrases.map((p) => (
-            <li key={p.fa} className={cx("rounded-xl border-2 px-3 py-1", usedPhrases.includes(p) ? "border-pista bg-pista-soft text-pista-ink" : "border-line")}>
+            <li key={p.fa} className={cx("rounded-xl border px-3 py-1", usedPhrases.includes(p) ? "border-pista bg-pista-soft text-pista-ink" : "border-line")}>
               <Fa className="font-bold">{p.fa}</Fa> <span className="text-xs font-semibold text-muted">{p.en}</span>
             </li>
           ))}
@@ -446,7 +446,7 @@ export function SpeakingPractice({ task, onDone }: { task: SpeakingTask; onDone:
       {phase === "review" && (
         <div className="space-y-5">
           {heard && (
-            <div className="rounded-2xl border-2 border-line p-4">
+            <div className="rounded-2xl border border-line p-4">
               <p className="text-sm font-extrabold text-muted">What we heard · {words} words</p>
               <p dir="rtl" lang="fa" className="mt-1 text-lg leading-loose">
                 {heard}

@@ -183,7 +183,7 @@ export function FlashcardSession({
 
         {/* Back */}
         {flipped ? (
-          <div className="mt-6 w-full animate-pop border-t-2 border-line pt-6">
+          <div className="mt-6 w-full animate-pop border-t border-line pt-6">
             {toFarsi ? (
               <>
                 <Fa className="block text-5xl font-bold leading-relaxed">
@@ -268,7 +268,7 @@ export function FlashcardSession({
 
       {/* Spacer for the fixed bar */}
       <div className="h-40" aria-hidden />
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-line bg-card pb-[env(safe-area-inset-bottom)]">
+      <div className="material fixed inset-x-0 bottom-0 z-40 border-t border-line pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto max-w-2xl px-4 py-4">
           {flipped ? (
             <div className="grid grid-cols-3 gap-2">

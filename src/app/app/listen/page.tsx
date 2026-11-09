@@ -81,7 +81,7 @@ export default function ListenPage() {
       </div>
     );
 
-  const select = "min-h-12 w-full cursor-pointer rounded-2xl border-2 border-field-edge bg-paper px-3 text-sm font-bold text-ink transition-colors focus:border-sky focus:bg-card";
+  const select = "min-h-12 w-full cursor-pointer rounded-2xl border border-field-edge bg-paper px-3 text-sm font-bold text-ink transition-colors focus:border-sky focus:bg-card";
 
   return (
     <div className="mx-auto max-w-xl">

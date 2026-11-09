@@ -254,7 +254,7 @@ export default function SoundsPage() {
         <p className="mb-3 text-sm font-semibold text-muted">These letters sound just like their English partners.</p>
         <ul className="flex flex-wrap gap-2">
           {easy.map((snd) => (
-            <li key={snd.id} className="flex items-center gap-2 rounded-xl border-2 border-line py-1 pe-1 ps-3" title={`Like ${snd.like}`}>
+            <li key={snd.id} className="flex items-center gap-2 rounded-xl border border-line py-1 pe-1 ps-3" title={`Like ${snd.like}`}>
               <Fa className="font-bold">{snd.letters}</Fa>
               <span className="text-sm font-bold text-muted">{snd.label}</span>
               <AudioButtons text={snd.examples[0].fa} compact />
@@ -283,7 +283,7 @@ function SoundDialog({ sound, canPractise, onPractise, onClose }: { sound: Sound
       ref={ref}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="card m-auto max-h-[calc(100dvh-2rem)] w-[min(32rem,calc(100vw-2rem))] animate-pop overflow-y-auto p-0 text-ink backdrop:bg-black/50"
+      className="card m-auto !rounded-[1.75rem] max-h-[calc(100dvh-2rem)] w-[min(32rem,calc(100vw-2rem))] animate-pop overflow-y-auto p-0 text-ink backdrop:bg-black/40"
       aria-label={`The ${sound.name} sound`}
     >
       <div className="p-5">
@@ -297,7 +297,7 @@ function SoundDialog({ sound, canPractise, onPractise, onClose }: { sound: Sound
         {words.length > 0 && (
           <>
             <p className="eyebrow mb-2 mt-5 text-muted">Words from the course</p>
-            <ul className="divide-y-2 divide-line rounded-2xl border-2 border-line">
+            <ul className="divide-y divide-line rounded-2xl border border-line">
               {words.map((w) => (
                 <li key={w.id} className="flex items-center gap-2 py-1.5 pe-1 ps-3">
                   <Fa className="text-lg font-bold">{w.fa}</Fa>

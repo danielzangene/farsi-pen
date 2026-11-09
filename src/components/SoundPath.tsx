@@ -32,7 +32,7 @@ export function NextUpCard({ all, onPlay, disabled }: { all: Record<string, Soun
   const total = stageCount(unit) + 1;
   const review = stage === stageCount(unit);
   return (
-    <section aria-labelledby="next-up" className={cx("rounded-2xl border-2 p-5 sm:p-6", TONE[unit.tone].border, TONE[unit.tone].soft)}>
+    <section aria-labelledby="next-up" className={cx("rounded-2xl border p-5 sm:p-6", TONE[unit.tone].border, TONE[unit.tone].soft)}>
       <div className="flex items-center gap-4">
         <span className={cx("grid size-16 shrink-0 place-items-center rounded-2xl text-on-accent", TONE[unit.tone].bg)}>
           <Fa className="text-2xl font-bold">{unit.badge}</Fa>
@@ -75,7 +75,7 @@ export function SoundPathList({ all, onPlay, onInfo, disabled }: { all: Record<s
         const expanded = openIds.includes(u.id);
         return (
           <li key={u.id}>
-            <div className={cx("rounded-2xl border-2 border-line", !open && "opacity-75")}>
+            <div className={cx("rounded-2xl border border-line", !open && "opacity-75")}>
               <button type="button" className="flex w-full items-center gap-4 p-4 text-start" onClick={() => toggle(u.id)} aria-expanded={expanded}>
                 <span className={cx("grid size-14 shrink-0 place-items-center rounded-2xl", open ? cx(TONE[u.tone].bg, "text-on-accent") : "bg-paper text-muted")}>
                   <Fa className="text-xl font-bold">{u.badge}</Fa>
@@ -100,7 +100,7 @@ export function SoundPathList({ all, onPlay, onInfo, disabled }: { all: Record<s
               </button>
 
               {expanded && (
-                <div className="border-t-2 border-line px-4 pb-4 pt-3">
+                <div className="border-t border-line px-4 pb-4 pt-3">
                   <ol className="relative">
                     {Array.from({ length: n + 1 }, (_, k) => {
                       const review = k === n;

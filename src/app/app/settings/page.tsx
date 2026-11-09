@@ -56,7 +56,7 @@ export default function SettingsPage() {
 
       <section className="card p-5">
         <h2 className="eyebrow text-muted">Learning</h2>
-        <div className="divide-y-2 divide-line">
+        <div className="divide-y divide-line">
           <div className="flex flex-wrap items-center justify-between gap-3 py-4">
             <span className="font-bold">Why you&apos;re learning</span>
             <Segmented
@@ -124,7 +124,7 @@ export default function SettingsPage() {
 
       <section className="card p-5">
         <h2 className="eyebrow text-muted">Voice &amp; speech</h2>
-        <div className="divide-y-2 divide-line">
+        <div className="divide-y divide-line">
           <div className="py-4">
             <VoiceSetup />
           </div>
@@ -137,7 +137,7 @@ export default function SettingsPage() {
       <section className="card p-5">
         <h2 className="eyebrow mb-4 text-muted">Your progress</h2>
         <ProgressTools />
-        <div className="mt-4 border-t-2 border-line pt-4">
+        <div className="mt-4 border-t border-line pt-4">
           <p className="font-bold">Placement test</p>
           <p className="mt-1 text-sm font-semibold text-muted">Find your level (A1 to B2) so Today skips what you already know.</p>
           <Link href="/app/placement/" className="btn-secondary btn-sm mt-3">
