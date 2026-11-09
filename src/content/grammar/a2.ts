@@ -488,4 +488,77 @@ export const A2: GrammarUnit[] = [
       ],
     },
   ]),
+  unit("A2", "Kinds of sentences", [
+    {
+      id: "sentence-parts",
+      title: "Subject and predicate",
+      titleFa: "نهاد و گزاره",
+      summary: "Every sentence has a nahâd (who or what) and a gozâre (what is said about it). The verb comes last.",
+      intro: "Persian grammar splits a sentence in two: the nahâd (subject) and the gozâre (predicate: everything else, ending with the verb). Because the verb ending already shows the person, the subject is often left out.",
+      table: {
+        columns: ["Nahâd (subject)", "Gozâre (predicate)", "Meaning"],
+        rows: [
+          ["Maryam", "be Tehrân âmad", "Maryam came to Tehran"],
+          ["(man)", "ketâb mikhunam", "I'm reading a book"],
+          ["havâ", "sard ast", "The weather is cold"],
+          ["bachchehâ", "dar hayât bâzi mikonand", "The children are playing in the yard"],
+        ],
+      },
+      keyPoints: [
+        "Word order is subject – object – verb: Maryam ketâb râ khând (Maryam read the book).",
+        "The subject can be dropped: the verb ending (-am, -i, -ad…) says who.",
+        "A simple sentence has one verb; a compound sentence joins two with va, ammâ, vali or yâ.",
+        "Time and place usually come early: emruz dar dâneshgâh kelâs dâram.",
+      ],
+      examples: [
+        { fa: "مریم دیروز به تهران آمد.", tr: "Maryam diruz be Tehrân âmad.", en: "Maryam came to Tehran yesterday." },
+        { fa: "کتاب می‌خوانم.", tr: "ketâb mikhânam.", en: "I'm reading a book. (no subject needed)" },
+        { fa: "هوا سرد است ولی آفتابی است.", tr: "havâ sard ast vali âftâbi ast.", en: "It's cold but sunny. (two clauses)" },
+      ],
+      exercises: [
+        { kind: "choice", prompt: "Where does the verb usually go?", options: ["At the end", "At the start", "After the subject", "Anywhere"], answer: "At the end" },
+        { kind: "choice", prompt: "In «havâ sard ast», which part is the nahâd?", options: ["havâ", "sard", "ast", "sard ast"], answer: "havâ" },
+        { kind: "choice", prompt: "Why can «ketâb mikhânam» leave out «man»?", options: ["The ending -am already says \"I\"", "It's a question", "It's spoken Persian only", "Books don't need a subject"], answer: "The ending -am already says \"I\"" },
+        { kind: "choice", prompt: "Which is a compound sentence?", options: ["Havâ sard ast vali âftâbi ast.", "Havâ sard ast.", "Maryam âmad.", "Ketâb mikhânam."], answer: "Havâ sard ast vali âftâbi ast." },
+        { kind: "fill", prompt: "Maryam be Tehrân ___.", translation: "Maryam came to Tehran.", answers: ["âmad", "amad"] },
+        { kind: "translate", prompt: "The weather is cold.", answers: ["havâ sard ast", "havâ sarde"] },
+      ],
+    },
+    {
+      id: "exclamations",
+      title: "What a…! How…!",
+      titleFa: "جمله‌های تعجبی",
+      summary: "che + noun + -i!, cheghadr …!, ajab …!, vây! — showing surprise, delight or dismay.",
+      intro: "Persian has a few set ways to exclaim. The most common is «che» before a noun with the -i ending: che havâ-ye khubi! (what lovely weather!). «Cheghadr» means how (much), and «ajab» adds surprise.",
+      table: {
+        columns: ["Pattern", "Example", "Meaning"],
+        rows: [
+          ["che + noun + -i!", "che shahr-e bozorgi!", "What a big city!"],
+          ["che + adjective!", "che khub!", "How nice!"],
+          ["cheghadr + adjective!", "cheghadr garme!", "How hot it is!"],
+          ["ajab + noun + -i!", "ajab ruz-i!", "What a day!"],
+          ["vây / vây che…!", "vây, che ghashang!", "Oh, how pretty!"],
+        ],
+      },
+      keyPoints: [
+        "With a noun, add -i to the end of the phrase: che manzare-ye ghashangi! (what a beautiful view!).",
+        "With an adjective alone, no -i: che bad! (how awful!), che jâleb! (how interesting!).",
+        "cheghadr + verb shows amount: cheghadr kâr dâri! (you've got so much work!).",
+        "In writing, an exclamation ends with «!»; in speech, the voice rises on che.",
+      ],
+      examples: [
+        { fa: "چه هوای خوبی!", tr: "che havâ-ye khubi!", en: "What lovely weather!" },
+        { fa: "چقدر ترافیکه!", tr: "cheghadr terâfike!", en: "So much traffic!" },
+        { fa: "عجب روزی بود!", tr: "ajab ruzi bud!", en: "What a day that was!" },
+      ],
+      exercises: [
+        { kind: "choice", prompt: "\"What a big house!\"", options: ["che khune-ye bozorgi!", "che khune bozorg!", "cheghadr khune!", "khune che bozorg!"], answer: "che khune-ye bozorgi!" },
+        { kind: "choice", prompt: "\"How interesting!\"", options: ["che jâleb!", "che jâlebi!", "jâleb che!", "cheghadr jâlebi!"], answer: "che jâleb!" },
+        { kind: "fill", prompt: "che havâ-ye khub___!", translation: "What lovely weather!", answers: ["i"] },
+        { kind: "choice", prompt: "Which word adds surprise, like \"what a…\"?", options: ["ajab", "chon", "agar", "ham"], answer: "ajab" },
+        { kind: "translate", prompt: "How nice!", answers: ["che khub", "che khoob"] },
+        { kind: "translate", prompt: "What a beautiful city!", answers: ["che shahr-e ghashangi", "che shahre ghashangi"] },
+      ],
+    },
+  ]),
 ];

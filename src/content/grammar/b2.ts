@@ -304,4 +304,42 @@ export const B2: GrammarUnit[] = [
       ],
     },
   ]),
+  unit("B2", "Literary Persian", [
+    {
+      id: "chon-cho",
+      title: "chon and cho",
+      titleFa: "چون / چو",
+      summary: "chon: because, since, when, like. cho: its short poetic form, as in Saadi and Hafez.",
+      intro: "«chon» is everyday Persian for because (chon diram shod, because it got late). In older and literary Persian it also means when and like. «cho» is a short form found mostly in poetry, where it means when or like.",
+      table: {
+        columns: ["Word", "Meaning", "Where", "Example"],
+        rows: [
+          ["chon", "because, since", "everyday", "chon khaste budam, zud khâbidam"],
+          ["chon", "when, as soon as", "written, literary", "chon be khâne residam, bârân gereft"],
+          ["chon", "like, as", "literary", "chon gol mikhandid"],
+          ["cho", "when / like", "poetry", "cho ozvi be dard âvarad ruzgâr"],
+          ["chon ke", "because (emphatic)", "speech and writing", "chon ke vaght nadâshtim"],
+        ],
+      },
+      keyPoints: [
+        "chon at the start of a sentence usually gives the reason: chon bârun miyâd, nemiyâm.",
+        "zirâ is a written synonym of chon (because); barâ-ye inke also means because.",
+        "In literary Persian, chon + past verb often means when: chon shab shod… (when night fell…).",
+        "cho is the poets' shorter chon, chosen to fit the metre; you'll read it, not say it.",
+      ],
+      examples: [
+        { fa: "چون دیر شد، با تاکسی رفتیم.", tr: "chon dir shod, bâ tâksi raftim.", en: "Because it got late, we took a taxi." },
+        { fa: "چون به خانه رسیدم، باران گرفت.", tr: "chon be khâne residam, bârân gereft.", en: "As soon as I got home, it started to rain. (literary)" },
+        { fa: "چو عضوی به درد آورد روزگار", tr: "cho ozvi be dard âvarad ruzgâr", en: "When fate brings pain to one limb… (Saadi, Golestan)" },
+      ],
+      exercises: [
+        { kind: "choice", prompt: "In everyday speech, chon means…", options: ["because", "how much", "until", "never"], answer: "because" },
+        { kind: "choice", prompt: "Where will you mostly meet «cho»?", options: ["In poetry", "In text messages", "In the news", "In numbers"], answer: "In poetry" },
+        { kind: "choice", prompt: "A written word with the same meaning as chon (because):", options: ["zirâ", "agar", "ammâ", "tâ"], answer: "zirâ" },
+        { kind: "choice", prompt: "«chon shab shod, be khâne bargashtand» means…", options: ["When night fell, they went home.", "Because of the night, they stayed.", "Like the night, they went home.", "They went home every night."], answer: "When night fell, they went home." },
+        { kind: "fill", prompt: "___ khaste budam, zud khâbidam.", translation: "Because I was tired, I went to bed early.", answers: ["chon", "chun"] },
+        { kind: "translate", prompt: "because it got late", answers: ["chon dir shod", "chun dir shod"] },
+      ],
+    },
+  ]),
 ];
