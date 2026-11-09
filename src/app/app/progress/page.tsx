@@ -90,13 +90,12 @@ function StreakCalendar() {
                 if (!d) return <td key={j} />;
                 const key = dayKey(d);
                 const st = dayState(s, key);
-                const future = key > todayKey;
                 return (
                   <td key={j}>
                     <span
                       className={cx(
                         "mx-auto grid aspect-square w-full max-w-11 place-items-center rounded-full text-sm font-bold",
-                        st === "goal" ? "bg-anar text-on-accent" : st === "practised" ? "bg-anar-soft text-anar-ink" : future ? "text-faint" : "text-muted",
+                        st === "goal" ? "bg-anar text-on-accent" : st === "practised" ? "bg-anar-soft text-anar-ink" : "text-muted",
                         key === todayKey && "ring-[3px] ring-sky",
                       )}
                       title={st === "goal" ? "Daily goal met" : st === "practised" ? "Practised" : undefined}
@@ -188,9 +187,6 @@ function BarMark({ bar, max }: { bar: Bar; max: number }) {
       className="group relative flex h-full min-w-0 flex-1 items-end"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onFocus={() => setHover(true)}
-      onBlur={() => setHover(false)}
-      tabIndex={0}
     >
       <div className={cx("w-full rounded-t-[4px]", bar.current ? "bg-saffron" : "bg-saffron/60", hover && "bg-saffron")} style={{ height: `${h}%` }} />
       {hover && (

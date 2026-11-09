@@ -50,11 +50,11 @@ export default function GrammarPage() {
       </div>
 
       <section className="mb-6 rounded-2xl bg-plum p-5 text-on-accent">
-        <p className="eyebrow opacity-70">Level {info.id}</p>
+        <p className="eyebrow">Level {info.id}</p>
         <h2 className="mt-1 text-2xl font-extrabold">
           {info.name} <Fa className="ms-1 text-lg font-bold opacity-80">{info.nameFa}</Fa>
         </h2>
-        <p className="mt-1 font-semibold opacity-90">
+        <p className="mt-1 font-semibold">
           {levelPassed}/{inLevel.length} concepts learned
         </p>
       </section>

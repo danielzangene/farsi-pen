@@ -31,11 +31,12 @@ export function Fa({ children, className }: { children: React.ReactNode; classNa
 }
 
 /** Thick rounded bar with a highlight sheen on the fill. */
-export function ProgressBar({ value, tone = "firuze", size = "md", className }: { value: number; tone?: Tone; size?: "sm" | "md"; className?: string }) {
+export function ProgressBar({ value, tone = "firuze", size = "md", className, label = "Progress" }: { value: number; tone?: Tone; size?: "sm" | "md"; className?: string; label?: string }) {
   const pct = Math.round(Math.max(0, Math.min(1, value)) * 100);
   return (
     <div
       role="progressbar"
+      aria-label={label}
       aria-valuenow={pct}
       aria-valuemin={0}
       aria-valuemax={100}

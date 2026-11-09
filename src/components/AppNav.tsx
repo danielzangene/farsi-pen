@@ -70,7 +70,7 @@ function StatChips({ streak, xp }: { streak: number; xp: number }) {
     <div className="flex items-center gap-1">
       <span className="flex items-center gap-1 rounded-xl px-2 py-1.5 text-base font-extrabold text-anar-ink" title="Day streak" aria-label={`${streak} day streak`}>
         <Flame className={cx("size-5", streak > 0 ? "fill-anar text-anar-ink" : "fill-line text-faint")} aria-hidden />
-        <span className={streak > 0 ? undefined : "text-faint"}>{streak}</span>
+        <span className={streak > 0 ? undefined : "text-muted"}>{streak}</span>
       </span>
       <span className="flex items-center gap-1 rounded-xl px-2 py-1.5 text-base font-extrabold text-saffron-ink" title="Total XP" aria-label={`${xp} XP`}>
         <Star className="size-5 fill-saffron text-saffron-shadow" aria-hidden />
@@ -179,7 +179,7 @@ function TabLink({ href, label, icon, on }: { href: string; label: string; icon:
     <Link
       href={href}
       aria-current={on ? "page" : undefined}
-      className={cx(TAB, on ? "text-sky" : "text-ink/70")}
+      className={cx(TAB, on ? "text-sky-ink" : "text-ink/70")}
     >
       <TabIcon icon={icon} on={on} />
       {label}
