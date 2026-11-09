@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 import { Info } from "lucide-react";
 import { resetProgress, updateSettings, useProgress } from "@/lib/store";
@@ -136,6 +137,13 @@ export default function SettingsPage() {
       <section className="card p-5">
         <h2 className="eyebrow mb-4 text-muted">Your progress</h2>
         <ProgressTools />
+        <div className="mt-4 border-t-2 border-line pt-4">
+          <p className="font-bold">Placement test</p>
+          <p className="mt-1 text-sm font-semibold text-muted">Find your level (A1 to B2) so Today skips what you already know.</p>
+          <Link href="/app/placement/" className="btn-secondary btn-sm mt-3">
+            Take the test
+          </Link>
+        </div>
       </section>
 
       <section className="card p-5">

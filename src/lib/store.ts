@@ -79,6 +79,8 @@ export interface ProgressState {
   soundPath: Record<string, SoundPathRecord>;
   /** Each sound's running score at the end of each day (dayKey → sound → score), last 120 days. */
   soundHistory: Record<string, Record<string, number>>;
+  /** Result of the placement test, if taken. */
+  placement: { level: "A0" | "A1" | "A2" | "B1" | "B2"; at: string; correct: number; total: number } | null;
 }
 
 export interface DayRecord {
@@ -156,6 +158,7 @@ export const DEFAULT_STATE: ProgressState = {
   readings: {},
   soundPath: {},
   soundHistory: {},
+  placement: null,
   settings: {
     name: "",
     dailyGoal: 10,
@@ -485,6 +488,12 @@ export function completeSoundStage(unitId: string, stage: number | "test", outco
     }
     return logActivity(addActivity({ ...s, soundPath: { ...(s.soundPath ?? {}), [unitId]: rec } }, 0, xp), "speak");
   });
+  return xp;
+}
+
+export function savePlacement(level: NonNullable<ProgressState["placement"]>["level"], correct: number, total: number): number {
+  const xp = correct;
+  update((s) => logActivity(addActivity({ ...s, placement: { level, at: dayKey(), correct, total } }, 0, xp), "lesson"));
   return xp;
 }
 
