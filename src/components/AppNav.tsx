@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AudioLines, Bookmark, ChartColumn, BookOpenText, Clapperboard, Headphones, BookHeart, BookOpen, Compass, Flame, House, Layers, Menu, Mic, PenLine, Puzzle, Repeat, Settings, Star, X } from "lucide-react";
+import { AudioLines, Bookmark, GraduationCap, ChartColumn, BookOpenText, Clapperboard, Headphones, BookHeart, BookOpen, Compass, Flame, House, Layers, Menu, Mic, PenLine, Puzzle, Repeat, Settings, Star, X } from "lucide-react";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
@@ -26,6 +26,7 @@ const SECONDARY: NavItem[] = [
   { href: "/app/sounds/", label: "Sounds", icon: AudioLines, tone: "saffron", hint: "Hard Persian sounds and a daily workout" },
   { href: "/app/practice/", label: "Daily Practice", icon: Repeat, tone: "sky", hint: "Type words from memory" },
   { href: "/app/reading/", label: "Reading", icon: BookOpenText, tone: "plum", hint: "B1 texts about Iran, with tasks" },
+  { href: "/app/samfa/", label: "SAMFA exam", icon: GraduationCap, tone: "firuze", hint: "Prepare for the Persian proficiency test" },
   { href: "/app/grammar/", label: "Grammar", icon: Puzzle, tone: "plum", hint: "A1 to B2, with exercises" },
   { href: "/app/alphabet/", label: "Alphabet", icon: PenLine, tone: "pista", hint: "Letters, vowel signs, tracing" },
   { href: "/app/poetry/", label: "Poetry", icon: BookHeart, tone: "plum", hint: "Fâl-e Hâfez and the poems everyone knows" },

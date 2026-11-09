@@ -81,6 +81,14 @@ export interface ProgressState {
   soundHistory: Record<string, Record<string, number>>;
   /** Result of the placement test, if taken. */
   placement: { level: "A0" | "A1" | "A2" | "B1" | "B2"; at: string; correct: number; total: number } | null;
+  /** SAMFA practice: mini mock results (newest last) and practice counts per skill. */
+  samfa: { mocks: SamfaMock[]; practised: Record<string, number> };
+}
+
+export interface SamfaMock {
+  at: string;
+  scores: { listening: number; reading: number; writing: number; speaking: number };
+  total: number;
 }
 
 export interface DayRecord {
@@ -159,6 +167,7 @@ export const DEFAULT_STATE: ProgressState = {
   soundPath: {},
   soundHistory: {},
   placement: null,
+  samfa: { mocks: [], practised: {} },
   settings: {
     name: "",
     dailyGoal: 10,
@@ -494,6 +503,27 @@ export function completeSoundStage(unitId: string, stage: number | "test", outco
 export function savePlacement(level: NonNullable<ProgressState["placement"]>["level"], correct: number, total: number): number {
   const xp = correct;
   update((s) => logActivity(addActivity({ ...s, placement: { level, at: dayKey(), correct, total } }, 0, xp), "lesson"));
+  return xp;
+}
+
+/** One SAMFA practice task (skill = listening/reading/writing/speaking); XP from its 0–60 score. */
+export function completeSamfaPractice(skill: string, score60: number): number {
+  const xp = Math.round(score60 / 6);
+  update((s) => {
+    const prev = s.samfa ?? { mocks: [], practised: {} };
+    const next = { ...s, samfa: { ...prev, practised: { ...prev.practised, [skill]: (prev.practised[skill] ?? 0) + 1 } } };
+    return logActivity(addActivity(next, 0, xp), "reading");
+  });
+  return xp;
+}
+
+export function saveSamfaMock(scores: SamfaMock["scores"]): number {
+  const total = scores.listening + scores.reading + scores.writing + scores.speaking;
+  const xp = Math.round(total / 8);
+  update((s) => {
+    const prev = s.samfa ?? { mocks: [], practised: {} };
+    return logActivity(addActivity({ ...s, samfa: { ...prev, mocks: [...prev.mocks, { at: dayKey(), scores, total }].slice(-20) } }, 0, xp), "reading");
+  });
   return xp;
 }
 
