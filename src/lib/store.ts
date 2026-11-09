@@ -77,6 +77,8 @@ export interface ProgressState {
   readings: Record<string, { best: number; doneAt: string }>;
   /** The sound path (unit id → stars per stage, tested out). */
   soundPath: Record<string, SoundPathRecord>;
+  /** Each sound's running score at the end of each day (dayKey → sound → score), last 120 days. */
+  soundHistory: Record<string, Record<string, number>>;
 }
 
 export interface DayRecord {
@@ -153,6 +155,7 @@ export const DEFAULT_STATE: ProgressState = {
   scenes: {},
   readings: {},
   soundPath: {},
+  soundHistory: {},
   settings: {
     name: "",
     dailyGoal: 10,
@@ -529,7 +532,12 @@ export function recordSounds(scores: { sound: string; score: number }[]) {
     });
     const key = dayKey();
     const day = s.daily[key] ?? { words: 0, xp: 0 };
-    return { ...s, soundStats: stats, daily: { ...s.daily, [key]: { ...day, spoken: (day.spoken ?? 0) + 1 } } };
+    const history: Record<string, Record<string, number>> = {};
+    for (const k of Object.keys(s.soundHistory ?? {}).sort().slice(-119)) history[k] = s.soundHistory[k];
+    const todayScores = { ...(history[key] ?? {}) };
+    take.forEach((_, id) => (todayScores[id] = stats[id].avg));
+    history[key] = todayScores;
+    return { ...s, soundStats: stats, soundHistory: history, daily: { ...s.daily, [key]: { ...day, spoken: (day.spoken ?? 0) + 1 } } };
   });
 }
 

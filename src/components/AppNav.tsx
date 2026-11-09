@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AudioLines, Bookmark, BookOpenText, Clapperboard, Headphones, BookHeart, BookOpen, Compass, Flame, House, Layers, Menu, Mic, PenLine, Puzzle, Repeat, Settings, Star, X } from "lucide-react";
+import { AudioLines, Bookmark, ChartColumn, BookOpenText, Clapperboard, Headphones, BookHeart, BookOpen, Compass, Flame, House, Layers, Menu, Mic, PenLine, Puzzle, Repeat, Settings, Star, X } from "lucide-react";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
@@ -19,6 +19,7 @@ const PRIMARY: NavItem[] = [
 
 /** Extra practice and tools: under "More" on phones, a second group in the sidebar. */
 const SECONDARY: NavItem[] = [
+  { href: "/app/progress/", label: "Progress", icon: ChartColumn, tone: "saffron", hint: "Streak calendar, XP chart, your sounds" },
   { href: "/app/speak/", label: "Speak", icon: Mic, tone: "anar", hint: "Say words, see each sound scored" },
   { href: "/app/listen/", label: "Hands-free", icon: Headphones, tone: "firuze", hint: "Hear it, say it, repeat — eyes free" },
   { href: "/app/scenes/", label: "Scenes", icon: Clapperboard, tone: "sky", hint: "Play a part in everyday sketches" },
