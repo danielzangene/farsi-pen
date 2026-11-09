@@ -41,7 +41,7 @@ export interface PathSection {
 const TRACE_PASS = 60;
 
 // Missions placed after the lessons whose words they use.
-const MISSIONS_AFTER_LEVEL: Record<number, string[]> = { 1: ["meet", "cafe"], 2: ["taxi"], 3: ["bazaar"], 4: ["guest"] };
+const MISSIONS_AFTER_LEVEL: Record<number, string[]> = { 1: ["meet", "cafe"], 2: ["taxi", "directions"], 3: ["bazaar", "pharmacy"], 4: ["guest"] };
 // Grammar levels taught alongside each lesson level.
 const GRAMMAR_FOR_LEVEL: Record<number, "A1" | "A2" | undefined> = { 2: "A1", 4: "A2" };
 
@@ -79,8 +79,8 @@ export function buildPath(s: ProgressState, now = new Date()): PathSection[] {
     },
   ];
 
-  for (const level of LEVELS) {
-    const items: PathItem[] = LESSONS.filter((l) => l.level === level.id).map((l) => {
+  const lessonItems = (levelId: number): PathItem[] =>
+    LESSONS.filter((l) => l.level === levelId).map((l) => {
       const rec = s.lessons[l.id];
       return {
         id: `lesson-${l.id}`,
@@ -93,6 +93,10 @@ export function buildPath(s: ProgressState, now = new Date()): PathSection[] {
         done: !!rec?.completedAt,
       };
     });
+  // B1 vocabulary lives in the Independent section, next to the readings.
+  const b1Levels = LEVELS.filter((l) => l.cefr === "B1").map((l) => l.id);
+  for (const level of LEVELS.filter((l) => l.cefr !== "B1")) {
+    const items: PathItem[] = lessonItems(level.id);
     for (const mid of MISSIONS_AFTER_LEVEL[level.id] ?? []) {
       const m = MISSION_BY_ID[mid];
       if (!m) continue;
@@ -123,8 +127,9 @@ export function buildPath(s: ProgressState, now = new Date()): PathSection[] {
     title: "Independent",
     fa: "مستقل",
     cefr: "B1",
-    description: "Real texts about Iran in written Persian, and the grammar to read them.",
+    description: "Vocabulary for news, people and paperwork, real texts about Iran in written Persian, and the grammar to read them.",
     items: [
+      ...b1Levels.flatMap(lessonItems),
       ...READINGS.map((r) => ({
         id: `reading-${r.id}`,
         kind: "reading" as const,

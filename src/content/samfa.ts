@@ -92,6 +92,35 @@ export const WRITING_TASKS: WritingTask[] = [
       "قربانت، سارا",
     ],
   },
+  {
+    id: "technology",
+    prompt: { en: "Has the mobile phone made our lives better or worse? Give your opinion with reasons.", fa: "آیا تلفن همراه زندگی ما را بهتر کرده است یا بدتر؟ نظرتان را با دلیل بنویسید." },
+    words: 150,
+    minutes: 20,
+    plan: ["Say what has changed in one sentence.", "Two ways it helps, with examples.", "Two problems it causes, with examples.", "Your conclusion with «به طور خلاصه»."],
+    model: [
+      "در بیست سال گذشته، تلفن همراه بخش جدانشدنی زندگی ما شده است.",
+      "از یک طرف، با تلفن همراه می‌توانیم در هر لحظه با خانواده و دوستانمان در ارتباط باشیم، حتی اگر در کشور دیگری زندگی کنند.",
+      "علاوه بر این، بسیاری از کارها مانند خرید، پرداخت قبض و پیدا کردن آدرس آسان‌تر شده است.",
+      "از طرف دیگر، بسیاری از مردم ساعت‌ها به صفحه‌ی گوشی نگاه می‌کنند و کمتر با اطرافیانشان حرف می‌زنند.",
+      "استفاده‌ی زیاد از گوشی، به‌ویژه شب‌ها، خواب را هم کم می‌کند.",
+      "به طور خلاصه، به نظر من تلفن همراه زندگی را راحت‌تر کرده است، به شرط اینکه درست از آن استفاده کنیم.",
+    ],
+  },
+  {
+    id: "person",
+    prompt: { en: "Write about a person who has had a big influence on your life.", fa: "درباره‌ی کسی بنویسید که تأثیر زیادی بر زندگی شما داشته است." },
+    words: 120,
+    minutes: 15,
+    plan: ["Who they are and how you know them.", "What they are like (two adjectives, each with an example).", "One thing they taught you (simple past).", "Why they still matter to you."],
+    model: [
+      "کسی که بیشترین تأثیر را بر زندگی من داشته، مادربزرگم است.",
+      "او زنی صبور و مهربان بود و همیشه وقت داشت تا به حرف‌های نوه‌هایش گوش کند.",
+      "وقتی بچه بودم، به من آشپزی و کتاب خواندن یاد داد.",
+      "او همیشه می‌گفت که هیچ‌وقت برای یاد گرفتن دیر نیست.",
+      "هنوز هم وقتی کار سختی پیش رو دارم، به حرف او فکر می‌کنم.",
+    ],
+  },
 ];
 
 export interface SpeakingTask {
@@ -181,6 +210,32 @@ export const SPEAKING_TASKS: SpeakingTask[] = [
       { fa: "در آینده", en: "in the future" },
     ],
     model: ["اگر در ایران درس بخوانم، رشته‌ی معماری را انتخاب می‌کنم.", "چون معماری سنتی ایران، مثل بادگیرها و خانه‌های حیاط‌دار، برایم خیلی جالب است.", "در آینده دوست دارم این ایده‌ها را در ساختمان‌های امروزی به کار ببرم."],
+  },
+  {
+    id: "food",
+    prompt: { en: "Describe your favourite food and how it is made.", fa: "غذای مورد علاقه‌تان را توصیف کنید و بگویید چطور درست می‌شود." },
+    prepSeconds: 30,
+    speakSeconds: 60,
+    phrases: [
+      { fa: "غذای مورد علاقه‌ی من", en: "my favourite food" },
+      { fa: "مواد لازم", en: "the ingredients" },
+      { fa: "اول … بعد", en: "first … then" },
+      { fa: "معمولاً با … می‌خوریم", en: "we usually eat it with …" },
+    ],
+    model: ["غذای مورد علاقه‌ی من قورمه‌سبزی است.", "مواد لازمش سبزی، گوشت، لوبیا قرمز و لیمو عمانی است.", "اول گوشت و پیاز را سرخ می‌کنند، بعد سبزی و لوبیا را اضافه می‌کنند و چند ساعت می‌پزند.", "معمولاً آن را با برنج می‌خوریم."],
+  },
+  {
+    id: "online",
+    prompt: { en: "Are online classes as good as classes in person? Give your opinion.", fa: "به نظر شما کلاس‌های آنلاین به خوبی کلاس‌های حضوری هستند؟ نظرتان را بگویید." },
+    prepSeconds: 45,
+    speakSeconds: 90,
+    phrases: [
+      { fa: "مزیت اصلی", en: "the main advantage" },
+      { fa: "با این حال", en: "however" },
+      { fa: "برای مثال", en: "for example" },
+      { fa: "به طور کلی", en: "in general" },
+    ],
+    model: ["مزیت اصلی کلاس‌های آنلاین این است که از هر جایی می‌شود در آن‌ها شرکت کرد.", "برای مثال، من از کانادا در کلاس فارسی یک استاد ایرانی شرکت می‌کنم.", "با این حال، در کلاس حضوری ارتباط با استاد و هم‌کلاسی‌ها راحت‌تر است.", "به طور کلی، فکر می‌کنم بهترین راه ترکیب این دو است."],
   },
 ];
 
