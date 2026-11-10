@@ -38,7 +38,7 @@ The onboarding question *"Why are you learning?"* defines four segments. *"Can y
 ## 4. Product principles (from how the app is built)
 
 1. **One clear next step.** The Today plan has one Continue button and at most three steps, then says "that's enough for today".
-2. **Can-do, not clicks.** XP comes from proving a skill (a mastery check), and skills come back after 7+ days to check they've stuck.
+2. **Can-do, not clicks.** XP comes from proving a skill (a mastery check), and skills come back after 7 days, then at growing gaps, to check they've stuck.
 3. **Spoken first, formal labelled.** Words are tagged *Spoken* or *Formal*; scenes use spoken Tehran Persian.
 4. **Forgiving input.** Finglish or فارسی, typos treated as "almost", sound-alike letters treated as one sound, voice wherever typing works.
 5. **The pen.** Reading and writing the script is part of the core, not an extra: tracing with scoring, letter forms, vowel signs.
