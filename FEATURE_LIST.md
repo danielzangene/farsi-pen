@@ -5,11 +5,13 @@
 Companion document: [PRD_OVERVIEW.md](PRD_OVERVIEW.md)
 
 **Status key**
+
 - ✅ **Live**: built and working in the static app, with no account or server needed
 - 🌐 **Optional online**: built, but only shown when `NEXT_PUBLIC_API_URL` points at the Cloudflare Worker
 - 🔜 **Not built yet**: planned in the V1 spec but not in the prototype
 
 **Priority key** (proposed, from how the product is put together)
+
 - **P0, core**: the product doesn't work without it
 - **P1, key**: a main reason to choose Farsi Pen
 - **P2, supporting**: adds depth, retention or trust
