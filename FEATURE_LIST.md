@@ -1,6 +1,6 @@
 # Farsi Pen — Feature List
 
-*Taken from the working prototype (`src/`, `worker/`, commit history) as of November 2026. Live dev build: https://danielzangene.github.io/farsi-pen/dev/app/*
+*Taken from the working prototype (`src/`, `worker/`, commit history) as of November 2026, and checked against the code on 10 November 2026. Live dev build: https://danielzangene.github.io/farsi-pen/dev/app/*
 
 Companion document: [PRD_OVERVIEW.md](PRD_OVERVIEW.md)
 
@@ -66,11 +66,11 @@ Plus a public landing page (`/`): "Learn to read, write and speak Farsi", with *
 
 | Feature | Description | Status | Priority |
 |---|---|---|---|
-| Alphabet | All 32 letters plus آ and ء, with isolated, initial, medial and final forms, audio, example words and a "Unique to Persian" filter | ✅ | P0 |
+| Alphabet | All 32 letters plus آ and ء, with isolated, initial, medial and final forms, audio, example words, a "Unique to Persian" filter (پ چ ژ گ) and a mark on letters that don't join the next one | ✅ | P0 |
 | Short-vowel signs | zabar, zir, pish, tashdid, sokun, tanvin | ✅ | P1 |
 | **Letter tracing with scoring** | Trace each letter in every form and get a score (pass is 60). This is the "pen" in Farsi Pen | ✅ | P1 |
-| Sounds page | The 12 Persian sounds English speakers find hard (kh, gh, rolled r, zh, â, a, u, i, o, e, h, the glottal catch), each with a tip, mouth diagram, course words and a running score | ✅ | P1 |
-| Sound path | 8 units (kh, gh, tapped r, â/a, u/o, i/e, h, zh). Each unit has up to 6 stages of 4 words and a sentence, then a review. Stages earn 1 to 3 stars and open in order; you can test out of any unit | ✅ | P1 |
+| Sounds page | A guide to 29 Persian sounds, led by the 12 that English speakers find hard (kh, gh, rolled r, zh, â, a, u, i, o, e, h, the glottal catch). Each has a tip, mouth diagram, course words and a running score | ✅ | P1 |
+| Sound path | 8 units (kh, gh, tapped r, â/a, u/o, i/e, h, zh). Each unit has up to 6 stages of 4 words and a sentence (zh has 1 stage so far), then a review. Stages earn 1 to 3 stars and open in order; you can test out of any unit | ✅ | P1 |
 | Daily sound workout | Picks your 3 weakest sounds and runs 9 short words, then shows how each sound moved | ✅ | P1 |
 | Pronunciation lab | Each letter coloured by how clearly it was heard, a score per sound, accuracy and completeness. Play the model, your take, or both back to back. A tip card for the weakest sound | ✅ | P1 |
 
@@ -78,14 +78,14 @@ Plus a public landing page (`/`): "Learn to read, write and speak Farsi", with *
 
 | Feature | Description | Status | Priority |
 |---|---|---|---|
-| Vocabulary lessons | **40 lessons, 583 words in 5 levels** (A1–B1). Flow: preview grid → study cards → Round 1 recognition (4 options, keys 1–4) → Round 2 typed recall (missed words come back) → result with XP | ✅ | P0 |
+| Vocabulary lessons | **40 lessons, 583 words in 5 levels** (A1–B1). Flow: preview grid → study cards → Round 1 recognition (4 options, keys 1–4 or A–D) → Round 2 typed recall (missed words come back) → result with XP. Lessons open in order, but any lesson can be opened to skip ahead | ✅ | P0 |
 | Flashcards | See the word, guess, flip, hear it, see it in a sentence, watch real videos, say it, then rate *Didn't know / Almost / Knew it*. Missed cards come back in the same session | ✅ | P0 |
 | Spaced repetition (FSRS) | `ts-fsrs` schedules each card. Decks: Today (due words plus 5 new), My cards, By lesson | ✅ | P0 |
 | Daily Practice | 10 words chosen by FSRS: due words first, then the weakest | ✅ | P1 |
 | Card controls | FA→EN or EN→FA; Latin-first, Farsi-first or script-only; "sounds like"; bookmark; hide; report | ✅ | P1 |
 | Forgiving answer checking | Allows small typos, normalises Arabic ك/ي to Persian ک/ی, ignores ZWNJ and diacritics, accepts synonyms, and says "almost — check your spelling" | ✅ | P0 |
 | Persian keyboard | On-screen ISIRI layout. Answers in script or Finglish (transliteration) are both accepted | ✅ | P1 |
-| Word browser | Search and filters, with Say it and videos on every card | ✅ | P2 |
+| Word browser | Search with filters (lesson, type, progress) and a choice of view, with Say it and videos on every card | ✅ | P2 |
 | My cards (bookmarks) | Bookmarked and hidden words, with bookmark practice | ✅ | P2 |
 | Dictionary | Look up English or Persian: course words first, then 46,000+ open-source entries with example sentences. Plural and verb endings are stripped to find the base word. Any meaning can be added to My cards | ✅ | P1 |
 | Spelling help | "Did you mean …?" for misspelled Persian; sound-alike letters and missing half-spaces count as small slips | ✅ | P2 |
@@ -97,11 +97,11 @@ Plus a public landing page (`/`): "Learn to read, write and speak Farsi", with *
 |---|---|---|---|
 | **Missions** | 7 situation-based missions: Meet someone new (A1), Take a taxi (A1), Order at a café (A1), Ask for directions (A1), Shop at the bazaar (A2), At the pharmacy (A2), Be a guest: ta'ârof at home (A2). 27 skills in all | ✅ | P0 |
 | Mission flow | Listen to a dialogue → key phrases (spoken and formal) → grammar when needed → build sentences → role-play → unguided mastery check. Answer by typing (Finglish or فارسی) or by voice | ✅ | P0 |
-| Mastery model | Each skill ends as *mastered*, *needs practice* (focused repair, then a fresh check) or *retry*. "Prove it" goes straight to the check. Mastered skills come back for a short check after 7+ days | ✅ | P0 |
-| Scenes | 8 short episodes with a recurring cast (Sara visiting from Toronto, her aunt, her cousin, the shopkeeper, the neighbour) in spoken Tehran Persian. Pick a part, the other lines are read aloud, and you say yours and get a score. Culture notes, plus a scene of the day | ✅ | P1 |
+| Mastery model | Each skill ends as *mastered*, *needs practice* (focused repair, then a fresh check) or *retry*. "Prove it" goes straight to the check. Mastered skills come back for a short check after 7 days, then at growing gaps (×2.5 each time, up to 180 days) | ✅ | P0 |
+| Scenes | 8 short episodes with a recurring cast (Sara, visiting from Toronto; her aunt Khale Mahin; her cousin Arash; Agha Mamad at the corner shop; Shirin, the neighbour upstairs; a shared-taxi driver) in spoken Tehran Persian. Pick a part, the other lines are read aloud, and you say yours and get a score. Culture notes, plus a scene of the day | ✅ | P1 |
 | Speak | Hear a word, say it, get a match score. Speak by topic, or type any sentence to practise | ✅ | P1 |
 | Hands-free mode | For walks and cooking: English prompt, a pause to answer, then Persian to repeat. Scenes play line by line for shadowing. Optional mic scoring, screen kept awake, and earphone/lock-screen controls | ✅ | P2 |
-| AI tutor | A conversation partner in 7 situations (free chat, café, shared taxi, bazaar, visiting a family, pharmacy, lost in the city). Replies in Persian with transliteration, optional English and gentle corrections. Mic input and audio. Daily limits apply | 🌐 | P1 |
+| AI tutor | A conversation partner in 7 situations (free chat, café, shared taxi, bazaar, visiting a family, pharmacy, lost in the city). Replies in Persian with transliteration, optional English and gentle corrections. Mic input and audio. Runs on Llama 3.3 70B through NVIDIA's API, with limits of 40 replies per visitor and 3,000 in total per day | 🌐 | P1 |
 
 ### 3.5 Structured course (grammar, reading, literature)
 
@@ -109,16 +109,16 @@ Plus a public landing page (`/`): "Learn to read, write and speak Farsi", with *
 |---|---|---|---|
 | Grammar course | **54 concepts, A1 → B2** (A1: 16, A2: 15, B1: 14, B2: 9): pronouns, ezâfe, râ, all tenses, subjunctive, conditionals, passive, reported speech, spoken Persian, ta'ârof and more. Each concept has a table, key points, examples and 6 exercises; 80% passes | ✅ | P1 |
 | Reading track (B1) | 8 lessons: Life in the capital, Yalda night, The windcatchers of Yazd, Travelling by train, In the bazaar, Nowruz, Hafez, A glass of tea. 8 steps each: key words → text (tap any word, listen to all of it or line by line) → comprehension → written vs spoken Persian → grammar → news vocabulary → culture note → speaking task with a model answer | ✅ | P1 |
-| Poetry | Fâl-e Hâfez (12 ghazals with transliteration, English, an omen reading and key words) and a poem of the day (Hafez, Saadi, Khayyam). The full poem loads from Ganjoor open data with vowel marks and explanations; tap any word to look it up | ✅ | P2 |
+| Poetry | Fâl-e Hâfez (12 ghazals with transliteration, English, an omen reading and key words) and a poem of the day drawn from 16 poems (Hafez, Saadi, Khayyam). The full poem loads from Ganjoor open data with vowel marks and explanations; tap any word to look it up | ✅ | P2 |
 
 ### 3.6 Exams
 
 | Feature | Description | Status | Priority |
 |---|---|---|---|
 | Placement test | Up to 4 rounds (A1, A2, B1, B2) of 5 questions: word meaning, grammar and listening. 4 right moves you up a round. The result sets the level, suggests a starting point, and marks lower lessons as optional | ✅ | P1 |
-| SAMFA overview | The official exam at a glance: 4 skills × 60 points = 240; General and Academic versions; the usual university bar is half the total | ✅ | P1 |
-| SAMFA practice | Listening (played twice, no text), timed reading, timed writing (plan, linking words, word count, spelling check), speaking (prep time, timed answer, transcript, useful phrases counted). Model answers and a self-check rubric | ✅ | P1 |
-| SAMFA mini mock | Runs all four skills and estimates a score out of 240; results are saved | ✅ | P1 |
+| SAMFA overview | The official exam at a glance: 4 skills × 60 points = 240; General and Academic versions; the usual university bar is half the total. Run by Iran's Ministry of Science a few times a year; certificates last two years. The app reminds learners to check the official announcement for dates and fees | ✅ | P1 |
+| SAMFA practice | Listening (played twice, no text), timed reading, timed writing (plan, linking words, word count, spelling check), speaking (prep time, timed answer, transcript, useful phrases counted). 6 writing and 8 speaking prompts, 10 linking words to tap in, model answers and a self-check rubric (task, organisation, range, accuracy) | ✅ | P1 |
+| SAMFA mini mock | Runs all four skills in about 25 minutes and estimates a score out of 240, compared with the university bar; results are saved | ✅ | P1 |
 
 ### 3.7 Motivation and progress
 
@@ -137,27 +137,27 @@ Plus a public landing page (`/`): "Learn to read, write and speak Farsi", with *
 | Feature | Description | Status | Priority |
 |---|---|---|---|
 | Guest mode | No sign-up. All progress is kept in `localStorage`, shaped so it can be merged into an account later | ✅ | P0 |
-| Settings | Name, goal, reading level, daily goal, card defaults, keyboard, voice and speech recognition, appearance (light/dark/auto) | ✅ | P0 |
+| Settings | Name, goal, reading level, daily goal (5, 10 or 20 words), card direction and script, on-screen keyboard, natural voice (Amir or Gyro), speech recogniser (Browser or Whisper, with a download button), theme (dark by default, light, or auto) | ✅ | P0 |
 | Backup and restore | Download or upload a JSON file; a one-time nudge after a 3-day streak | ✅ | P1 |
-| Sync across devices | A private 130-bit code, with no email or account; automatic push and pull | 🌐 | P1 |
-| Privacy page | What is stored, where, and who can see it | ✅ | P1 |
+| Sync across devices | A private 130-bit code, with no email or account; automatic push and pull; unused copies are deleted after about a year | 🌐 | P1 |
+| Privacy page | What is stored, where, and who can see it. No analytics, ads or cookies of Farsi Pen's own | ✅ | P1 |
 | Report a problem | On every word, flashcard, grammar exercise and mission task. Opens a GitHub issue, or posts to the server when the API is on | ✅ / 🌐 | P1 |
-| Send feedback | Free-text feedback | 🌐 | P2 |
-| Content review tool | "Check the content" lists all 1,763 Persian items. A native speaker marks each one correct or suggests a fix, records it in their own voice, and exports one review file. `scripts/apply-review.mjs` turns it into fixes and MP3s | ✅ | P1 |
-| Reset progress | Clear everything (with confirmation) | ✅ | P2 |
+| Send feedback | Free-text feedback with a rating | 🌐 | P2 |
+| Content review tool | "Check the content" lists all 1,979 Persian items (581 words, 580 examples, 33 letters, 162 grammar, 214 mission, 77 scene, 220 reading, 74 SAMFA and 38 sound items). A native speaker marks each one correct or suggests a fix, records it in their own voice, and exports one review file. `scripts/apply-review.mjs` turns it into fixes and MP3s | ✅ | P1 |
+| Reset progress | Clears XP, streaks, lessons, reviews, bookmarks and badges from this browser after confirming; settings are kept | ✅ | P2 |
 | Build info | Commit and build time shown in Settings | ✅ | P2 |
 
 ### 3.9 Platform and voice (cross-cutting)
 
 | Feature | Description | Status | Priority |
 |---|---|---|---|
-| Recorded audio for all course text | ~2,170 MP3 clips (open Piper "amir" voice); native-speaker recordings play first when they exist. A test fails if new text has no recording | ✅ | P0 |
+| Recorded audio for all course text | 2,169 MP3 clips (open Piper "amir" voice). Native-speaker recordings will play first once they exist; none are recorded yet. A test fails if new text has no recording | ✅ | P0 |
 | In-browser natural voice | Piper neural TTS (~63 MB once, then offline); falls back to the device's Persian voice | ✅ | P1 |
 | Speech recognition | Web Speech API (fa-IR) or Whisper on the device (transformers.js). No API keys. Sound-alike letters count as the same sound | ✅ | P0 |
 | Design system | Apple-style interface (grouped surfaces, glass materials, weight-based hierarchy, calm motion), with Yekan Bakh for Persian and Farsi Pen's own colours | ✅ | P1 |
 | Accessibility | axe and Hallmark audits: contrast ≥ 4.5:1, labelled progress bars, keyboard focus rings, reduced motion and transparency, no sideways scroll at 320px | ✅ | P0 |
 | PWA basics | Manifest and icons (installable to the home screen) | ✅ | P2 |
-| Dev and prod channels | `main` → `/farsi-pen/`, `dev` → `/farsi-pen/dev/` (DEV badge, separate storage, hidden from search) | ✅ | P2 |
+| Dev and prod channels | `main` → `/farsi-pen/`, `dev` → `/farsi-pen/dev/` (DEV badge, separate storage, hidden from search). Every deploy first runs the unit tests: 841 tests in 29 files, all passing | ✅ | P2 |
 
 ---
 
@@ -171,7 +171,7 @@ Plus a public landing page (`/`): "Learn to read, write and speak Farsi", with *
 | Games | — |
 | Offline service worker and push reminders | Only the manifest and in-app reminders exist today |
 | Stroke-order hints for tracing | — |
-| More content | More lessons, levels and grammar; native-speaker review of all drafts |
+| More content | More lessons, levels and grammar; native-speaker review and recordings of all drafts |
 
 ---
 
@@ -185,10 +185,26 @@ Plus a public landing page (`/`): "Learn to read, write and speak Farsi", with *
 | Missions | 7 missions, 27 skills |
 | Scenes | 8 episodes |
 | Reading lessons | 8 (B1) |
-| Hard sounds | 12 on the Sounds page; 8 sound-path units |
-| Poetry | 12 Fâl-e Hâfez ghazals, poem of the day, full poems from Ganjoor |
+| Hard sounds | 29 sounds in the guide (12 hard ones); 8 sound-path units with 43 stages |
+| Poetry | 16 poems: 12 Fâl-e Hâfez ghazals plus 4 more for the poem of the day; full poems from Ganjoor |
 | Dictionary | 46,000+ entries, 3,167 example sentences |
-| SAMFA | 4 skills, writing and speaking prompts, mini mock |
+| SAMFA | 4 skills, 6 writing and 8 speaking prompts, 10 linking words, mini mock |
 | AI tutor situations | 7 🌐 |
-| Persian items in content review | 1,763 |
-| Recorded audio clips | ~2,170 |
+| Persian items in content review | 1,979 |
+| Recorded audio clips | 2,169 (no native-speaker recordings yet) |
+
+---
+
+## 6. Mission skills (what a learner can do after each mission)
+
+These 27 can-do statements are what the mastery check tests and what earns XP.
+
+| Mission | Level | Skills |
+|---|---|---|
+| Meet someone new | A1 | Say hello and tell someone your name · Say it's nice to meet them · Say where you're from and ask where they're from · Say you're learning Persian |
+| Take a taxi | A1 | Tell the driver where you're going · Ask how much the fare is · Ask the driver to stop, politely · Handle ta'ârof when you pay |
+| Order at a café | A1 | Order food and drinks · Answer "this or that?" questions · Ask them to bring something extra · Ask for the bill and handle ta'ârof |
+| Ask for directions | A1 | Ask where a place is · Repeat directions back to check them · Ask how far it is |
+| Shop at the bazaar | A2 | Ask how much something is · Understand and repeat prices · Ask for a discount and make an offer · Agree on a price and buy |
+| At the pharmacy | A2 | Say what hurts · Ask for something for a cold, fever or pain · Ask how to take a medicine |
+| Be a guest: ta'ârof at home | A2 | Greet your host and thank them for inviting you · Politely decline the first offer · Accept and thank your host properly · Compliment the food · Leave politely |
