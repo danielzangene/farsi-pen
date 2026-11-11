@@ -61,7 +61,7 @@ The skill adds: `text-on-accent` only on solid accent fills, at 15px semibold or
 | Keyboard only | An inline script sets `html[data-input]` to `pointer` on load and on pointer-down, and to `keyboard` on Tab or an arrow key; in pointer mode the ring is hidden | `layout.tsx:9-10`, `globals.css:149-154` |
 | Text fields | Use their own `:focus` style (sky border + ring), so they always show focus | `globals.css:484-487`, `:514-518` |
 | Selected sound tile | `ring-[3px] ring-sky` | `PronunciationFeedback.tsx:145` |
-| Focus on new content | 36 `autoFocus` uses: the Continue button in `FeedbackSheet` (`ui.tsx:281`), the close button in dialogs (`YouglishPlayer.tsx:142`), answer inputs (`RecallRound.tsx:175`) | grep `autoFocus` |
+| Focus on new content | 36 `autoFocus` uses: the Continue button in `FeedbackSheet` (`ui.tsx:281`), the close button in dialogs (`YouglishPlayer.tsx:142`), answer inputs (`RecallRound.tsx:177`) | grep `autoFocus` |
 
 ### 2.5 Target sizes
 
@@ -152,9 +152,9 @@ The skill adds: `text-on-accent` only on solid accent fills, at 15px semibold or
 | Rule | Value | Source |
 |---|---|---|
 | Element | Native `<dialog>` opened with `showModal()` (inert background, Esc to close) | `SayItButton.tsx:52`, `YouglishPlayer.tsx:118`, `sounds/page.tsx:278` |
-| Name | `aria-label` on the dialog ("Say it") | `SayItButton.tsx:101` |
-| Close | X button with `aria-label="Close"`; backdrop click closes | `SayItButton.tsx:99`, `:106` |
-| Visual | `backdrop:bg-black/40` + 4px backdrop blur, `!rounded-[1.75rem]`, `animate-pop` | `SayItButton.tsx:100`, `globals.css:606-609` |
+| Name | `aria-label` on the dialog ("Say it") | `SayItButton.tsx:102` |
+| Close | X button with `aria-label="Close"`; backdrop click closes | `SayItButton.tsx:100`, `:107` |
+| Visual | `backdrop:bg-black/40` + 4px backdrop blur, `!rounded-[1.75rem]`, `animate-pop` | `SayItButton.tsx:101`, `globals.css:606-609` |
 | Answer sheet | `FeedbackSheet` moves focus to Continue (`autoFocus`) and announces itself (`role="status"`) | `ui.tsx:262`, `:281` |
 | Focus return | Not handled explicitly: closing by X or backdrop unmounts the dialog without `dialog.close()` | `SayItButton.tsx:23`, `YouglishPlayer.tsx:109` |
 
