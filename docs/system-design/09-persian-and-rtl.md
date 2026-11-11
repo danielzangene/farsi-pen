@@ -30,7 +30,7 @@ How the prototype shows Persian (right-to-left, cursive, its own digits) inside 
 | `lg` | `text-3xl` (30px) | `text-base` (16px); Persian second line `text-2xl` |
 | `xl` | `text-4xl sm:text-5xl` (36px / 48px) | `text-base` (16px); Persian second line `text-2xl` |
 
-Usage: `<Fa>` appears 106 times across `src/`; `FaWord` 5 times (lesson, choice, recall and speak rounds, and the Say it dialog). 21 further elements set `lang="fa"` by hand, mostly reading blocks and inputs (grep `lang="fa"`).
+Usage: `<Fa>` appears 106 times across `src/`; `FaWord` 5 times (lesson, choice, recall and speak rounds, and the Say it dialog). 19 further elements set `lang="fa"` by hand (18 fixed, 1 switching at `RecallRound.tsx:168`), mostly reading blocks and inputs (grep `lang="fa"`).
 
 ### 2.2 Language and direction attributes
 
@@ -257,6 +257,8 @@ Colour changes alone do not break joins in modern browsers, but some engines dro
 | Reading, poetry, dialogue, tables | `src/components/reading/ReadingLessonView.tsx`, `src/components/Poetry.tsx`, `src/components/mission/InfoSteps.tsx`, `src/components/scene/ScenePlayer.tsx`, `src/components/GrammarLesson.tsx` |
 
 ## 6. Gaps and recommendations
+
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
 
 **P1**
 

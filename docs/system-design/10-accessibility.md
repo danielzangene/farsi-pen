@@ -72,7 +72,7 @@ The skill adds: `text-on-accent` only on solid accent fills, at 15px semibold or
 | `btn-icon` | 2.75rem (44px) round | `globals.css:368-374` | Yes |
 | `btn-sm` | 2.25rem (36px); 69 uses | `globals.css:355-360` | No |
 | `Segmented` option | `min-h-10` (40px), never wraps | `ui.tsx:173` | Agreed exception (Hallmark audit) |
-| Mobile tab | full fifth of the bar, about 55px tall | `AppNav.tsx:166` | Yes |
+| Mobile tab | full fifth of the bar, about 55px tall | `AppNav.tsx:169` | Yes |
 | Sound tile | `min-h-11 min-w-14` (44 × 56px) | `PronunciationFeedback.tsx:145` | Yes |
 | Persian keyboard key | `h-11` (44px) tall, width shared | `PersianKeyboard.tsx:16` | Height yes; about 19px wide at 320px |
 | SAMFA rubric marks | `size-10` (40px) | `samfa/Practice.tsx:177` | No |
@@ -201,7 +201,7 @@ The skill adds: `text-on-accent` only on solid accent fills, at 15px semibold or
 **Learners who cannot or prefer not to speak**
 
 - Missions accept typing; speak rounds and scenes offer Skip; SAMFA speaking offers a self-marked path.
-- The overview's promise of "a typing alternative for every speaking task" (`00-overview.md:38`) is only true for missions (Gap 6).
+- Typing instead of speaking is available only in missions (Gap 6); the overview now states this (`00-overview.md:38`).
 
 **Dyslexia and a new script**
 
@@ -288,6 +288,8 @@ What this area must guarantee on every release.
 
 ## 6. Gaps and recommendations
 
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
+
 **P0**
 
 1. **Single-key shortcuts cannot be turned off (WCAG 2.1.4, Level A).** 1–4 and A–D (`ChoiceRound.tsx:79-80`), 1–9 (`GrammarLesson.tsx:214-216`) and 1–3 (`FlashcardSession.tsx:122-124`) are listened for on `window`. Speech-input users who say a letter or number can pick an answer by accident. *(proposed)* Add a "Keyboard shortcuts" switch in Settings, or require focus inside the option group.
@@ -296,9 +298,9 @@ What this area must guarantee on every release.
 
 2. **Reduced motion does not stop loops.** The global rule shortens duration to 0.01ms but leaves `animation-iteration-count` infinite (`globals.css:166-173`), so `animate-pulse`, `animate-ping` and `animate-spin` keep cycling every frame. *(proposed)* Add `animation-iteration-count: 1 !important` and replace the pulse/ping on playing and listening buttons with a static state (also matches the skill's "no loops", `SKILL.md:97`). Verify in a browser.
 3. **White on saffron is 2.25:1 in light mode.** Reward circles (`LessonSession.tsx:283`, `FlashcardSession.tsx:324`, `speak/page.tsx:50`, `bookmarks/page.tsx:49`, `sounds/page.tsx:132`, `practice/page.tsx:85`), done lesson nodes (`lessons/page.tsx:13`), checklist checks (`app/page.tsx:79`) and mission mastered (`MissionSession.tsx:80`). *(proposed)* Use `saffron-ink` icons on `saffron-soft`, or a dark `on-saffron` token.
-4. **Tab labels are 10px.** The Hallmark fix set 11px; e9c9ef8 reduced it to `text-[10px]` (`AppNav.tsx:166`), below the 11px minimum. *(proposed)* Return to 11px.
+4. **Tab labels are 10px.** The Hallmark fix set 11px; e9c9ef8 reduced it to `text-[10px]` (`AppNav.tsx:169`), below the 11px minimum. *(proposed)* Return to 11px.
 5. **Focus ring below 3:1.** At 70% sky the ring measures about 2.95:1 on cards and 2.76:1 on the light canvas (`globals.css:146`). The skill describes it as "3px sky outline" (`SKILL.md:110`). *(proposed)* Use solid `sky` (4.80:1 on white).
-6. **Typing alternative is promised but partial.** Overview: "a typing alternative for every speaking task" (`00-overview.md:38`). Only missions have one; speak rounds, scenes and SAMFA speaking offer Skip or self-marking. *(proposed)* Add "Type it instead" to speak rounds and scenes, scored with the mission checker; or correct the overview.
+6. **Typing alternative is partial.** Only missions let learners type instead of speaking; speak rounds, scenes and SAMFA speaking offer Skip or self-marking. *(proposed)* Add "Type it instead" to speak rounds and scenes, scored with the mission checker.
 7. **SAMFA listening has no non-audio route.** *(proposed)* An "I can't use audio" option that skips the part without scoring it, and an untimed, unlimited-play practice mode outside the mock.
 8. **Dialog focus return.** Closing by X or backdrop unmounts the `<dialog>` without `close()` (`SayItButton.tsx:23`, `YouglishPlayer.tsx:109`), so focus may fall to `<body>`. *(proposed)* Call `close()` and refocus the opener. Verify with a keyboard.
 9. **No automated accessibility tests.** The two audits were one-offs; CI runs only unit tests. *(proposed)* Run axe (for example through Playwright) on the main routes in light and dark on every pull request.

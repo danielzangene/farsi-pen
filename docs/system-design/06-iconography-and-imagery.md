@@ -139,7 +139,7 @@ Emoji are the only colour pictures in the app. They name a topic; they never car
 | Missions | One per mission (🧺 bazaar, ☕ café, 🧭 directions, 🫖 guest, 👋 meet, 💊 pharmacy, 🚕 taxi) | `size-14 rounded-2xl bg-firuze-soft text-3xl`; detail `size-16 text-4xl`; upcoming missions `bg-paper grayscale` | `src/content/missions/*.ts`, `src/app/app/missions/page.tsx:31,60`, `src/components/mission/MissionScreen.tsx:55` |
 | Today plan steps | 🗂️ review, ✍️ letter, lesson emoji, 🧩 grammar, mission emoji, 🗣️ sound workout, 🎤 speak | `size-11 rounded-full text-xl`; replaced by a `Check` on `bg-pista` when done | `src/lib/today.ts:62-96`, `src/components/TodayPlan.tsx:126-131` |
 | Goal picker | 🧳 travel, 👨‍👩‍👧 family, 🏡 heritage, ✨ curious | `text-3xl` | `src/components/TodayPlan.tsx:10-14,64-65` |
-| Badges | 15 achievements (🌱, 📗, 🎓, 🔥 ×2, 🌙, 🗂️, 📚, ⭐, 🌟, ✍️, 🖋️, 🧩, 🏛️ …) | `size-12 rounded-full text-2xl`, `bg-saffron-soft` when earned, `bg-paper opacity-60 grayscale` when not | `src/lib/gamification.ts:107-121`, `src/components/Achievements.tsx:64-66` |
+| Badges | 14 badges (🌱, 📗, 🎓, 🔥 ×2, 🌙, 🗂️, 📚, ⭐, 🌟, ✍️, 🖋️, 🧩, 🏛️ …) | `size-12 rounded-full text-2xl`, `bg-saffron-soft` when earned, `bg-paper opacity-60 grayscale` when not | `src/lib/gamification.ts:107-120`, `src/components/Achievements.tsx:64-66` |
 | Path items | Lesson and mission emoji, 🎬 scenes, 📖 reading, 🌹 poetry, 🧩 grammar | `size-11 rounded-xl`, `text-xl`, `aria-hidden` | `src/lib/path.ts:57,91,110,117,139,153`, `src/app/app/path/page.tsx:13-26` |
 | AI tutor scenarios | 💬 ☕ 🚕 🧺 🫖 💊 🧭 | list and header | `src/app/app/tutor/page.tsx:28-70,178,215` |
 | Feedback rating | 😞 😕 😐 🙂 😍 | `size-11 text-2xl` radio buttons labelled "1 of 5" … | `src/components/FeedbackCard.tsx:6,53-62` |
@@ -228,8 +228,10 @@ Cast (`src/content/scenes.ts:21-26`): Sara س (sky), Khale Mahin م (plum), Aras
 
 ## 6. Gaps and recommendations
 
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
+
 **P0**
-- **White on saffron fails non-text contrast.** `text-on-accent` (white) on `bg-saffron` (#f09a0a) is about 2.2:1 in light mode, below the 3:1 minimum for icons and well below 4.5:1 for text. It is used for done lesson nodes (`src/app/app/lessons/page.tsx:13`), `size-24` result medallions (`src/components/FlashcardSession.tsx:324`, `src/components/LessonSession.tsx:283`, `src/app/app/speak/page.tsx:50`, `src/app/app/bookmarks/page.tsx:49`, `src/app/app/sounds/page.tsx:132`, `src/app/app/practice/page.tsx:85`) and Agha Mamad's avatar letter (`src/components/scene/Cast.tsx:12-14`). *(proposed)* Use `bg-saffron-soft text-saffron-ink` for medallions (as `LessonSession.tsx:132` already does), and `text-ink` (or a darker saffron) on solid saffron.
+- **White on saffron fails non-text contrast.** `text-on-accent` (white) on `bg-saffron` (#f09a0a) is about 2.25:1 in light mode, below the 3:1 minimum for icons and well below 4.5:1 for text. It is used for done lesson nodes (`src/app/app/lessons/page.tsx:13`), `size-24` result medallions (`src/components/FlashcardSession.tsx:324`, `src/components/LessonSession.tsx:283`, `src/app/app/speak/page.tsx:50`, `src/app/app/bookmarks/page.tsx:49`, `src/app/app/sounds/page.tsx:132`, `src/app/app/practice/page.tsx:85`) and Agha Mamad's avatar letter (`src/components/scene/Cast.tsx:12-14`). *(proposed)* Use `bg-saffron-soft text-saffron-ink` for medallions (as `LessonSession.tsx:132` already does), and `text-ink` (or a darker saffron) on solid saffron.
 
 **P1**
 - **App icons and share image use the retired brand.** `scripts/make-icons.mjs:19-20` fills the tile with #12a594, not firuze #0a8276; the OG image still uses Nunito 900, a dark #131f24 background and a hard `0 12px 0` lip shadow (`scripts/make-icons.mjs:33-41`), all of which the redesign dropped (`docs/design-system.md:9`). *(proposed)* Render icons in #0a8276, rebuild `og.png` with the system font stack (or Yekan Bakh for Persian), the canvas or card colour and no lip; then bump `ICON_VERSION` to 3. The `@fontsource-variable/nunito` dependency exists only for this script.

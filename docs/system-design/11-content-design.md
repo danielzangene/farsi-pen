@@ -286,6 +286,8 @@ Further pairs to follow:
 
 ## 6. Gaps and recommendations
 
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
+
 **P0**
 
 1. **The settings screen has two names.** The tab, page title and h1 say "Profile" (`src/components/AppNav.tsx:18`, `src/app/app/settings/page.tsx:23`), but 13 strings send learners to "Settings" ("switch to Whisper in Settings", "download the voice in Settings", "Settings → Voice & speech"; e.g. `src/components/SpeakRound.tsx:19-20`, `src/components/ui.tsx:92`, `src/components/home/HomeSections.tsx:306-309`), while the sync card says "Profile → Sync across devices" (`src/components/SyncCard.tsx:145`). *(proposed)* Use "Profile" everywhere, and "Profile → Voice & speech" for deep pointers.

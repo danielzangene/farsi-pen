@@ -132,9 +132,9 @@ Other shadows in use: the selected segment `0 1px 3px rgb(0 0 0/0.12), 0 0 0 0.5
 | Value | Meaning | Source |
 |---|---|---|
 | `bottom-[max(0.75rem,env(safe-area-inset-bottom))]`, `inset-x-3`, `max-w-md`, `p-1` | Tab bar floats 12px above the bottom edge (or the safe area, if larger), 12px from the sides | `src/components/AppNav.tsx:128` |
-| ≈ 63px | Tab bar height, computed from classes: `p-1` (8) + `pt-2` (8) + icon `h-6` (24) + `gap-0.5` (2) + 10px label at 1.5 leading (15) + `pb-1.5` (6) | `src/components/AppNav.tsx:128,169,173` |
+| ≈ 65px | Tab bar height, computed from classes: `p-1` (8) + `pt-2` (8) + icon `h-6` (24) + `gap-0.5` (2) + 10px label at 1.5 leading (15) + `pb-1.5` (6) + the glass 1px border (`globals.css:455`); its top edge sits about 77px above the screen bottom | `src/components/AppNav.tsx:128,169,173` |
 | `pb-[calc(7.5rem+env(safe-area-inset-bottom))]` | Page bottom padding (120px + safe area), so the last content clears the tab bar | `src/app/app/layout.tsx:14` |
-| `bottom-[calc(5.25rem+env(safe-area-inset-bottom))]` | Sticky bars that sit just above the tab bar (84px + safe area; about 9px of air above a 75px-tall bar) | `src/components/LessonSession.tsx:86`, `src/app/app/tutor/page.tsx:299` |
+| `bottom-[calc(5.25rem+env(safe-area-inset-bottom))]` | Sticky bars that sit just above the tab bar (84px + safe area; about 7px of air above the bar's top edge at ~77px) | `src/components/LessonSession.tsx:86`, `src/app/app/tutor/page.tsx:299` |
 | `[body[data-focus]_&]:pb-6`, `[body[data-focus]_&]:pl-0` | Sessions hide the nav, so the clearance and sidebar offset drop away | `src/app/app/layout.tsx:10,14`, `src/app/globals.css:618-620` |
 | `pb-[env(safe-area-inset-bottom)]` | Fixed bottom action bars pad themselves into the safe area | `src/components/ui.tsx:264`, `src/components/FlashcardSession.tsx:271`, `src/components/scene/ScenePlayer.tsx:248`, `src/components/reading/ReadingLessonView.tsx:79`, `src/app/app/placement/page.tsx:152` |
 | `h-40` spacer | Lets session content scroll clear of the fixed FeedbackSheet (160px) | `src/components/ui.tsx:260` |
@@ -201,13 +201,15 @@ Other shadows in use: the selected segment `0 1px 3px rgb(0 0 0/0.12), 0 0 0 0.5
 
 ## 6. Gaps and recommendations
 
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
+
 **P0**
 - None found that break layout on a 375px phone.
 
 **P1**
 - **Safe-area insets are probably always 0.** Every offset uses `env(safe-area-inset-bottom)`, but the viewport export sets only `width` and `initialScale`, not `viewportFit: "cover"` (`src/app/layout.tsx:42-49`). Without `viewport-fit=cover`, iOS reports zero insets, so the calc() offsets fall back to their fixed parts. *(proposed)* Add `viewportFit: "cover"` and test the tab bar, FeedbackSheet and top bar on a notched iPhone in Safari and as an installed app.
-- **Grammar "Start exercises" bar uses the wrong offset.** It sits at `bottom-[calc(4rem_+_env(…))]` and drops to `md:bottom-0` (`src/components/GrammarLesson.tsx:134`). The tab bar is about 75px tall and stays visible until `lg`, so the bar overlaps it on phones and is hidden behind it between 768 and 1023px. *(proposed)* Use the standard `bottom-[calc(5.25rem+env(safe-area-inset-bottom))] lg:bottom-4`. The bar's `from-card` gradient also sits on the canvas colour; use the glass action bar from `LessonSession.tsx:86` instead.
-- **Two magic numbers carry the tab-bar geometry.** `7.5rem` and `5.25rem` are repeated in three files and depend on the computed 63px bar height. *(proposed)* Define `--tabbar-clearance` and `--tabbar-offset` in `globals.css` and use them everywhere.
+- **Grammar "Start exercises" bar uses the wrong offset.** It sits at `bottom-[calc(4rem_+_env(…))]` and drops to `md:bottom-0` (`src/components/GrammarLesson.tsx:134`). The tab bar's top edge is about 77px up and it stays visible until `lg`, so on phones the bar's padding overlaps it (the button clears it by about 3px) and is hidden behind it between 768 and 1023px. *(proposed)* Use the standard `bottom-[calc(5.25rem+env(safe-area-inset-bottom))] lg:bottom-4`. The bar's `from-card` gradient also sits on the canvas colour; use the glass action bar from `LessonSession.tsx:86` instead.
+- **Two magic numbers carry the tab-bar geometry.** `7.5rem` and `5.25rem` are repeated in three files and depend on the computed ~65px bar height. *(proposed)* Define `--tabbar-clearance` and `--tabbar-offset` in `globals.css` and use them everywhere.
 
 **P2**
 - **No elevation tokens.** Popovers use Tailwind's default `shadow-lg`, the sheet uses an arbitrary `shadow-[0_-12px_40px_…]`, the segment another one. *(proposed)* Add `--shadow-popover` and `--shadow-sheet` tokens next to the card and glass shadows.

@@ -130,7 +130,7 @@ Type sizes are Tailwind 4 defaults (not overridden): `xs` 12/16, `sm` 14/20, `ba
 | `btn` | `0.875rem` (14px) | Default button | `radius/button` | `:271` |
 | `btn-sm` | `0.625rem` (10px) | Small button; segment | `radius/button-sm` | `:358`; `ui.tsx:173` |
 | `btn-lg` | `1rem` (16px) | Large button | `radius/button-lg` | `:364` |
-| `tile` | `1rem` (16px) | Tappable rows | `radius/tile` | `:389` |
+| `tile` | `1rem` (16px) | Tappable rows | `radius/tile` | `:390` |
 | `input`, `select` | `0.75rem` (12px) | Fields; also `rounded-xl` | `radius/field` | `:474`, `:498` |
 | `btn-icon`, `chip` | `9999px` | Round / pill | `radius/full` | `:372`, `:466` |
 | `rounded-[1.75rem]` | 28px | Tab bar, dialogs, sheet top, tutor composer | `radius/sheet` *(proposed token)* | `AppNav.tsx:128`; `ui.tsx:265` |
@@ -260,6 +260,8 @@ There are no `@custom-variant` declarations in `globals.css`. State is expressed
 - `node_modules/tailwindcss/theme.css` — Tailwind defaults the system relies on (type scale, radii, tracking, leading).
 
 ## 6. Gaps and recommendations
+
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
 
 **P1**
 - **Layout offsets are not tokens.** Tab-bar clearance (120px), sticky offset (84px) and the 28px / 24px radii are repeated as arbitrary classes. `GrammarLesson.tsx:134` uses a third, different offset (`calc(4rem + safe-area)`). *(proposed)* Add `--tabbar-clearance`, `--sticky-above-tabbar`, `--radius-sheet`, `--radius-bar` to `@theme`.

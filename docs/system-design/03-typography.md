@@ -175,6 +175,8 @@ Elsewhere the transliteration line is `text-sm font-semibold text-muted` (`WordC
 
 ## 6. Gaps and recommendations
 
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
+
 **P1**
 - **`h1` leading 1.12 never applies.** Tailwind's `text-*` utilities set their own line-height, and utilities override `@layer base`. Every `h1` has a size class, so a `text-3xl` title gets 1.2 and `text-2xl` gets 1.333 (`globals.css:123`; `theme.css:358-360`). *(proposed)* Add `leading-tight` to `PageHeader` or define title text styles that bundle size, leading and tracking.
 - **Two `h1` tracking values.** The base rule says −0.022em (`globals.css:122`); `PageHeader` and four other titles add `tracking-tight` (−0.025em). Others have no class and get −0.022em. *(proposed)* Pick one and remove the other.

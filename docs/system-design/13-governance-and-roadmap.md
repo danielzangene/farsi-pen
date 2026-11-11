@@ -63,15 +63,15 @@ How the Farsi Pen design system is owned, changed and checked, and the prioritis
 
 ## 3. Consolidated design backlog
 
-The gaps the team found while documenting the prototype, merged and deduplicated. The source docs have file and line details.
+The gaps the team found while documenting the prototype, merged, deduplicated and fact-checked by the `design-system-reviewer` agent (13 of 14 reported gaps confirmed, 1 partly). **This list is the agreed priority**: where a source doc gives a different P-level, this list wins. The source docs have file and line details.
 
 ### P0: fix before public launch
 
 | # | Issue | Fix *(proposed)* | Docs |
 |---|---|---|---|
-| 1 | **White icons and text on saffron are 2.25:1** in light mode (result medallions, done lessons, checklist ticks, mission badge, cast avatar) | `saffron-soft` + `saffron-ink`, or a dark `on-saffron` token | 02, 06, 10 |
+| 1 | **White icons and text on saffron are 2.25:1** in light mode: result medallions, done lessons, checklist ticks, the mission badge, a cast avatar, and saffron fills set through `TONE` (the Path *Next up* panel, sound-path unit badges with white Persian letters, Home practice tiles) | `saffron-soft` + `saffron-ink`, or a dark `on-saffron` token | 02, 06, 10 |
 | 2 | **Single-key answer shortcuts can't be turned off** (1–4, A–D, 1–3; WCAG 2.1.4) | A "Keyboard shortcuts" switch, or listen only when focus is in the option group | 10 |
-| 3 | **Tap targets under 44 px:** `btn-sm` is 36 px (69 uses, some primary), segments are 40 px | Raise the minimum height; keep `btn-sm` for secondary actions | 07, 10, 12 |
+| 3 | **Tap targets under 44 px:** `btn-sm` is 36 px (69 uses, some primary) | Give `btn-sm` a 44 px minimum hit area (the visual size can stay smaller) and keep it for secondary actions. **Decision:** Segmented stays at 40 px, a documented exception (above the WCAG 2.2 AA 24 px minimum) | 07, 10, 12 |
 | 4 | **Focus ring is below 3:1** (sky at 70%) | Use solid sky | 02, 10 |
 | 5 | **Report popover:** no Escape or outside-click close, no focus move | Build it on `<dialog>` or a popover primitive | 07, 08 |
 | 6 | **Result screens are inconsistent:** some stay in focus mode, others show the tab bar | A `ResultScreen` primitive that includes focus mode | 08 |
@@ -80,7 +80,7 @@ The gaps the team found while documenting the prototype, merged and deduplicated
 
 | # | Issue | Fix *(proposed)* | Docs |
 |---|---|---|---|
-| 7 | Looping animations (pulse, ping, spin, mouth-diagram halo) against the "no loops" rule; reduced motion may not stop them | Allow loops only for live states, written into the skill; add `animation-iteration-count: 1` under reduced motion; static halo | 05, 07, 10 |
+| 7 | Looping animations (pulse, ping, spin, mouth-diagram halo) against the "no loops" rule; reduced motion doesn't stop them (the iteration count stays infinite) | Allow loops only for live states, written into the skill; add `animation-iteration-count: 1` under reduced motion; static halo | 05, 07, 10 |
 | 8 | The skill promises a sheet grabber that doesn't exist | Remove it from the skill (sheets aren't draggable) | 05, 07, 08 |
 | 9 | Grammar "Start exercises" bar: gradient, and a 4 rem offset that the tab bar can cover | Use the glass action bar at the standard offset | 04, 05, 08 |
 | 10 | Safe-area insets are probably 0 (no `viewportFit: "cover"`) | Add it; test on a notched iPhone | 04 |

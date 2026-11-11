@@ -189,6 +189,8 @@ Theme changes set or remove `html[data-theme]` (`src/lib/store.ts:221-227`). Onl
 
 ## 6. Gaps and recommendations
 
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
+
 **P1**
 - **Reduced motion does not stop infinite loops.** The global rule shortens `animation-duration` to 0.01ms but leaves `animation-iteration-count: infinite`, so `animate-pulse`, `animate-ping` and `animate-spin` keep cycling at very high speed. This can show as flicker. *(proposed)* Add `animation-iteration-count: 1 !important` to the rule in `src/app/globals.css:166-173`, and give spinners a static alternative.
 - **The skill promises a grabber that does not exist.** Skill §7 says bottom sheets "show a grabber"; no component draws one, and the only sheet (FeedbackSheet) is not draggable. *(proposed)* Either remove the line from the skill, or define a grabber (36×5px capsule, `bg-line-strong`, 6px from the top) and use it only on sheets that can be dragged.

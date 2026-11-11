@@ -89,7 +89,7 @@ Other mixes in use:
 | Auto (`"system"`) | attribute removed | Dark tokens when `prefers-color-scheme: dark`, else light | `store.ts:221-227`; `globals.css:218-256` |
 
 - The page is served with `data-theme="dark"`. An inline script in `<head>` reads the saved setting before first paint and switches to light or Auto, so the wrong theme never flashes (`layout.tsx:5-7`, `:55`).
-- The learner picks Dark / Light / Auto in a `Segmented` control under Settings → Appearance (`src/app/app/settings/page.tsx:77-90`). `applyTheme()` runs on every save (`store.ts:212`).
+- The learner picks Dark / Light / Auto in a `Segmented` control under Profile → Appearance (`src/app/app/settings/page.tsx:77-90`). `applyTheme()` runs on every save (`store.ts:212`).
 - `color-scheme: dark` is set in both dark blocks, so native controls and scrollbars follow (`globals.css:182`, `:220`).
 - The body eases its background over 300ms when the theme changes (`globals.css:138-139`).
 - `theme-color` meta: `#f2f2f7` for `prefers-color-scheme: light`, `#000000` for dark (`layout.tsx:42-46`). It follows the **device** setting, not the in-app choice (see Gaps).
@@ -195,6 +195,8 @@ Other mixes in use:
 - Canvas drawing reads tokens at runtime with hex fallbacks: `src/components/TraceCanvas.tsx:99`, `:116`.
 
 ## 6. Gaps and recommendations
+
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
 
 **P0**
 - **White on saffron fails in light mode (2.25:1).** Used on completion medallions (`LessonSession.tsx:283`, `FlashcardSession.tsx:324`, `practice/page.tsx:85`, `speak/page.tsx:50`, `bookmarks/page.tsx:49`, `sounds/page.tsx:132`), done lesson nodes (`lessons/page.tsx:13`), checklist ticks (`app/page.tsx:79`) and the mission-mastered badge (`MissionSession.tsx:80`). *(proposed)* Add `--color-on-saffron` (`#000000` or `saffron-ink`-dark, 9.33:1 for black) or darken the light saffron fill to reach 3:1 for icons.

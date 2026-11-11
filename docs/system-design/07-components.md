@@ -263,7 +263,7 @@ There is no toast component; `grep -rn toast src` finds nothing. Status is inlin
 
 | Pattern | Example | Spec |
 |---|---|---|
-| Success line | `ProgressTools.tsx:71`, `ReportButton.tsx:116-121` | `text-sm font-bold text-pista-ink` + `CheckCircle2` or `Check` icon |
+| Success line | `ProgressTools.tsx:71`, `ReportButton.tsx:118` | `text-pista-ink` with `font-bold` (ProgressTools) or `font-semibold` (ReportButton) + `CheckCircle2` or `Check` icon |
 | Error line | `ReportButton.tsx:134-139`, `FeedbackCard.tsx:88` | `text-sm font-semibold text-anar-ink`, "Couldn't send. Try again." |
 | Live hint | `AnswerInput.tsx:110`, `SayItButton.tsx:133` | muted, `min-h-*` reserved so layout does not jump |
 | Info callout | `settings/page.tsx:68-74` | `rounded-2xl bg-sky-soft p-3 text-sm font-semibold text-sky-ink` + `Info` icon |
@@ -289,7 +289,7 @@ Built by hand in each place: `bookmarks/page.tsx:95-116`, `practice/page.tsx:49-
 | Aspect | Spec |
 |---|---|
 | Purpose | App chrome: phone tab bar, phone top bar, desktop sidebar. All three carry `.app-nav` and are hidden in focus mode (`globals.css:618-620`). |
-| Destinations | 5 tabs: Home, Path, Exams, Progress, Profile (`AppNav.tsx:13-19`). 14 secondary pages, each mapped to a parent tab (`26-43`). The tutor appears only with a backend. |
+| Destinations | 5 tabs: Home, Path, Exams, Progress, Profile (`AppNav.tsx:13-19`). 16 secondary pages (15 without the tutor), each mapped to a parent tab (`27-42`). The tutor appears only with a backend. |
 | Tab bar | `glass`, fixed, `inset-x-3`, `bottom: max(0.75rem, safe area)`, `max-w-md`, `rounded-[1.75rem]`, `p-1`, phones only (`lg:hidden`) (`127-129`). Five equal `TabLink`s: icon 24px (stroke 2.3 on, 1.9 off), label 10px weight 500, `active:scale-95` (`169-190`). Current tab: `text-sky-ink`; others `text-ink/70`. A `--glass-pill` capsule (`rounded-[1.5rem]`, inset top highlight) slides under the current tab with `translateX(index × 100%)`, 420ms `--ease-spring`, no transition under reduced motion (`132-139`). |
 | Top bar (phone) | `material-canvas`, sticky, `h-14` (56px), bottom hairline; Logo left, StatChips right (`117-124`). On desktop only the StatChips show, top right, static. |
 | Sidebar (desktop) | `lg:flex`, fixed, `w-64` (256px), solid `bg-card`, right hairline (`97-114`). Logo, then the 5 tabs, then "Practice" and "Course" group labels (`text-xs font-semibold text-muted`). `SideLink`: `rounded-xl px-3 py-2`, 15px weight 500, 32px icon slot with the item's tone `-ink`; current: `bg-sky-soft text-sky-ink`; hover `bg-paper`; `active:scale-[0.98]` (`151-167`). |
@@ -692,9 +692,11 @@ Tailwind needs literal class names, so any tone-driven component looks classes u
 
 ## 6. Gaps and recommendations
 
+> Priorities in this section are this designer's view. The agreed, deduplicated priority for each issue is in *13 · Governance and roadmap*, §3.
+
 ### P0
 
-- **Looping animations break the "nothing loops" rule.** `animate-pulse` while playing (`ui.tsx:102`, `118`; `PronunciationFeedback.tsx:165-173`), on the contact point (`MouthDiagram.tsx:99`), and `animate-ping` on listening mics (`SayItButton.tsx:122`, `SpeakRound.tsx:174`, `ScenePlayer.tsx:304`). They stop under reduced motion, but the skill (§1, §8) says no looping animations. *(proposed)* Replace with a static state (playing: filled icon + "Playing" label; listening: the existing danger fill and stop icon) or one 280ms `animate-pop` on change.
+- **Looping animations break the "nothing loops" rule.** `animate-pulse` while playing (`ui.tsx:102`, `118`; `PronunciationFeedback.tsx:165-173`), on the contact point (`MouthDiagram.tsx:99`), and `animate-ping` on listening mics (`SayItButton.tsx:122`, `SpeakRound.tsx:174`, `ScenePlayer.tsx:304`). Under reduced motion they keep looping (the rule shortens the duration but leaves the iteration count infinite, `globals.css:166-173`), and the skill (§1, §8) says no looping animations. `animate-spin` (14 uses) also loops. *(proposed)* Replace with a static state (playing: filled icon + "Playing" label; listening: the existing danger fill and stop icon) or one 280ms `animate-pop` on change.
 - **Targets under 44px.** `btn-sm` is 36px (`globals.css:356`) and is used for real actions (Skip, Save backup, Show translation); Segmented segments are 40px (`ui.tsx:173`). The skill's checklist asks for 44px or more. *(proposed)* Raise `btn-sm` to 44px with a smaller visual padding, and Segmented to `min-h-11`.
 - **ReportButton popover has no keyboard dismissal.** No Escape, no outside click, focus does not move in (`ReportButton.tsx:97-148`). *(proposed)* Build it on `<dialog>` or a popover primitive.
 
