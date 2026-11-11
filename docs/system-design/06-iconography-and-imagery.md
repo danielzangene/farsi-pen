@@ -211,7 +211,7 @@ Cast (`src/content/scenes.ts:21-26`): Sara س (sky), Khale Mahin م (plum), Aras
 - Decorative icons stay hidden: lucide does this by default; keep it that way by not passing `aria-label` to icons that sit beside visible text.
 - Meaningful standalone icons get a label: `<Check aria-label="Correct" />` style, as used in 5 places.
 - Icon-only controls: 44px minimum target, `aria-label`, and `aria-pressed` for toggles.
-- Non-text contrast: icons and avatar letters on a solid fill need 3:1 (icons) or 4.5:1 (letters below 18.66px bold). White on saffron #f09a0a is only about 2.2:1 (see Gaps).
+- Non-text contrast: icons and avatar letters on a solid fill need 3:1 (icons) or 4.5:1 (letters below 18.66px bold). White on saffron #f09a0a is only about 2.25:1 (see Gaps).
 - Emoji render differently on each platform; they must never be the only carrier of meaning.
 - Persian letters in badges are real text in `<Fa>` (`lang="fa"`), so screen readers can read them with a Persian voice.
 - The mouth diagram's meaning is fully available as text (`aria-label` and visible caption).
