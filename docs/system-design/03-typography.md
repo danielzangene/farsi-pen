@@ -79,13 +79,13 @@ Counts come from the class string on the same line as the opening tag (`<h1`, `<
 
 | Role | Most common | Count | Other sizes seen | Weight | Example |
 |---|---|---|---|---|---|
-| Page title (`h1`) | `text-3xl` (30/36) | 19 of 37 | `2xl` ×9, `4xl` ×7, `[2.75rem]`→`md:text-6xl` ×1 (landing) | `font-extrabold` (700) | `PageHeader`, `ui.tsx:188` |
+| Page title (`h1`) | `text-3xl` (30/36) | 19 of 36 | `2xl` ×9, `4xl` ×7, `[2.75rem]`→`md:text-6xl` ×1 (landing) | `font-extrabold` (700) | `PageHeader`, `ui.tsx:188` |
 | Section title (`h2`) | `text-xl` (20/28) | 25 of 57 | `2xl` ×16, `lg` ×11, `3xl` ×3, `4xl` ×1, `sm` ×1; some `h2` are `eyebrow` | `font-extrabold` (700) | `HomeSections.tsx:29` |
 | Body | `text-base` (16/24, the default) | 149 `<p>` with no size class | — | 400 | — |
 | Secondary body | `text-sm font-semibold text-muted` (14/20, 500) | 116 | — | 500 | `PageHeader` subtitle `ui.tsx:189` uses base size |
-| Label / list-row emphasis | `text-sm font-bold` (14/20, 600) | 58 (29 muted, 29 ink) | `text-[15px] font-semibold` in sidebar | 600 | `src/app/app/page.tsx:76` |
+| Label / list-row emphasis | `text-sm font-bold` (14/20, 600) | 58 (29 with `text-muted`) | `text-[15px] font-semibold` in sidebar | 600 | `src/app/app/page.tsx:75` |
 | Caption | `text-xs font-semibold text-muted` (12/16, 500) | 19 | `chip` 12px 600; tab bar 10px 500 | 500 | `StatCard` label `ui.tsx:298` |
-| Eyebrow (section label) | `eyebrow` (13px, 500, uppercase) | ~55 class uses in 28 files | — | 500 | `settings/page.tsx:78` |
+| Eyebrow (section label) | `eyebrow` (13px, 500, uppercase) | ~55 class uses in 28 files | — | 500 | `settings/page.tsx:77` |
 | Card / sheet title | `text-xl font-extrabold` | 35 | `text-lg font-extrabold` ×30 | 700 | `FeedbackSheet` `ui.tsx:277` |
 | Stat value | `text-2xl font-bold tracking-tight` | — | Top-bar chips `text-base font-extrabold` | 600–700 | `StatCard` `ui.tsx:299`; `AppNav.tsx:73` |
 | Persian display (`<Fa>`) | `text-xl` and `text-lg` (20 each) | 79 sized `<Fa>` | `2xl` ×12, `base` ×8, `sm` ×6, `5xl` ×6, `3xl` ×4, `4xl` ×3 | `font-bold` (600) on 70 | `FaWord` `ui.tsx:52-58` |
@@ -178,7 +178,7 @@ Elsewhere the transliteration line is `text-sm font-semibold text-muted` (`WordC
 **P1**
 - **`h1` leading 1.12 never applies.** Tailwind's `text-*` utilities set their own line-height, and utilities override `@layer base`. Every `h1` has a size class, so a `text-3xl` title gets 1.2 and `text-2xl` gets 1.333 (`globals.css:123`; `theme.css:358-360`). *(proposed)* Add `leading-tight` to `PageHeader` or define title text styles that bundle size, leading and tracking.
 - **Two `h1` tracking values.** The base rule says −0.022em (`globals.css:122`); `PageHeader` and four other titles add `tracking-tight` (−0.025em). Others have no class and get −0.022em. *(proposed)* Pick one and remove the other.
-- **No named type styles.** Roles are rebuilt from raw classes each time (37 `h1` across 4 sizes, 57 `h2` across 6 sizes). *(proposed)* Add `@utility` text styles: `title-1` (30/36, 700, −0.022em), `title-2` (20/28, 700), `body`, `subhead` (14/20, 500, muted), `caption` (12/16, 500), `fa-display`, `fa-reading`.
+- **No named type styles.** Roles are rebuilt from raw classes each time (36 sized `h1` across 5 sizes, 57 `h2` across 6 sizes). *(proposed)* Add `@utility` text styles: `title-1` (30/36, 700, −0.022em), `title-2` (20/28, 700), `body`, `subhead` (14/20, 500, muted), `caption` (12/16, 500), `fa-display`, `fa-reading`.
 
 **P2**
 - **Persian is letter-spaced on the landing page.** The decorative letter strip uses `tracking-[0.5em]` on a `lang="fa"` element (`src/app/page.tsx:185-188`). The utility beats the base reset. It is `aria-hidden` and the letters are separate, so joining is not broken, but it breaks the rule.
