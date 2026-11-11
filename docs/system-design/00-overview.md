@@ -35,7 +35,7 @@ It is used by every screen in the prototype: 5 tabs, about 25 feature areas, and
 | **Familiarity** | Patterns people already know behave the way they expect | Tab bar, grouped lists, segmented controls, sheets with a grabber |
 | **Wayfinding** | Every screen answers: where am I, where can I go, how do I get out | Tab highlight on every page; SessionHeader with ✕ in every session |
 | **Persian with respect** | Persian is shown properly, never as an afterthought | Yekan Bakh, `<Fa>`, correct joining, Persian digits, loose leading |
-| **Inclusive by default** | WCAG 2.1 AA, and a typing alternative for every speaking task | Focus rings, 44 px targets, reduced motion and transparency |
+| **Inclusive by default** | WCAG 2.1 AA; speaking never blocks progress where typing works (today: missions), and every mic failure explains what to do | Focus rings, 44 px targets, reduced motion and transparency |
 
 ## 3. The docs in this folder
 
