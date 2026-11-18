@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, LayoutGrid, AudioLines, Bookmark, BookHeart, BookOpen, BookOpenText, ChartColumn, CircleUserRound, Clapperboard, Compass, Flame, GraduationCap, Headphones, House, Layers, MessagesSquare, Mic, PenLine, Puzzle, Repeat, Route, Star } from "lucide-react";
@@ -11,7 +12,7 @@ import { TONE, type Tone } from "@/components/ui";
 
 type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean; hint?: string; parent?: number };
 
-/** The five tabs (phone tab bar; first group in the sidebar). */
+/** The main pages: first group in the sidebar. On phones Home, Path, Exams and Progress are tabs and Profile is in the top bar. */
 const PRIMARY: NavItem[] = [
   { href: "/app/", label: "Home", icon: House, tone: "firuze", exact: true },
   { href: "/app/path/", label: "Path", icon: Route, tone: "saffron" },
@@ -22,6 +23,7 @@ const PRIMARY: NavItem[] = [
 const HOME = 0;
 const PATH = 1;
 const EXAMS = 2;
+const PROGRESS = 3;
 const PROFILE = 4;
 
 /** Every other page, grouped under the tab it belongs to (shown in the sidebar on desktop). */
@@ -93,9 +95,16 @@ export function AppNav() {
   const s = useProgress();
   const isActive = (href: string, exact?: boolean) => (exact ? pathname === href || pathname === href.slice(0, -1) : pathname.startsWith(href.slice(0, -1)));
   const streak = currentStreak(s);
-  // The tab to highlight: the page's own tab, or the tab its section lives under.
+  const [sheet, setSheet] = useState<"sections" | "profile" | null>(null);
+
+  // Close any sheet when the route changes (a link inside it was followed).
+  useEffect(() => setSheet(null), [pathname]);
+
+  // The phone tab to highlight: the open Sections sheet, the page's own tab, or the tab its section lives under.
   const primaryIndex = PRIMARY.findIndex((l) => isActive(l.href, l.exact));
-  const activeTab = primaryIndex >= 0 ? primaryIndex : (SECONDARY.find((l) => isActive(l.href))?.parent ?? -1);
+  const ownerIndex = primaryIndex >= 0 ? primaryIndex : (SECONDARY.find((l) => isActive(l.href))?.parent ?? -1);
+  const ownerHref = PRIMARY[ownerIndex]?.href;
+  const activeTab = sheet === "sections" ? TABS.indexOf("sections") : TABS.findIndex((t) => t !== "sections" && t.href === ownerHref);
 
   return (
     <>
@@ -119,18 +128,27 @@ export function AppNav() {
         </nav>
       </aside>
 
-      {/* Mobile top bar: brand and progress only. On desktop only the stat chips, top right of the content column. */}
+      {/* Mobile top bar: brand, progress and Profile. On desktop only the stat chips, top right of the content column. */}
       <header className="app-nav max-lg:material-canvas sticky top-0 z-30 border-b border-line lg:static lg:border-0">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4 lg:h-auto lg:justify-end lg:pt-5">
           <div className="mr-auto lg:hidden">
             <Logo bar />
           </div>
           <StatChips streak={streak} xp={s.xp} />
-          <SectionsMenu isActive={isActive} />
+          <button
+            type="button"
+            className="btn-ghost btn-icon -mr-2 shrink-0 lg:hidden"
+            onClick={() => setSheet("profile")}
+            aria-label="Profile"
+            aria-haspopup="dialog"
+            aria-expanded={sheet === "profile"}
+          >
+            <Avatar name={s.settings.name} />
+          </button>
         </div>
       </header>
 
-      {/* Mobile tab bar: a floating glass capsule; a glass pill slides to the current tab. */}
+      {/* Mobile tab bar: a floating glass capsule; a glass pill slides to the current tab. Sections sits in the centre. */}
       <nav
         className="app-nav glass fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 mx-auto max-w-md rounded-[1.75rem] p-1 lg:hidden"
         aria-label="Main"
@@ -145,17 +163,62 @@ export function AppNav() {
               <span className="block size-full rounded-[1.5rem] bg-[var(--glass-pill)] shadow-[inset_0_1px_0_var(--glass-highlight)]" />
             </span>
           )}
-          {PRIMARY.map((l, i) => (
-            <TabLink key={l.href} href={l.href} label={l.label} icon={l.icon} on={activeTab === i} />
-          ))}
+          {TABS.map((t, i) =>
+            t === "sections" ? (
+              <button
+                key="sections"
+                type="button"
+                className={cx(TAB, activeTab === i ? "text-sky-ink" : "text-ink/70")}
+                onClick={() => setSheet("sections")}
+                aria-haspopup="dialog"
+                aria-expanded={sheet === "sections"}
+              >
+                <TabIcon icon={LayoutGrid} on={activeTab === i} />
+                Sections
+              </button>
+            ) : (
+              <TabLink key={t.href} href={t.href} label={t.label} icon={t.icon} on={activeTab === i} />
+            ),
+          )}
         </div>
       </nav>
 
+      {sheet === "sections" && (
+        <Sheet title="Sections" onClose={() => setSheet(null)}>
+          <SectionsList isActive={isActive} />
+        </Sheet>
+      )}
+      {sheet === "profile" && (
+        <Sheet title="Profile" grouped onClose={() => setSheet(null)}>
+          <div className="space-y-6">
+            <ProfileContent />
+          </div>
+        </Sheet>
+      )}
     </>
   );
 }
 
-/** Sections shown in the phone menu sheet: every page the sidebar lists, plus Placement and My cards. */
+/** Phone tab bar: Home, Path, Sections (opens the sheet), Exams, Progress. Profile lives in the top bar. */
+const TABS: (NavItem | "sections")[] = [PRIMARY[HOME], PRIMARY[PATH], "sections", PRIMARY[EXAMS], PRIMARY[PROGRESS]];
+
+/** Loaded only when the Profile sheet first opens. */
+const ProfileContent = dynamic(() => import("@/components/ProfileContent"), {
+  ssr: false,
+  loading: () => <p className="py-10 text-center font-semibold text-muted">Loading…</p>,
+});
+
+/** The learner's initial on a firuze disc, or a person icon before they've set a name. */
+function Avatar({ name }: { name: string }) {
+  const initial = (name.trim()[0] ?? "").toUpperCase();
+  return (
+    <span className="grid size-8 place-items-center rounded-full bg-firuze text-base font-bold text-on-accent" aria-hidden>
+      {initial || <CircleUserRound className="size-5" strokeWidth={2} />}
+    </span>
+  );
+}
+
+/** Groups in the Sections sheet: every page the sidebar lists, plus Placement and My cards. */
 const MENU_GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "Practice", items: SECONDARY.filter((l) => l.parent === HOME) },
   { title: "Course", items: SECONDARY.filter((l) => l.parent === PATH) },
@@ -163,96 +226,78 @@ const MENU_GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "Profile", items: SECONDARY.filter((l) => l.parent === PROFILE) },
 ];
 
-/**
- * Phones only: a top-bar button that opens a bottom sheet listing every section,
- * so pages that live in the desktop sidebar are one tap away on a phone too.
- */
-function SectionsMenu({ isActive }: { isActive: (href: string, exact?: boolean) => boolean }) {
-  const [open, setOpen] = useState(false);
-  const trigger = useRef<HTMLButtonElement>(null);
-  const pathname = usePathname();
-
-  // Close when the route changes (a link in the sheet was followed).
-  useEffect(() => setOpen(false), [pathname]);
-
-  return (
-    <>
-      <button
-        ref={trigger}
-        type="button"
-        className="btn-ghost btn-icon -mr-2 shrink-0 lg:hidden"
-        onClick={() => setOpen(true)}
-        aria-label="All sections"
-        aria-haspopup="dialog"
-        aria-expanded={open}
-      >
-        <LayoutGrid className="size-6" strokeWidth={2} aria-hidden />
-      </button>
-      {open && (
-        <SectionsSheet
-          isActive={isActive}
-          onClose={() => {
-            setOpen(false);
-            trigger.current?.focus();
-          }}
-        />
-      )}
-    </>
-  );
+function SectionsList({ isActive }: { isActive: (href: string) => boolean }) {
+  return MENU_GROUPS.map((g, gi) => (
+    <section key={g.title} aria-labelledby={`menu-${g.title}`}>
+      <h3 id={`menu-${g.title}`} className={cx("eyebrow mb-2 text-muted", gi > 0 && "mt-5")}>
+        {g.title}
+      </h3>
+      <ul className="grid grid-cols-2 gap-2">
+        {g.items.map((l) => {
+          const on = isActive(l.href);
+          return (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                aria-current={on ? "page" : undefined}
+                data-state={on ? "current" : undefined}
+                className="tile flex min-h-12 items-center gap-2.5 px-3 py-2 text-[15px] font-semibold"
+              >
+                <l.icon className={cx("size-[22px] shrink-0", l.tone ? TONE[l.tone].ink : "text-muted")} strokeWidth={2} aria-hidden />
+                <span className="min-w-0 truncate">{l.label}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  ));
 }
 
-function SectionsSheet({ isActive, onClose }: { isActive: (href: string) => boolean; onClose: () => void }) {
+/**
+ * Phone bottom sheet (modal dialog): grabber, a title bar that stays put while the
+ * content scrolls, and a close button. Escape, the backdrop and any link inside close it;
+ * focus returns to whatever opened it. `grouped` uses the canvas colour so cards inside read as cards.
+ */
+function Sheet({ title, grouped, onClose, children }: { title: string; grouped?: boolean; onClose: () => void; children: React.ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const opener = useRef<Element | null>(null);
   useEffect(() => {
     const d = ref.current;
+    opener.current = document.activeElement;
     if (d && !d.open) d.showModal();
   }, []);
+  const bg = grouped ? "bg-canvas" : "bg-card";
 
   return createPortal(
     <dialog
       ref={ref}
-      onClose={onClose}
-      onClick={(e) => e.target === ref.current && ref.current.close()}
-      className="card mx-auto mb-0 mt-auto max-h-[85dvh] w-full max-w-lg animate-slide-up overflow-y-auto !rounded-b-none !rounded-t-[1.75rem] p-0 text-ink backdrop:bg-black/40"
-      aria-labelledby="sections-heading"
+      onClose={() => {
+        onClose();
+        if (opener.current instanceof HTMLElement) opener.current.focus();
+      }}
+      onClick={(e) => {
+        const t = e.target as Element;
+        if (t === ref.current || t.closest("a[href]")) ref.current?.close();
+      }}
+      className={cx(
+        "mx-auto mb-0 mt-auto max-h-[90dvh] w-full max-w-lg animate-slide-up overflow-y-auto overscroll-contain rounded-t-[1.75rem] border border-b-0 border-line-strong p-0 text-ink shadow-[0_-8px_40px_rgb(0_0_0/0.18)] backdrop:bg-black/40",
+        bg,
+      )}
+      aria-labelledby="sheet-heading"
     >
-      <div className="px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2">
+      <div className={cx("sticky top-0 z-10 px-4 pb-3 pt-2", bg)}>
         <span aria-hidden className="mx-auto block h-1.5 w-9 rounded-full bg-line-strong" />
         <div className="mt-2 flex items-center justify-between">
-          <h2 id="sections-heading" className="text-xl font-extrabold">
-            All sections
+          <h2 id="sheet-heading" className="text-xl font-extrabold">
+            {title}
           </h2>
           <button type="button" className="btn-ghost btn-icon -mr-2" onClick={() => ref.current?.close()} aria-label="Close">
             <X className="size-6" aria-hidden />
           </button>
         </div>
-        {MENU_GROUPS.map((g) => (
-          <section key={g.title} aria-labelledby={`menu-${g.title}`}>
-            <h3 id={`menu-${g.title}`} className="eyebrow mb-2 mt-5 text-muted">
-              {g.title}
-            </h3>
-            <ul className="grid grid-cols-2 gap-2">
-              {g.items.map((l) => {
-                const on = isActive(l.href);
-                return (
-                  <li key={l.href}>
-                    <Link
-                      href={l.href}
-                      onClick={() => ref.current?.close()}
-                      aria-current={on ? "page" : undefined}
-                      data-state={on ? "current" : undefined}
-                      className="tile flex min-h-12 items-center gap-2.5 px-3 py-2 text-[15px] font-semibold"
-                    >
-                      <l.icon className={cx("size-[22px] shrink-0", l.tone ? TONE[l.tone].ink : "text-muted")} strokeWidth={2} aria-hidden />
-                      <span className="min-w-0 truncate">{l.label}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        ))}
       </div>
+      <div className="px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">{children}</div>
     </dialog>,
     document.body,
   );
