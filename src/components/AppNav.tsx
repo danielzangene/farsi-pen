@@ -100,15 +100,15 @@ export function AppNav() {
   // Close any sheet when the route changes (a link inside it was followed).
   useEffect(() => setSheet(null), [pathname]);
 
-  // The phone tab to highlight: Sections while its sheet is open; else the page's own tab, the tab its
-  // section lives under, or Sections for pages reached from the sheet (Path and the course pages).
+  // The phone tab to highlight: Sections while its sheet is open; else the page's own tab; Sections for any
+  // page listed in the sheet; otherwise the tab its section lives under (e.g. SAMFA → Exams).
   const sectionsTab = TABS.indexOf("sections");
   const primaryIndex = PRIMARY.findIndex((l) => isActive(l.href, l.exact));
   const ownerIndex = primaryIndex >= 0 ? primaryIndex : (SECONDARY.find((l) => isActive(l.href))?.parent ?? -1);
   const directTab = TABS.findIndex((t) => t !== "sections" && isActive(t.href, t.exact));
   const ownerTab = TABS.findIndex((t) => t !== "sections" && t.href === PRIMARY[ownerIndex]?.href);
   const inSheet = MENU_GROUPS.some((g) => g.items.some((l) => isActive(l.href, l.exact)));
-  const activeTab = sheet === "sections" ? sectionsTab : directTab >= 0 ? directTab : ownerTab >= 0 ? ownerTab : inSheet ? sectionsTab : -1;
+  const activeTab = sheet === "sections" ? sectionsTab : directTab >= 0 ? directTab : inSheet ? sectionsTab : ownerTab;
 
   return (
     <>
