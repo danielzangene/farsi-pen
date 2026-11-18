@@ -218,11 +218,10 @@ function Avatar({ name }: { name: string }) {
   );
 }
 
-/** Groups in the Sections sheet: every page the sidebar lists, plus Placement and My cards. */
+/** Groups in the Sections sheet: the sidebar's Practice and Course pages, plus My cards. SAMFA and Placement live on the Exams tab. */
 const MENU_GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "Practice", items: SECONDARY.filter((l) => l.parent === HOME) },
   { title: "Course", items: SECONDARY.filter((l) => l.parent === PATH) },
-  { title: "Exams", items: SECONDARY.filter((l) => l.parent === EXAMS) },
   { title: "Profile", items: SECONDARY.filter((l) => l.parent === PROFILE) },
 ];
 
