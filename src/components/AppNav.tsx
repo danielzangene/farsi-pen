@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, LayoutGrid, AudioLines, Bookmark, BookHeart, BookOpen, BookOpenText, ChartColumn, CircleUserRound, Clapperboard, Compass, Flame, GraduationCap, Headphones, House, Layers, MessagesSquare, Mic, PenLine, Puzzle, Repeat, Route, Star } from "lucide-react";
 import { hasBackend } from "@/lib/backend";
+import { buildDeck } from "@/lib/flashcards";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
@@ -121,13 +122,14 @@ export function AppNav() {
           {PRIMARY.map((l) => (
             <SideLink key={l.href} item={l} on={isActive(l.href, l.exact)} />
           ))}
-          <p className="mx-3 mb-1 mt-4 text-xs font-semibold text-muted">Practice</p>
-          {SECONDARY.filter((l) => l.parent === HOME).map((l) => (
-            <SideLink key={l.href} item={l} on={isActive(l.href)} />
-          ))}
-          <p className="mx-3 mb-1 mt-4 text-xs font-semibold text-muted">Course</p>
-          {SECONDARY.filter((l) => l.parent === PATH || l.parent === EXAMS).filter((l) => l.href !== "/app/placement/").map((l) => (
-            <SideLink key={l.href} item={l} on={isActive(l.href)} />
+          {MENU_GROUPS.map((g) => (
+            <Fragment key={g.title}>
+              <p className="mx-3 mb-1 mt-4 text-xs font-semibold text-muted">{g.title}</p>
+              {/* Path is already in the main group above. */}
+              {g.items.filter((l) => l.href !== PRIMARY[PATH].href).map((l) => (
+                <SideLink key={l.href} item={l} on={isActive(l.href)} />
+              ))}
+            </Fragment>
           ))}
         </nav>
       </aside>
@@ -224,13 +226,21 @@ function Avatar({ name }: { name: string }) {
   );
 }
 
-/** Groups in the Sections sheet: the sidebar's Practice pages, then Path and its course pages. My cards, SAMFA and Placement have tabs. */
+/**
+ * Groups in the Sections sheet (and the desktop sidebar), by what the learner wants to do:
+ * learn something new, practise daily, or go on adventures with real Persian. Listed in display order.
+ * My cards, SAMFA and Placement are reached from their tabs instead.
+ */
 const MENU_GROUPS: { title: string; items: NavItem[] }[] = [
-  { title: "Practice", items: SECONDARY.filter((l) => l.parent === HOME) },
-  { title: "Course", items: [PRIMARY[PATH], ...SECONDARY.filter((l) => l.parent === PATH)] },
-];
+  { title: "Learn", hrefs: ["/app/path/", "/app/lessons/", "/app/grammar/", "/app/alphabet/", "/app/sounds/"] },
+  { title: "Practise", hrefs: ["/app/practice/", "/app/words/", "/app/speak/", "/app/listen/"] },
+  { title: "Adventures", hrefs: ["/app/missions/", "/app/scenes/", "/app/reading/", "/app/poetry/", "/app/tutor/"] },
+].map((g) => ({ title: g.title, items: g.hrefs.flatMap((h) => [...PRIMARY, ...SECONDARY].filter((l) => l.href === h)) }));
 
 function SectionsList({ isActive }: { isActive: (href: string) => boolean }) {
+  const s = useProgress();
+  const due = buildDeck("today", s).ids.length;
+  const badges: Record<string, number | undefined> = { "/app/words/": due || undefined };
   return MENU_GROUPS.map((g, gi) => (
     <section key={g.title} aria-labelledby={`menu-${g.title}`}>
       <h3 id={`menu-${g.title}`} className={cx("eyebrow mb-2 text-muted", gi > 0 && "mt-5")}>
@@ -248,7 +258,12 @@ function SectionsList({ isActive }: { isActive: (href: string) => boolean }) {
                 className="tile flex min-h-12 items-center gap-2.5 px-3 py-2 text-[15px] font-semibold"
               >
                 <l.icon className={cx("size-[22px] shrink-0", l.tone ? TONE[l.tone].ink : "text-muted")} strokeWidth={2} aria-hidden />
-                <span className="min-w-0 truncate">{l.label}</span>
+                <span className="min-w-0 flex-1 truncate">{l.label}</span>
+                {badges[l.href] && (
+                  <span className={cx("chip shrink-0", l.tone ? `${TONE[l.tone].soft} ${TONE[l.tone].ink}` : "bg-paper")} aria-label={`${badges[l.href]} due today`}>
+                    {badges[l.href]}
+                  </span>
+                )}
               </Link>
             </li>
           );
