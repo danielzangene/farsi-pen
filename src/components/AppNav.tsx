@@ -13,7 +13,7 @@ import { TONE, type Tone } from "@/components/ui";
 
 type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean; hint?: string; parent?: number };
 
-/** The main pages: first group in the sidebar. On phones Home, Path, Exams and Progress are tabs and Profile is in the top bar. */
+/** The main pages. Home, Exams and Progress are tabs (phone) and the sidebar's first group; Path is in the Learn group; Profile is the top-right avatar. */
 const PRIMARY: NavItem[] = [
   { href: "/app/", label: "Home", icon: House, tone: "firuze", exact: true },
   { href: "/app/path/", label: "Path", icon: Route, tone: "saffron" },
@@ -119,14 +119,14 @@ export function AppNav() {
           <Logo />
         </div>
         <nav aria-label="Main" className="flex flex-1 flex-col gap-1.5 overflow-y-auto">
-          {PRIMARY.map((l) => (
+          {/* Same hierarchy as phones: the tabs (Sections is the groups below), then the Sections groups. Profile is top right. */}
+          {TABS.filter((t): t is NavItem => t !== "sections").map((l) => (
             <SideLink key={l.href} item={l} on={isActive(l.href, l.exact)} />
           ))}
           {MENU_GROUPS.map((g) => (
             <Fragment key={g.title}>
               <p className="mx-3 mb-1 mt-4 text-xs font-semibold text-muted">{g.title}</p>
-              {/* Path is already in the main group above. */}
-              {g.items.filter((l) => l.href !== PRIMARY[PATH].href).map((l) => (
+              {g.items.map((l) => (
                 <SideLink key={l.href} item={l} on={isActive(l.href)} />
               ))}
             </Fragment>
@@ -134,7 +134,7 @@ export function AppNav() {
         </nav>
       </aside>
 
-      {/* Mobile top bar: brand, progress and Profile. On desktop only the stat chips, top right of the content column. */}
+      {/* Mobile top bar: brand, progress and Profile. On desktop the stat chips and Profile, top right of the content column. */}
       <header className="app-nav max-lg:material-canvas sticky top-0 z-30 border-b border-line lg:static lg:border-0">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4 lg:h-auto lg:justify-end lg:pt-5">
           <div className="mr-auto lg:hidden">
@@ -143,7 +143,7 @@ export function AppNav() {
           <StatChips streak={streak} xp={s.xp} />
           <button
             type="button"
-            className="btn-ghost btn-icon -mr-2 shrink-0 lg:hidden"
+            className="btn-ghost btn-icon -mr-2 shrink-0"
             onClick={() => setSheet("profile")}
             aria-label="Profile"
             aria-haspopup="dialog"
@@ -274,7 +274,7 @@ function SectionsList({ isActive }: { isActive: (href: string) => boolean }) {
 }
 
 /**
- * Phone bottom sheet (modal dialog): grabber, a title bar that stays put while the
+ * Bottom sheet on phones, centred dialog on wider screens (modal): grabber, a title bar that stays put while the
  * content scrolls, and a close button. Escape, the backdrop and any link inside close it;
  * focus returns to whatever opened it. `grouped` uses the canvas colour so cards inside read as cards.
  */
@@ -301,12 +301,14 @@ function Sheet({ title, grouped, onClose, children }: { title: string; grouped?:
       }}
       className={cx(
         "mx-auto mb-0 mt-auto max-h-[90dvh] w-full max-w-lg animate-slide-up overflow-y-auto overscroll-contain rounded-t-[1.75rem] border border-b-0 border-line-strong p-0 text-ink shadow-[0_-8px_40px_rgb(0_0_0/0.18)] backdrop:bg-black/40",
+        // Wider screens: a centred dialog instead of a bottom sheet.
+        "lg:my-auto lg:max-h-[85dvh] lg:w-[min(36rem,calc(100vw-4rem))] lg:max-w-none lg:animate-pop lg:rounded-[1.75rem] lg:border-b",
         bg,
       )}
       aria-labelledby="sheet-heading"
     >
-      <div className={cx("sticky top-0 z-10 px-4 pb-3 pt-2", bg)}>
-        <span aria-hidden className="mx-auto block h-1.5 w-9 rounded-full bg-line-strong" />
+      <div className={cx("sticky top-0 z-10 px-4 pb-3 pt-2 lg:pt-4", bg)}>
+        <span aria-hidden className="mx-auto block h-1.5 w-9 rounded-full bg-line-strong lg:hidden" />
         <div className="mt-2 flex items-center justify-between">
           <h2 id="sheet-heading" className="text-xl font-extrabold">
             {title}
