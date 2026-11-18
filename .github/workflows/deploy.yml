@@ -3,14 +3,14 @@ name: Test and deploy to GitHub Pages
 # One Pages site serves main plus preview branches, each in its own folder:
 #   main   → https://<owner>.github.io/farsi-pen/
 #   dev    → https://<owner>.github.io/farsi-pen/dev/
-#   dev-ui → https://<owner>.github.io/farsi-pen/dev-ui/
+#   fix-accessibility → https://<owner>.github.io/farsi-pen/fix-accessibility/
 # Pages only deploys from main, so a push to a preview branch asks main to
 # redeploy, and every main deploy builds all of them.
 # To add a preview: add the branch to `push.branches` and to PREVIEWS below.
 
 on:
   push:
-    branches: [main, dev, dev-ui]
+    branches: [main, dev, fix-accessibility]
   pull_request:
   workflow_dispatch:
 
@@ -48,7 +48,7 @@ jobs:
     env:
       NEXT_TELEMETRY_DISABLED: 1
       BASE: /${{ github.event.repository.name }}
-      PREVIEWS: dev dev-ui
+      PREVIEWS: dev fix-accessibility
       # Deploys (main) also build the preview branches; PRs only test their own code.
       DEPLOY: ${{ github.ref == 'refs/heads/main' }}
     steps:
