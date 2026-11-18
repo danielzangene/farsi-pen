@@ -1,7 +1,9 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AudioLines, Bookmark, BookHeart, BookOpen, BookOpenText, ChartColumn, CircleUserRound, Clapperboard, Compass, Flame, GraduationCap, Headphones, House, Layers, MessagesSquare, Mic, PenLine, Puzzle, Repeat, Route, Star } from "lucide-react";
+import { X, LayoutGrid, AudioLines, Bookmark, BookHeart, BookOpen, BookOpenText, ChartColumn, CircleUserRound, Clapperboard, Compass, Flame, GraduationCap, Headphones, House, Layers, MessagesSquare, Mic, PenLine, Puzzle, Repeat, Route, Star } from "lucide-react";
 import { hasBackend } from "@/lib/backend";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
@@ -56,12 +58,16 @@ export function LogoMark({ className }: { className?: string }) {
   );
 }
 
-/** Brand mark + name. `compact` shows the mark only. */
-export function Logo({ compact }: { compact?: boolean }) {
+/** Brand mark + name. `compact` shows the mark only; `bar` is the phone top-bar size (name hidden on very narrow screens). */
+export function Logo({ compact, bar }: { compact?: boolean; bar?: boolean }) {
   return (
-    <Link href="/" className="flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl text-2xl font-extrabold tracking-tight text-firuze-ink" aria-label="Farsi Pen home">
+    <Link
+      href="/"
+      className={cx("flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl font-extrabold tracking-tight text-firuze-ink", bar ? "text-xl" : "text-2xl")}
+      aria-label="Farsi Pen home"
+    >
       <LogoMark />
-      {!compact && <span>Farsi Pen</span>}
+      {!compact && <span className={cx(bar && "max-[359px]:hidden")}>Farsi Pen</span>}
       {IS_DEV_SITE && <span className="chip bg-saffron-soft text-saffron-ink">DEV</span>}
     </Link>
   );
@@ -70,11 +76,11 @@ export function Logo({ compact }: { compact?: boolean }) {
 function StatChips({ streak, xp }: { streak: number; xp: number }) {
   return (
     <div className="flex items-center gap-1">
-      <span className="flex items-center gap-1 rounded-xl px-2 py-1.5 text-base font-extrabold text-anar-ink" title="Day streak" aria-label={`${streak} day streak`}>
+      <span className="flex items-center gap-1 rounded-xl px-1.5 py-1.5 text-base font-extrabold text-anar-ink lg:px-2" title="Day streak" aria-label={`${streak} day streak`}>
         <Flame className={cx("size-5", streak > 0 ? "fill-anar text-anar-ink" : "fill-line text-faint")} aria-hidden />
         <span className={streak > 0 ? undefined : "text-muted"}>{streak}</span>
       </span>
-      <span className="flex items-center gap-1 rounded-xl px-2 py-1.5 text-base font-extrabold text-saffron-ink" title="Total XP" aria-label={`${xp} XP`}>
+      <span className="flex items-center gap-1 rounded-xl px-1.5 py-1.5 text-base font-extrabold text-saffron-ink lg:px-2" title="Total XP" aria-label={`${xp} XP`}>
         <Star className="size-5 fill-saffron text-saffron-shadow" aria-hidden />
         {xp}
       </span>
@@ -117,9 +123,10 @@ export function AppNav() {
       <header className="app-nav max-lg:material-canvas sticky top-0 z-30 border-b border-line lg:static lg:border-0">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4 lg:h-auto lg:justify-end lg:pt-5">
           <div className="mr-auto lg:hidden">
-            <Logo />
+            <Logo bar />
           </div>
           <StatChips streak={streak} xp={s.xp} />
+          <SectionsMenu isActive={isActive} />
         </div>
       </header>
 
@@ -145,6 +152,109 @@ export function AppNav() {
       </nav>
 
     </>
+  );
+}
+
+/** Sections shown in the phone menu sheet: every page the sidebar lists, plus Placement and My cards. */
+const MENU_GROUPS: { title: string; items: NavItem[] }[] = [
+  { title: "Practice", items: SECONDARY.filter((l) => l.parent === HOME) },
+  { title: "Course", items: SECONDARY.filter((l) => l.parent === PATH) },
+  { title: "Exams", items: SECONDARY.filter((l) => l.parent === EXAMS) },
+  { title: "Profile", items: SECONDARY.filter((l) => l.parent === PROFILE) },
+];
+
+/**
+ * Phones only: a top-bar button that opens a bottom sheet listing every section,
+ * so pages that live in the desktop sidebar are one tap away on a phone too.
+ */
+function SectionsMenu({ isActive }: { isActive: (href: string, exact?: boolean) => boolean }) {
+  const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
+
+  // Close when the route changes (a link in the sheet was followed).
+  useEffect(() => setOpen(false), [pathname]);
+
+  return (
+    <>
+      <button
+        ref={trigger}
+        type="button"
+        className="btn-ghost btn-icon -mr-2 shrink-0 lg:hidden"
+        onClick={() => setOpen(true)}
+        aria-label="All sections"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+      >
+        <LayoutGrid className="size-6" strokeWidth={2} aria-hidden />
+      </button>
+      {open && (
+        <SectionsSheet
+          isActive={isActive}
+          onClose={() => {
+            setOpen(false);
+            trigger.current?.focus();
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+function SectionsSheet({ isActive, onClose }: { isActive: (href: string) => boolean; onClose: () => void }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const d = ref.current;
+    if (d && !d.open) d.showModal();
+  }, []);
+
+  return createPortal(
+    <dialog
+      ref={ref}
+      onClose={onClose}
+      onClick={(e) => e.target === ref.current && ref.current.close()}
+      className="card mx-auto mb-0 mt-auto max-h-[85dvh] w-full max-w-lg animate-slide-up overflow-y-auto !rounded-b-none !rounded-t-[1.75rem] p-0 text-ink backdrop:bg-black/40"
+      aria-labelledby="sections-heading"
+    >
+      <div className="px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2">
+        <span aria-hidden className="mx-auto block h-1.5 w-9 rounded-full bg-line-strong" />
+        <div className="mt-2 flex items-center justify-between">
+          <h2 id="sections-heading" className="text-xl font-extrabold">
+            All sections
+          </h2>
+          <button type="button" className="btn-ghost btn-icon -mr-2" onClick={() => ref.current?.close()} aria-label="Close">
+            <X className="size-6" aria-hidden />
+          </button>
+        </div>
+        {MENU_GROUPS.map((g) => (
+          <section key={g.title} aria-labelledby={`menu-${g.title}`}>
+            <h3 id={`menu-${g.title}`} className="eyebrow mb-2 mt-5 text-muted">
+              {g.title}
+            </h3>
+            <ul className="grid grid-cols-2 gap-2">
+              {g.items.map((l) => {
+                const on = isActive(l.href);
+                return (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      onClick={() => ref.current?.close()}
+                      aria-current={on ? "page" : undefined}
+                      data-state={on ? "current" : undefined}
+                      className="tile flex min-h-12 items-center gap-2.5 px-3 py-2 text-[15px] font-semibold"
+                    >
+                      <l.icon className={cx("size-[22px] shrink-0", l.tone ? TONE[l.tone].ink : "text-muted")} strokeWidth={2} aria-hidden />
+                      <span className="min-w-0 truncate">{l.label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </dialog>,
+    document.body,
   );
 }
 
