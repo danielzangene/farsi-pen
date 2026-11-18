@@ -100,11 +100,15 @@ export function AppNav() {
   // Close any sheet when the route changes (a link inside it was followed).
   useEffect(() => setSheet(null), [pathname]);
 
-  // The phone tab to highlight: the open Sections sheet, the page's own tab, or the tab its section lives under.
+  // The phone tab to highlight: Sections while its sheet is open; else the page's own tab, the tab its
+  // section lives under, or Sections for pages reached from the sheet (Path and the course pages).
+  const sectionsTab = TABS.indexOf("sections");
   const primaryIndex = PRIMARY.findIndex((l) => isActive(l.href, l.exact));
   const ownerIndex = primaryIndex >= 0 ? primaryIndex : (SECONDARY.find((l) => isActive(l.href))?.parent ?? -1);
-  const ownerHref = PRIMARY[ownerIndex]?.href;
-  const activeTab = sheet === "sections" ? TABS.indexOf("sections") : TABS.findIndex((t) => t !== "sections" && t.href === ownerHref);
+  const directTab = TABS.findIndex((t) => t !== "sections" && isActive(t.href, t.exact));
+  const ownerTab = TABS.findIndex((t) => t !== "sections" && t.href === PRIMARY[ownerIndex]?.href);
+  const inSheet = MENU_GROUPS.some((g) => g.items.some((l) => isActive(l.href, l.exact)));
+  const activeTab = sheet === "sections" ? sectionsTab : directTab >= 0 ? directTab : ownerTab >= 0 ? ownerTab : inSheet ? sectionsTab : -1;
 
   return (
     <>
@@ -199,8 +203,10 @@ export function AppNav() {
   );
 }
 
-/** Phone tab bar: Home, Path, Sections (opens the sheet), Exams, Progress. Profile lives in the top bar. */
-const TABS: (NavItem | "sections")[] = [PRIMARY[HOME], PRIMARY[PATH], "sections", PRIMARY[EXAMS], PRIMARY[PROGRESS]];
+const MY_CARDS = SECONDARY.find((l) => l.href === "/app/bookmarks/")!;
+
+/** Phone tab bar: Home, My cards, Sections (opens the sheet), Exams, Progress. Profile lives in the top bar; Path is in the sheet. */
+const TABS: (NavItem | "sections")[] = [PRIMARY[HOME], MY_CARDS, "sections", PRIMARY[EXAMS], PRIMARY[PROGRESS]];
 
 /** Loaded only when the Profile sheet first opens. */
 const ProfileContent = dynamic(() => import("@/components/ProfileContent"), {
@@ -218,11 +224,10 @@ function Avatar({ name }: { name: string }) {
   );
 }
 
-/** Groups in the Sections sheet: the sidebar's Practice and Course pages, plus My cards. SAMFA and Placement live on the Exams tab. */
+/** Groups in the Sections sheet: the sidebar's Practice pages, then Path and its course pages. My cards, SAMFA and Placement have tabs. */
 const MENU_GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "Practice", items: SECONDARY.filter((l) => l.parent === HOME) },
-  { title: "Course", items: SECONDARY.filter((l) => l.parent === PATH) },
-  { title: "Profile", items: SECONDARY.filter((l) => l.parent === PROFILE) },
+  { title: "Course", items: [PRIMARY[PATH], ...SECONDARY.filter((l) => l.parent === PATH)] },
 ];
 
 function SectionsList({ isActive }: { isActive: (href: string) => boolean }) {
