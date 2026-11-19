@@ -4,7 +4,7 @@ import { Check, X } from "lucide-react";
 import { updateSettings, useHydrated, useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { Fa, ProgressBar } from "@/components/ui";
-import { BackupNudge, Onboarding, TodayPlan } from "@/components/TodayPlan";
+import { BackupNudge, TodayPlan } from "@/components/TodayPlan";
 import { DailyQuests, OwnSentence, PlacementPrompt, PracticeStudio, SceneOfTheDay, SpeakByTopic, WeakSounds, WeekStrip } from "@/components/home/HomeSections";
 
 /**
@@ -23,24 +23,20 @@ export default function Home() {
         <h1 className="text-3xl font-extrabold">{s.xp > 0 ? "Welcome back" : "Welcome"}</h1>
       </div>
 
-      {s.settings.onboarded ? <TodayPlan /> : <Onboarding />}
+      {/* The welcome questions come before Home (see /welcome/ and AuthGate), so Home is always the full dashboard. */}
+      <TodayPlan />
       <BackupNudge />
-
-      {s.settings.onboarded && (
-        <>
-          <PlacementPrompt />
-          <div className="grid gap-6 sm:grid-cols-2">
-            <WeekStrip />
-            <DailyQuests />
-          </div>
-          <PracticeStudio />
-          <SceneOfTheDay />
-          <WeakSounds />
-          <SpeakByTopic />
-          <OwnSentence />
-          {!s.settings.checklistHidden && <Checklist />}
-        </>
-      )}
+      <PlacementPrompt />
+      <div className="grid gap-6 sm:grid-cols-2">
+        <WeekStrip />
+        <DailyQuests />
+      </div>
+      <PracticeStudio />
+      <SceneOfTheDay />
+      <WeakSounds />
+      <SpeakByTopic />
+      <OwnSentence />
+      {!s.settings.checklistHidden && <Checklist />}
     </div>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { Bookmark, ChartColumn, ClipboardCheck, ChevronRight, CircleUserRound, Info, ShieldCheck } from "lucide-react";
+import { Bookmark, ChartColumn, ClipboardCheck, ChevronRight, Info, ShieldCheck } from "lucide-react";
 import { levelFor } from "@/lib/gamification";
-import { currentStreak, resetProgress, updateSettings, useProgress } from "@/lib/store";
+import { currentStreak, NAME_MAX_LENGTH, resetProgress, updateSettings, useProgress } from "@/lib/store";
 import { CardControls } from "@/components/CardControls";
 import { Segmented } from "@/components/ui";
 import { RecognitionSetup, VoiceSetup } from "@/components/SpeechSetup";
@@ -12,23 +12,24 @@ import { SyncCard } from "@/components/SyncCard";
 import { FeedbackCard } from "@/components/FeedbackCard";
 import { AccountCard } from "@/components/AccountCard";
 import { AUTH_ENABLED } from "@/lib/backend";
+import { useAuth } from "@/lib/auth";
+import { Avatar } from "@/components/Avatar";
 
 /** The Profile screen's content: shown on /app/settings/ and in the phone Profile sheet. Renders siblings for a `space-y-*` parent. */
 export default function ProfileContent() {
   const s = useProgress();
   const { settings } = s;
+  const { user } = useAuth();
   const [confirming, setConfirming] = useState(false);
   const level = levelFor(s.xp);
-  const initial = (settings.name.trim()[0] ?? "").toUpperCase();
 
   return (
     <>
       <section className="card flex items-center gap-4 p-5" aria-label="You">
-        <span className="grid size-16 shrink-0 place-items-center rounded-full bg-firuze text-2xl font-bold text-on-accent" aria-hidden>
-          {initial || <CircleUserRound className="size-9" strokeWidth={1.8} />}
-        </span>
+        <Avatar name={settings.name} src={settings.avatarUrl} className="size-16 text-2xl" iconClassName="size-9" />
         <div className="min-w-0">
           <p className="truncate text-xl font-extrabold">{settings.name || "Learner"}</p>
+          {user?.email && <p className="truncate text-sm font-semibold text-muted">{user.email}</p>}
           <p className="text-sm text-muted">
             Level {level.number} · {level.current.name} · {s.xp} XP · {currentStreak(s)} day streak
           </p>
@@ -55,25 +56,28 @@ export default function ProfileContent() {
         ))}
       </ul>
 
-      <section className="card space-y-4 p-5">
-        <label className="block">
-          <span className="font-bold">Your name</span>
-          <input
-            className="input mt-1.5 !text-base"
-            value={settings.name}
-            maxLength={30}
-            onChange={(e) => updateSettings({ name: e.target.value })}
-            placeholder="So we can greet you"
-          />
-        </label>
-        <p className="flex gap-2.5 rounded-2xl bg-sky-soft p-3 text-sm font-semibold text-sky-ink">
-          <Info className="size-5 shrink-0" strokeWidth={2.5} />
-          <span>
-            {!AUTH_ENABLED && <strong className="font-extrabold">No sign-up needed. </strong>}Your progress is saved in this browser. Use “Save backup” below to keep it safe or
-            move it to another device.
-          </span>
-        </p>
-      </section>
+      {/* Signed-in learners get their name and photo from Google (Supabase profile); only builds without sign-in ask for a name. */}
+      {!AUTH_ENABLED && (
+        <section className="card space-y-4 p-5">
+          <label className="block">
+            <span className="font-bold">Your name</span>
+            <input
+              className="input mt-1.5 !text-base"
+              value={settings.name}
+              maxLength={NAME_MAX_LENGTH}
+              onChange={(e) => updateSettings({ name: e.target.value })}
+              placeholder="So we can greet you"
+            />
+          </label>
+          <p className="flex gap-2.5 rounded-2xl bg-sky-soft p-3 text-sm font-semibold text-sky-ink">
+            <Info className="size-5 shrink-0" strokeWidth={2.5} />
+            <span>
+              <strong className="font-extrabold">No sign-up needed. </strong>Your progress is saved in this browser. Use “Save backup” below to keep it safe or move it
+              to another device.
+            </span>
+          </p>
+        </section>
+      )}
 
       <section className="card p-5">
         <h2 className="eyebrow text-muted">Appearance</h2>

@@ -12,7 +12,8 @@ import { asset, IS_DEV_SITE } from "./util";
 export { AUTH_ENABLED };
 
 let client: SupabaseClient | null = null;
-function supabase(): SupabaseClient {
+/** The shared Supabase client (one per page, so every module sees the same session). */
+export function supabaseClient(): SupabaseClient {
   if (!client)
     client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
       auth: {
@@ -38,7 +39,7 @@ function start() {
   if (started || !AUTH_ENABLED) return;
   started = true;
   // Fires INITIAL_SESSION once the client is ready (after finishing a Google redirect, if any), then on every change.
-  supabase().auth.onAuthStateChange((_event, session) => {
+  supabaseClient().auth.onAuthStateChange((_event, session) => {
     state = { status: session ? "signed-in" : "signed-out", user: session?.user ?? null };
     listeners.forEach((l) => l());
   });
@@ -84,7 +85,7 @@ export function takeNext(): string {
 
 /** Sends the learner to Google. Resolves only if starting the redirect failed. */
 export async function signInWithGoogle(): Promise<{ error: string | null }> {
-  const { error } = await supabase().auth.signInWithOAuth({
+  const { error } = await supabaseClient().auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo: `${window.location.origin}${asset("/login/")}` },
   });
@@ -92,5 +93,5 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
 }
 
 export async function signOut(): Promise<void> {
-  await supabase().auth.signOut();
+  await supabaseClient().auth.signOut();
 }

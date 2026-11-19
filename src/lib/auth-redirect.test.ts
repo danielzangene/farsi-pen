@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_AFTER_SIGN_IN, needsSignIn, safeNext } from "./auth-redirect";
+import { DEFAULT_AFTER_SIGN_IN, needsSignIn, needsWelcome, safeNext } from "./auth-redirect";
 
 describe("needsSignIn", () => {
   it("guards the app's pages", () => {
@@ -15,6 +15,21 @@ describe("needsSignIn", () => {
 
   it("doesn't treat a look-alike path as public", () => {
     expect(needsSignIn("/app/privacy-extra/")).toBe(true);
+  });
+});
+
+describe("needsWelcome", () => {
+  it("asks learners who haven't answered, on the app's pages", () => {
+    expect(needsWelcome("/app/", false)).toBe(true);
+    expect(needsWelcome("/app/lessons/greetings/", false)).toBe(true);
+  });
+
+  it("never asks twice", () => {
+    expect(needsWelcome("/app/", true)).toBe(false);
+  });
+
+  it("doesn't hold up the public privacy policy", () => {
+    expect(needsWelcome("/app/privacy/", false)).toBe(false);
   });
 });
 

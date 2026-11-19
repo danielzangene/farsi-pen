@@ -3,6 +3,9 @@
 /** Where people land after signing in when nothing else was asked for. */
 export const DEFAULT_AFTER_SIGN_IN = "/app/";
 
+/** The two welcome questions, asked once after sign-up before Home. */
+export const WELCOME_PATH = "/welcome/";
+
 /** Pages under /app that stay open without signing in. Google requires a public privacy policy. */
 const PUBLIC_APP_PATHS = ["/app/privacy/"];
 
@@ -10,6 +13,11 @@ const PUBLIC_APP_PATHS = ["/app/privacy/"];
 export function needsSignIn(pathname: string): boolean {
   const path = pathname.endsWith("/") ? pathname : `${pathname}/`;
   return !PUBLIC_APP_PATHS.some((p) => path.startsWith(p));
+}
+
+/** Whether a learner on `pathname` should answer the welcome questions first (public pages never wait for them). */
+export function needsWelcome(pathname: string, onboarded: boolean): boolean {
+  return !onboarded && needsSignIn(pathname);
 }
 
 /**

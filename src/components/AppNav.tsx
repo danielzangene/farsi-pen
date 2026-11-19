@@ -9,6 +9,7 @@ import { hasBackend } from "@/lib/backend";
 import { buildDeck } from "@/lib/flashcards";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
+import { Avatar } from "@/components/Avatar";
 import { TONE, type Tone } from "@/components/ui";
 
 type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean; hint?: string; parent?: number; featured?: boolean };
@@ -150,7 +151,7 @@ export function AppNav() {
             aria-haspopup="dialog"
             aria-expanded={sheet === "profile"}
           >
-            <Avatar name={s.settings.name} />
+            <Avatar name={s.settings.name} src={s.settings.avatarUrl} className="size-8 text-base" iconClassName="size-5" />
           </button>
         </div>
       </header>
@@ -216,16 +217,6 @@ const ProfileContent = dynamic(() => import("@/components/ProfileContent"), {
   ssr: false,
   loading: () => <p className="py-10 text-center font-semibold text-muted">Loading…</p>,
 });
-
-/** The learner's initial on a firuze disc, or a person icon before they've set a name. */
-function Avatar({ name }: { name: string }) {
-  const initial = (name.trim()[0] ?? "").toUpperCase();
-  return (
-    <span className="grid size-8 place-items-center rounded-full bg-firuze text-base font-bold text-on-accent" aria-hidden>
-      {initial || <CircleUserRound className="size-5" strokeWidth={2} />}
-    </span>
-  );
-}
 
 /**
  * Groups in the Sections sheet (and the desktop sidebar), by what the learner wants to do:

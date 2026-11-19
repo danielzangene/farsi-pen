@@ -19,8 +19,13 @@ export type Direction = "fa-en" | "en-fa";
 export type Outcome = "good" | "hard" | "again";
 export type Theme = "system" | "light" | "dark";
 
+/** Longest name the learner can have (the profiles.name column allows the same). */
+export const NAME_MAX_LENGTH = 255;
+
 export interface Settings {
   name: string;
+  /** Profile picture URL (the Google photo, from the Supabase profile), or null to show the initial. */
+  avatarUrl: string | null;
   dailyGoal: number;
   direction: Direction;
   /** Which writing leads on cards: transliteration or Persian script. */
@@ -174,6 +179,7 @@ export const DEFAULT_STATE: ProgressState = {
   samfa: { mocks: [], practised: {} },
   settings: {
     name: "",
+    avatarUrl: null,
     dailyGoal: 10,
     direction: "fa-en",
     script: "latin",
