@@ -9,7 +9,7 @@ import { DailyQuests, OwnSentence, PlacementPrompt, PracticeStudio, SceneOfTheDa
 
 /**
  * Home: what to do today, then every way to practise. The course itself
- * lives on Path, exams on Exams, numbers on Progress, settings on Profile.
+ * lives on Journey, exams on Exams, numbers on Progress, settings on Profile.
  */
 export default function Home() {
   const s = useProgress();

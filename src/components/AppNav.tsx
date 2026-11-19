@@ -4,19 +4,19 @@ import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, LayoutGrid, AudioLines, Bookmark, BookHeart, BookOpen, BookOpenText, ChartColumn, CircleUserRound, Clapperboard, Compass, Flame, GraduationCap, Headphones, House, Layers, MessagesSquare, Mic, PenLine, Puzzle, Repeat, Route, Star } from "lucide-react";
+import { X, LayoutGrid, AudioLines, Bookmark, BookHeart, BookOpen, BookOpenText, ChartColumn, ChevronRight, CircleUserRound, Clapperboard, Compass, Flame, GraduationCap, Headphones, House, Layers, MessagesSquare, Mic, PenLine, Puzzle, Repeat, Route, Star } from "lucide-react";
 import { hasBackend } from "@/lib/backend";
 import { buildDeck } from "@/lib/flashcards";
 import { currentStreak, useProgress } from "@/lib/store";
 import { cx, IS_DEV_SITE } from "@/lib/util";
 import { TONE, type Tone } from "@/components/ui";
 
-type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean; hint?: string; parent?: number };
+type NavItem = { href: string; label: string; icon: typeof House; tone?: Tone; exact?: boolean; hint?: string; parent?: number; featured?: boolean };
 
-/** The main pages. Home, Exams and Progress are tabs (phone) and the sidebar's first group; Path is in the Learn group; Profile is the top-right avatar. */
+/** The main pages. Home, Exams and Progress are tabs (phone) and the sidebar's first group; Journey leads the Learn group; Profile is the top-right avatar. */
 const PRIMARY: NavItem[] = [
   { href: "/app/", label: "Home", icon: House, tone: "firuze", exact: true },
-  { href: "/app/path/", label: "Path", icon: Route, tone: "saffron" },
+  { href: "/app/path/", label: "Journey", icon: Route, tone: "anar", hint: "The whole course, step by step", featured: true },
   { href: "/app/exams/", label: "Exams", icon: GraduationCap, tone: "plum" },
   { href: "/app/progress/", label: "Progress", icon: ChartColumn, tone: "sky" },
   { href: "/app/settings/", label: "Profile", icon: CircleUserRound, tone: "pista" },
@@ -30,16 +30,16 @@ const PROFILE = 4;
 /** Every other page, grouped under the tab it belongs to (shown in the sidebar on desktop). */
 const SECONDARY: NavItem[] = [
   { href: "/app/words/", label: "Words", icon: Layers, tone: "sky", parent: HOME },
-  { href: "/app/speak/", label: "Speak", icon: Mic, tone: "anar", parent: HOME },
-  { href: "/app/scenes/", label: "Scenes", icon: Clapperboard, tone: "sky", parent: HOME },
-  { href: "/app/listen/", label: "Hands-free", icon: Headphones, tone: "firuze", parent: HOME },
-  { href: "/app/practice/", label: "Daily Practice", icon: Repeat, tone: "sky", parent: HOME },
-  ...(hasBackend ? [{ href: "/app/tutor/", label: "AI tutor", icon: MessagesSquare, tone: "sky" as const, parent: HOME }] : []),
-  { href: "/app/sounds/", label: "Sounds", icon: AudioLines, tone: "saffron", parent: PATH },
+  { href: "/app/speak/", label: "Speak", icon: Mic, tone: "plum", parent: HOME },
+  { href: "/app/scenes/", label: "Scenes", icon: Clapperboard, tone: "saffron", parent: HOME },
+  { href: "/app/listen/", label: "Hands-free", icon: Headphones, tone: "pista", parent: HOME },
+  { href: "/app/practice/", label: "Daily Practice", icon: Repeat, tone: "firuze", parent: HOME },
+  ...(hasBackend ? [{ href: "/app/tutor/", label: "AI tutor", icon: MessagesSquare, tone: "pista" as const, parent: HOME }] : []),
+  { href: "/app/sounds/", label: "Sounds", icon: AudioLines, tone: "sky", parent: PATH },
   { href: "/app/lessons/", label: "Lessons", icon: BookOpen, tone: "saffron", parent: PATH },
   { href: "/app/missions/", label: "Missions", icon: Compass, tone: "firuze", parent: PATH },
   { href: "/app/grammar/", label: "Grammar", icon: Puzzle, tone: "plum", parent: PATH },
-  { href: "/app/reading/", label: "Reading", icon: BookOpenText, tone: "plum", parent: PATH },
+  { href: "/app/reading/", label: "Reading", icon: BookOpenText, tone: "sky", parent: PATH },
   { href: "/app/alphabet/", label: "Alphabet", icon: PenLine, tone: "pista", parent: PATH },
   { href: "/app/poetry/", label: "Poetry", icon: BookHeart, tone: "plum", parent: PATH },
   { href: "/app/samfa/", label: "SAMFA", icon: GraduationCap, tone: "plum", parent: EXAMS },
@@ -207,7 +207,7 @@ export function AppNav() {
 
 const MY_CARDS = SECONDARY.find((l) => l.href === "/app/bookmarks/")!;
 
-/** Phone tab bar: Home, My cards, Sections (opens the sheet), Exams, Progress. Profile lives in the top bar; Path is in the sheet. */
+/** Phone tab bar: Home, My cards, Sections (opens the sheet), Exams, Progress. Profile lives in the top bar; Journey is in the sheet. */
 const TABS: (NavItem | "sections")[] = [PRIMARY[HOME], MY_CARDS, "sections", PRIMARY[EXAMS], PRIMARY[PROGRESS]];
 
 /** Loaded only when the Profile sheet first opens. */
@@ -249,6 +249,26 @@ function SectionsList({ isActive }: { isActive: (href: string) => boolean }) {
       <ul className="grid grid-cols-2 gap-2">
         {g.items.map((l) => {
           const on = isActive(l.href);
+          if (l.featured)
+            return (
+              <li key={l.href} className="col-span-2">
+                <Link
+                  href={l.href}
+                  aria-current={on ? "page" : undefined}
+                  data-state={on ? "current" : undefined}
+                  className="tile flex min-h-16 items-center gap-3 px-3 py-2.5"
+                >
+                  <span className={cx("grid size-10 shrink-0 place-items-center rounded-xl", l.tone ? `${TONE[l.tone].soft} ${TONE[l.tone].ink}` : "bg-paper text-muted")}>
+                    <l.icon className="size-6" strokeWidth={2.2} aria-hidden />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[17px] font-extrabold">{l.label}</span>
+                    {l.hint && <span className="block truncate text-[13px] text-muted">{l.hint}</span>}
+                  </span>
+                  <ChevronRight className="size-5 shrink-0 text-faint" aria-hidden />
+                </Link>
+              </li>
+            );
           return (
             <li key={l.href}>
               <Link
@@ -330,7 +350,8 @@ function SideLink({ item: l, on }: { item: NavItem; on: boolean }) {
       href={l.href}
       aria-current={on ? "page" : undefined}
       className={cx(
-        "flex items-center gap-3 rounded-xl px-3 py-2 text-[15px] font-semibold transition-colors active:scale-[0.98]",
+        "flex items-center gap-3 rounded-xl px-3 py-2 text-[15px] transition-colors active:scale-[0.98]",
+        l.featured ? "font-extrabold" : "font-semibold",
         on ? "bg-sky-soft text-sky-ink" : "text-ink hover:bg-paper",
       )}
     >

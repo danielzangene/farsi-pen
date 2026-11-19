@@ -42,7 +42,7 @@ export default function PathPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <PageHeader title="Path" subtitle="The whole course in order, from the first letter to reading real Persian." />
+      <PageHeader title="Journey" subtitle="The whole course in order, from the first letter to reading real Persian." />
 
       {next ? (
         <section aria-labelledby="next-heading" className={cx("rounded-[1.25rem] p-5 sm:p-6", TONE[TONES[(next.section.number - 1) % TONES.length]].soft)}>
@@ -89,7 +89,22 @@ export default function PathPage() {
           return (
             <li key={sec.id} className="card overflow-hidden !p-0">
               <button type="button" className="flex w-full items-center gap-4 p-4 text-start sm:p-5" onClick={() => toggle(sec.id)} aria-expanded={expanded}>
-                <span className={cx("grid size-12 shrink-0 place-items-center rounded-full text-lg font-extrabold text-on-accent", TONE[tone].bg)}>{sec.number}</span>
+                {/* Soft tint while in progress; solid once the whole section is done. */}
+                <span
+                  className={cx(
+                    "grid size-12 shrink-0 place-items-center rounded-full text-lg font-extrabold",
+                    p.done === p.total ? cx(TONE[tone].bg, "text-on-accent") : cx(TONE[tone].soft, TONE[tone].ink),
+                  )}
+                >
+                  {p.done === p.total ? (
+                    <>
+                      <Check className="size-6" strokeWidth={3} aria-hidden />
+                      <span className="sr-only">Done:</span>
+                    </>
+                  ) : (
+                    sec.number
+                  )}
+                </span>
                 <span className="min-w-0 flex-1">
                   <span className={cx("block text-xs font-semibold", TONE[tone].ink)}>
                     Section {sec.number} · {sec.cefr}

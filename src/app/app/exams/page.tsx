@@ -22,7 +22,7 @@ export default function ExamsPage() {
         <h2 id="placement-heading" className="mt-1 text-2xl font-extrabold">
           Find your level
         </h2>
-        <p className="mt-1 text-muted">Words, grammar and listening from A1 up to B2. Your Path and Today plan then start where you are.</p>
+        <p className="mt-1 text-muted">Words, grammar and listening from A1 up to B2. Your Journey and Today plan then start where you are.</p>
         {s.placement && (
           <p className="mt-3 rounded-xl bg-paper px-4 py-3 text-sm">
             Last result: <strong className="font-bold">{LEVEL_NAME[s.placement.level]}</strong> · {s.placement.correct}/{s.placement.total} right
