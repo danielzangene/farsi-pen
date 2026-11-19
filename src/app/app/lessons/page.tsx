@@ -1,8 +1,9 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, Library, Lock } from "lucide-react";
+import { Check, ChevronDown, Library, Lock } from "lucide-react";
 import { LESSONS, LEVELS } from "@/content/lessons";
-import { useProgress } from "@/lib/store";
+import { useHydrated, useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { Bubble, Fa, PageHeader } from "@/components/ui";
 
@@ -18,34 +19,67 @@ const NODE = {
 export default function LessonsPage() {
   const s = useProgress();
   const done = LESSONS.filter((l) => s.lessons[l.id]?.completedAt).length;
-  const currentIdx = LESSONS.findIndex((l) => !s.lessons[l.id]?.completedAt);
+  const current = LESSONS.find((l) => !s.lessons[l.id]?.completedAt);
+  // Only the learner's current unit starts open; the others are closed until tapped.
+  const hydrated = useHydrated();
+  const [open, setOpen] = useState<number[]>([]);
+  useEffect(() => {
+    if (hydrated && current) setOpen([current.level]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+  const toggle = (id: number) => setOpen((o) => (o.includes(id) ? o.filter((x) => x !== id) : [...o, id]));
 
   return (
     <div className="mx-auto max-w-2xl">
       <PageHeader title="Lessons" subtitle={`${done} of ${LESSONS.length} lessons complete`} />
-      {LEVELS.map((level) => (
+      <div className="space-y-4">
+      {LEVELS.map((level) => {
+        const unit = LESSONS.filter((l) => l.level === level.id);
+        const unitDone = unit.filter((l) => s.lessons[l.id]?.completedAt).length;
+        const isOpen = open.includes(level.id);
+        return (
         <section key={level.id} aria-labelledby={`unit-${level.id}`}>
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-firuze p-5 text-on-accent sm:p-6">
+          {/* The whole banner toggles the unit (the button's ::after covers it); Word list sits above that layer. */}
+          <div className="relative flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-firuze p-5 text-on-accent transition-transform duration-150 active:scale-[0.99] sm:p-6">
             <div className="min-w-0">
               <p className="eyebrow inline-block rounded-full bg-card px-2.5 py-1 text-firuze-ink">
                 Unit {level.id} · {level.cefr}
               </p>
-              <h2 id={`unit-${level.id}`} className="mt-2 flex flex-wrap items-baseline gap-x-2 text-2xl font-extrabold">
-                {level.name}
-                <Fa className="text-xl font-bold">{level.nameFa}</Fa>
+              <h2 id={`unit-${level.id}`} className="mt-2 text-2xl font-extrabold">
+                <button
+                  type="button"
+                  onClick={() => toggle(level.id)}
+                  aria-expanded={isOpen}
+                  aria-controls={`unit-${level.id}-lessons`}
+                  className="flex flex-wrap items-baseline gap-x-2 text-left after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-firuze"
+                >
+                  {level.name}
+                  <Fa className="text-xl font-bold">{level.nameFa}</Fa>
+                </button>
               </h2>
               <p className="mt-1 text-[15px] font-bold">{level.description}</p>
+              <p className="mt-2 text-sm font-semibold">
+                {unitDone} of {unit.length} lessons done
+              </p>
             </div>
-            <Link href="/app/words/" className="btn btn-sm shrink-0 [--btn-bg:rgb(0_0_0/0.2)] [--btn-fg:var(--color-on-accent)]">
-              <Library className="size-4" strokeWidth={2.5} /> Word list
-            </Link>
+            <div className="flex shrink-0 items-center gap-2">
+              <Link href="/app/words/" className="btn btn-sm relative z-[1] [--btn-bg:rgb(0_0_0/0.2)] [--btn-fg:var(--color-on-accent)]">
+                <Library className="size-4" strokeWidth={2.5} /> Word list
+              </Link>
+              <ChevronDown
+                className={cx("size-6 transition-transform duration-200 motion-reduce:transition-none", isOpen && "rotate-180")}
+                strokeWidth={2.5}
+                aria-hidden
+              />
+            </div>
           </div>
 
-          <ol className="mt-12 flex flex-col items-center gap-10 pb-4">
-            {LESSONS.filter((l) => l.level === level.id).map((l, i) => {
+          {isOpen && (
+          <ol id={`unit-${level.id}-lessons`} className="mt-12 flex flex-col items-center gap-10 pb-4">
+            {unit.map((l, i) => {
               const rec = s.lessons[l.id];
               const isDone = !!rec?.completedAt;
-              const isCurrent = i === currentIdx;
+              const isCurrent = l.id === current?.id;
               const state = isDone ? "done" : isCurrent ? "current" : "locked";
               const status = isDone ? `Best ${rec.best}%` : isCurrent ? (rec ? "In progress" : "Up next") : "Not started";
               const label = isDone
@@ -90,8 +124,11 @@ export default function LessonsPage() {
               );
             })}
           </ol>
+          )}
         </section>
-      ))}
+        );
+      })}
+      </div>
       <p className="mt-6 text-center text-sm font-semibold text-muted">Lessons unlock in order, but you can open any of them to skip ahead.</p>
       <section className="card mt-8 p-5 text-center" aria-labelledby="whats-next">
         <h2 id="whats-next" className="text-lg font-extrabold">
