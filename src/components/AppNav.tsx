@@ -47,15 +47,16 @@ const SECONDARY: NavItem[] = [
   { href: "/app/bookmarks/", label: "My cards", icon: Bookmark, tone: "saffron", parent: PROFILE },
 ];
 
-/**
- * The "FA" monogram on a teal tile. Same paths as scripts/make-icons.mjs,
- * which renders the favicon, app icons and share image.
- */
+/** "FA" set in Nunito Black, as outlines on the 64×64 tile. Shared with scripts/make-icons.mjs (favicon, app icons, share image). */
+export const LOGO_PATH =
+  "M15.47 43.66Q13.8 43.66 12.9 42.74Q12 41.82 12 40.09V24.23Q12 22.5 12.92 21.58Q13.83 20.66 15.57 20.66H26.02Q27.34 20.66 28.02 21.34Q28.69 22.01 28.69 23.3Q28.69 24.59 28.02 25.26Q27.34 25.94 26.02 25.94H18.91V29.48H25.28Q26.6 29.48 27.28 30.15Q27.95 30.83 27.95 32.11Q27.95 33.4 27.28 34.07Q26.6 34.75 25.28 34.75H18.91V40.09Q18.91 43.66 15.47 43.66ZM30.85 43.66Q29.69 43.66 28.9 43.11Q28.11 42.56 27.9 41.62Q27.69 40.67 28.24 39.48L35.99 23.14Q36.67 21.69 37.65 21.02Q38.63 20.34 39.91 20.34Q41.2 20.34 42.17 21.02Q43.13 21.69 43.81 23.14L51.56 39.48Q52.14 40.7 51.96 41.65Q51.78 42.6 51.03 43.13Q50.27 43.66 49.14 43.66Q47.67 43.66 46.86 42.98Q46.06 42.31 45.41 40.8L43.87 37.19L46.44 39.12H33.35L35.93 37.19L34.38 40.8Q33.74 42.31 33.03 42.98Q32.33 43.66 30.85 43.66ZM39.85 27.8 36.57 35.68 35.61 33.85H44.19L43.23 35.68L39.91 27.8H39.85Z";
+
+/** The "FA" monogram on a teal tile. */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <span className={cx("grid size-9 shrink-0 place-items-center rounded-xl bg-firuze text-on-accent", className)}>
-      <svg viewBox="0 0 64 64" className="size-[78%]" fill="none" stroke="currentColor" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M14 46V18h14M14 31h11M34 46l8-28 8 28M37 37h10" />
+    <span className={cx("grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-firuze text-on-accent", className)}>
+      <svg viewBox="0 0 64 64" className="size-full" fill="currentColor" aria-hidden>
+        <path d={LOGO_PATH} />
       </svg>
     </span>
   );

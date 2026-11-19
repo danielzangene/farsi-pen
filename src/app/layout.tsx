@@ -10,7 +10,7 @@ const themeScript = `try{var t=JSON.parse(localStorage.getItem(${JSON.stringify(
 const inputScript = `(function(d){d.dataset.input="pointer";addEventListener("keydown",function(e){if(e.key==="Tab"||e.key.indexOf("Arrow")===0)d.dataset.input="keyboard"},true);addEventListener("pointerdown",function(){d.dataset.input="pointer"},true)})(document.documentElement)`;
 
 /** Icon cache version; see scripts/make-icons.mjs. */
-const ICON_VERSION = 2;
+const ICON_VERSION = 3;
 
 export const metadata: Metadata = {
   title: { default: "Farsi Pen — learn to read, write and speak Persian", template: "%s · Farsi Pen" },
