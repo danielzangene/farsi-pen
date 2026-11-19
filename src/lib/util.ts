@@ -11,13 +11,12 @@ export function cx(...classes: (string | false | null | undefined)[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
-/** Which deploy this build is: "dev" for the dev-branch site, otherwise production. */
+/** Which build this is: "dev" for a test build (NEXT_PUBLIC_CHANNEL=dev), otherwise production. */
 export const IS_DEV_SITE = process.env.NEXT_PUBLIC_CHANNEL === "dev";
 
 /**
- * localStorage key for progress. The dev site lives on the same origin as
- * production (…/farsi-pen/dev/), so it gets its own key and never touches
- * real progress.
+ * localStorage key for progress. A dev build gets its own key, so a test site
+ * on the same origin as production never touches real progress.
  */
 export const STORAGE_KEY = IS_DEV_SITE ? "farsipen:v1:dev" : "farsipen:v1";
 
