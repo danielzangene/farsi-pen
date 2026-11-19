@@ -5,7 +5,7 @@
 // Progress itself still lives in localStorage (store.ts); this module only answers "who is signed in".
 import { useSyncExternalStore } from "react";
 import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
-import { safeNext } from "./auth-redirect";
+import { AFTER_SIGN_OUT, safeNext } from "./auth-redirect";
 import { AUTH_ENABLED, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./backend";
 import { asset, IS_DEV_SITE } from "./util";
 
@@ -34,6 +34,8 @@ const LOADING: AuthState = { status: "loading", user: null };
 let state: AuthState = LOADING;
 const listeners = new Set<() => void>();
 let started = false;
+/** Set while the learner signs out on purpose, so guards don't bounce them to /login/ on the way out. */
+let signingOut = false;
 
 function start() {
   if (started || !AUTH_ENABLED) return;
@@ -92,6 +94,14 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
   return { error: error?.message ?? null };
 }
 
+/** Whether the current sign-out was asked for (see signOut), rather than an expired or revoked session. */
+export function isSigningOut(): boolean {
+  return signingOut;
+}
+
+/** Ends the session and opens the landing page with a full load, so nothing from the session stays in memory. */
 export async function signOut(): Promise<void> {
+  signingOut = true;
   await supabaseClient().auth.signOut();
+  window.location.replace(asset(AFTER_SIGN_OUT));
 }

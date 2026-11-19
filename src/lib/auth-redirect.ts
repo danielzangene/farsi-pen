@@ -3,6 +3,9 @@
 /** Where people land after signing in when nothing else was asked for. */
 export const DEFAULT_AFTER_SIGN_IN = "/app/";
 
+/** Where people land after signing out: the landing page. */
+export const AFTER_SIGN_OUT = "/";
+
 /** The two welcome questions, asked once after sign-up before Home. */
 export const WELCOME_PATH = "/welcome/";
 

@@ -1,12 +1,10 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { AUTH_ENABLED, signOut, useAuth } from "@/lib/auth";
 
-/** Who is signed in, and a way out. Only shown when the build has sign-in. */
+/** Who is signed in, and a way out (to the landing page). Only shown when the build has sign-in. */
 export function AccountCard() {
   const { user } = useAuth();
-  const router = useRouter();
   const [leaving, setLeaving] = useState(false);
   if (!AUTH_ENABLED || !user) return null;
 
@@ -20,10 +18,9 @@ export function AccountCard() {
         type="button"
         className="btn-secondary mt-4"
         disabled={leaving}
-        onClick={async () => {
+        onClick={() => {
           setLeaving(true);
-          await signOut();
-          router.replace("/login/");
+          void signOut();
         }}
       >
         {leaving ? "Signing out…" : "Sign out"}

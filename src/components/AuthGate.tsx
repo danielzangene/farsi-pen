@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/LoadingScreen";
-import { AUTH_ENABLED, useAuth } from "@/lib/auth";
+import { AUTH_ENABLED, isSigningOut, useAuth } from "@/lib/auth";
 import { needsSignIn, needsWelcome, WELCOME_PATH } from "@/lib/auth-redirect";
 import { startProfileSync, useProfileReady } from "@/lib/profile-sync";
 import { useHydrated, useProgress } from "@/lib/store";
@@ -29,7 +29,8 @@ export function AuthGate({ children, skipWelcome = false }: { children: React.Re
   useEffect(() => startProfileSync(), []);
 
   useEffect(() => {
-    if (gated && status === "signed-out") router.replace(`/login/?next=${encodeURIComponent(pathname)}`);
+    // A deliberate sign-out heads to the landing page instead (see signOut).
+    if (gated && status === "signed-out" && !isSigningOut()) router.replace(`/login/?next=${encodeURIComponent(pathname)}`);
   }, [gated, status, pathname, router]);
 
   useEffect(() => {
