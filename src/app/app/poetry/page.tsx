@@ -62,7 +62,7 @@ function Fal() {
   return (
     <section className="card p-6 text-center sm:p-8">
       <span className="mx-auto grid size-20 place-items-center rounded-full bg-saffron-soft text-saffron-ink">
-        <BookHeart className={opening ? "size-10 animate-bob" : "size-10"} />
+        <BookHeart className="size-10" />
       </span>
       <h2 className="mt-5 text-2xl font-extrabold">
         Fâl-e Hâfez <Fa className="ms-1 text-xl font-bold text-muted">فال حافظ</Fa>

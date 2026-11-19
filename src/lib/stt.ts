@@ -21,6 +21,16 @@ export class SttError extends Error {
   }
 }
 
+/** What to tell the learner for each recognition failure ("aborted" is silent). */
+export const STT_ERROR_TEXT: Record<SttError["code"], string> = {
+  "no-speech": "Didn't catch that — tap the mic and try again.",
+  "not-allowed": "Microphone access is blocked. Allow it in your browser's site settings.",
+  network: "The browser's recogniser needs internet. Try again, or switch to Whisper in Settings.",
+  unsupported: "Persian recognition isn't available here. Switch to Whisper in Settings.",
+  aborted: "",
+  failed: "Something went wrong — try again.",
+};
+
 type SpeechRecognitionCtor = new () => {
   lang: string;
   interimResults: boolean;

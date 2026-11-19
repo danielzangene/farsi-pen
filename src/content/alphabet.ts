@@ -22,6 +22,9 @@ export interface Letter {
 
 const ZWJ = "\u200d";
 
+/** Tracing score (0–100) a letter needs to count as traced. */
+export const TRACE_PASS = 60;
+
 export type FormName = "isolated" | "initial" | "medial" | "final";
 export const FORM_NAMES: FormName[] = ["isolated", "initial", "medial", "final"];
 
@@ -88,4 +91,3 @@ export const SIGNS: { char: string; name: string; sound: string; example: { fa: 
   { char: "ً", name: "tanvin", sound: "-an (on alef)", example: { fa: "لطفاً", tr: "lotfan", en: "please" } },
 ];
 
-export const LETTER_BY_ID: Record<string, Letter> = Object.fromEntries(LETTERS.map((l) => [l.id, l]));

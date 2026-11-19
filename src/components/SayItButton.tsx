@@ -7,7 +7,7 @@ import type { Word } from "@/content/words";
 import { analyzeSpoken, type PhonicsResult } from "@/lib/phonics";
 import { checkSpoken, type SpeakResult } from "@/lib/pronounce";
 import { recordSounds, useProgress } from "@/lib/store";
-import { listen, loadWhisper, resolveEngine, SttError, whisperLoaded, type Listening } from "@/lib/stt";
+import { listen, loadWhisper, resolveEngine, STT_ERROR_TEXT, SttError, whisperLoaded, type Listening } from "@/lib/stt";
 import { cx } from "@/lib/util";
 import { PronunciationFeedback } from "./PronunciationFeedback";
 import { AudioButtons, FaWord, Fa } from "./ui";
@@ -26,15 +26,6 @@ export function SayItButton({ word }: { word: Word }) {
 }
 
 type Phase = "idle" | "loading" | "listening" | "checking" | "done";
-
-const ERRORS: Record<SttError["code"], string> = {
-  "no-speech": "Didn't catch that — tap the mic and try again.",
-  "not-allowed": "Microphone access is blocked. Allow it in your browser's site settings.",
-  network: "The browser's recogniser needs internet. Try again, or switch to Whisper in Settings.",
-  unsupported: "Persian recognition isn't available here. Switch to Whisper in Settings.",
-  aborted: "",
-  failed: "Something went wrong — try again.",
-};
 
 export function SayItDialog({ word, onClose }: { word: Word; onClose: () => void }) {
   const { settings } = useProgress();
@@ -83,7 +74,7 @@ export function SayItDialog({ word, onClose }: { word: Word; onClose: () => void
     } catch (e) {
       const code = e instanceof SttError ? e.code : "failed";
       setPhase("idle");
-      if (code !== "aborted") setError(ERRORS[code]);
+      if (code !== "aborted") setError(STT_ERROR_TEXT[code]);
     } finally {
       live.current = null;
     }

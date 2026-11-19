@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { hasBackend } from "@/lib/backend";
-import { ArrowRight, AudioLines, Check, ChevronRight, Clapperboard, Flame, Headphones, Keyboard, Layers, MessagesSquare, Mic, Star, Zap } from "lucide-react";
+import { ArrowRight, AudioLines, Check, ChevronRight, Clapperboard, Flame, Headphones, Keyboard, Layers, MessagesSquare, Mic, Zap } from "lucide-react";
 import { buildDeck } from "@/lib/flashcards";
 import { LESSONS } from "@/content/lessons";
 import { CAST, castOf, sceneOfTheDay } from "@/content/scenes";
@@ -10,7 +10,7 @@ import { SOUND_BY_ID } from "@/content/sounds";
 import { dayKey } from "@/lib/gamification";
 import { dailyQuests, lastWeek } from "@/lib/quests";
 import { hasDeviceVoice } from "@/lib/speech";
-import { nextUp, PATH_UNITS, stageCount, unitPool } from "@/lib/sound-path";
+import { nextUp, stageCount } from "@/lib/sound-path";
 import { claimQuest, currentStreak, useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { CastStack } from "../scene/Cast";
@@ -188,47 +188,6 @@ export function WeakSounds() {
           </Link>
         )}
       </div>
-    </section>
-  );
-}
-
-/** Lessons by sound: the units of the sound path with the stars earned. */
-export function SoundLessons() {
-  const s = useProgress();
-  return (
-    <section aria-labelledby="sound-lessons">
-      <div className="mb-3 flex items-baseline justify-between gap-2">
-        <h2 id="sound-lessons" className="text-xl font-extrabold">
-          Lessons by sound
-        </h2>
-        <Link href="/app/sounds/" className="text-sm font-bold text-sky-ink">
-          The whole path
-        </Link>
-      </div>
-      <ul className="grid grid-cols-2 gap-3">
-        {PATH_UNITS.map((u) => {
-          const rec = s.soundPath?.[u.id];
-          const max = (stageCount(u) + 1) * 3;
-          const stars = rec?.testedOut ? max : (rec?.stars ?? []).reduce((a, b) => a + (b ?? 0), 0);
-          return (
-            <li key={u.id}>
-              <Link href="/app/sounds/" className="tile flex h-full flex-col p-4">
-                <span className="flex items-start justify-between gap-2">
-                  <span className={cx("grid size-12 place-items-center rounded-xl text-on-accent", TONE[u.tone].bg)}>
-                    <Fa className="text-lg font-bold">{u.badge}</Fa>
-                  </span>
-                  <span className="flex items-center gap-1 text-xs font-extrabold text-muted">
-                    <Star className="size-3.5 fill-saffron text-saffron" aria-hidden /> {stars}/{max}
-                  </span>
-                </span>
-                <span className="mt-3 block font-extrabold leading-tight">{u.title}</span>
-                <span className="mt-0.5 block text-sm font-semibold text-muted">{u.subtitle}</span>
-                <span className={cx("mt-auto block pt-2 text-sm font-bold", TONE[u.tone].ink)}>{unitPool(u).words.length} words</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
     </section>
   );
 }

@@ -597,10 +597,6 @@
 @utility animate-shake {
   animation: shake 320ms ease-in-out;
 }
-/* Formerly a looping bob; slow loops are avoided, so it only centres. */
-@utility animate-bob {
-  transform: translateX(-50%);
-}
 
 /* Dialogs dim and blur what's behind them, and arrive as a material. */
 dialog::backdrop {

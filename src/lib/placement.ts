@@ -10,6 +10,7 @@ import { WORD_BY_ID, type Word } from "@/content/words";
 import { shuffle } from "./util";
 
 export type PlacementLevel = "A0" | "A1" | "A2" | "B1" | "B2";
+export const LEVEL_NAME: Record<PlacementLevel, string> = { A0: "Beginner", A1: "A1 · Basic", A2: "A2 · Elementary", B1: "B1 · Intermediate", B2: "B2 · Upper intermediate" };
 export const ROUNDS: Exclude<PlacementLevel, "A0">[] = ["A1", "A2", "B1", "B2"];
 export const PASS = 4;
 export const PER_ROUND = 5;

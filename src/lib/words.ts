@@ -3,10 +3,6 @@
 import { WORD_BY_ID, type Word } from "@/content/words";
 import type { CustomWord } from "./store";
 
-export function isCustomId(id: string): boolean {
-  return id.startsWith("custom:");
-}
-
 export function customToWord(id: string, c: CustomWord): Word {
   return {
     id,

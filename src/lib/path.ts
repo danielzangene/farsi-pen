@@ -3,7 +3,7 @@
 // the missions that use those words, the grammar for the level and, later,
 // reading — so the learner always knows what comes next.
 
-import { LETTERS } from "@/content/alphabet";
+import { LETTERS, TRACE_PASS } from "@/content/alphabet";
 import { GRAMMAR } from "@/content/grammar";
 import { LESSONS, LEVELS } from "@/content/lessons";
 import { MISSION_BY_ID } from "@/content/missions";
@@ -37,8 +37,6 @@ export interface PathSection {
   description: string;
   items: PathItem[];
 }
-
-const TRACE_PASS = 60;
 
 // Missions placed after the lessons whose words they use.
 const MISSIONS_AFTER_LEVEL: Record<number, string[]> = { 1: ["meet", "cafe"], 2: ["taxi", "directions"], 3: ["bazaar", "pharmacy"], 4: ["guest"] };

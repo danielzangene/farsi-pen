@@ -5,7 +5,7 @@
 
 import { useSyncExternalStore } from "react";
 import { LESSONS } from "@/content/lessons";
-import { LETTERS } from "@/content/alphabet";
+import { LETTERS, TRACE_PASS } from "@/content/alphabet";
 import { GRAMMAR } from "@/content/grammar";
 import { dayKey, earnedBadges, extendStreak, liveStreak, XP, type BadgeStats, type Streak } from "./gamification";
 import { STORAGE_KEY } from "./util";
@@ -296,7 +296,6 @@ export function badgeStats(s: ProgressState): BadgeStats {
   };
 }
 
-export const TRACE_PASS = 60;
 
 function withBadges(s: ProgressState): ProgressState {
   const earned = earnedBadges(badgeStats(s));
@@ -621,14 +620,6 @@ export function addCustomWord(w: Omit<CustomWord, "addedAt">): string {
     bookmarks: s.bookmarks.includes(id) ? s.bookmarks : [...s.bookmarks, id],
   }));
   return id;
-}
-
-export function removeCustomWord(id: string) {
-  update((s) => {
-    const customWords = { ...s.customWords };
-    delete customWords[id];
-    return { ...s, customWords, bookmarks: s.bookmarks.filter((b) => b !== id) };
-  });
 }
 
 export function toggleBookmark(wordId: string) {

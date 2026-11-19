@@ -2,13 +2,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Volume2 } from "lucide-react";
-import { advice, buildRound, levelFrom, PASS, ROUNDS, type PlacementItem } from "@/lib/placement";
+import { advice, buildRound, LEVEL_NAME, levelFrom, PASS, ROUNDS, type PlacementItem } from "@/lib/placement";
 import { speak } from "@/lib/speech";
 import { savePlacement, useHydrated, useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { Fa, SessionHeader } from "@/components/ui";
 
-const LEVEL_NAME = { A0: "Beginner", A1: "A1 · Basic", A2: "A2 · Elementary", B1: "B1 · Intermediate", B2: "B2 · Upper intermediate" } as const;
 
 export default function PlacementPage() {
   const s = useProgress();

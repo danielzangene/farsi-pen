@@ -5,7 +5,7 @@ import { hasBackend, sendFeedback } from "@/lib/backend";
 import { cx } from "@/lib/util";
 
 const KEY = "farsipen:reports";
-const REPO = "https://github.com/danielzangene/farsi-pen";
+const REPO = "https://github.com/danielzangene/farsi-pen-prototype";
 
 /** A pre-filled GitHub issue: free, no backend, and lands where the team works. */
 export function reportUrl(

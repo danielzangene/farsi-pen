@@ -5,22 +5,13 @@ import type { Word } from "@/content/words";
 import { analyzeSpoken, type PhonicsResult } from "@/lib/phonics";
 import { checkSpoken, type SpeakResult } from "@/lib/pronounce";
 import { recordSounds, type Outcome, type SessionSummary, useProgress } from "@/lib/store";
-import { listen, loadWhisper, resolveEngine, SttError, whisperLoaded, type Listening } from "@/lib/stt";
+import { listen, loadWhisper, resolveEngine, STT_ERROR_TEXT, SttError, whisperLoaded, type Listening } from "@/lib/stt";
 import { cx } from "@/lib/util";
 import { SOUND_BY_ID } from "@/content/sounds";
 import { PronunciationFeedback, SoundTipCard } from "./PronunciationFeedback";
 import { AudioButtons, Fa, FaWord, FeedbackSheet, ProgressBar, SessionHeader, type FeedbackState } from "./ui";
 
 type Phase = "idle" | "preparing" | "listening" | "checking" | "done";
-
-const ERRORS: Record<SttError["code"], string> = {
-  "no-speech": "Didn't catch that — tap the mic and try again.",
-  "not-allowed": "Microphone access is blocked. Allow it in your browser's site settings.",
-  network: "The browser's recogniser needs internet. Try again, or switch to Whisper in Settings.",
-  unsupported: "Persian recognition isn't available here. Switch to Whisper in Settings.",
-  aborted: "",
-  failed: "Something went wrong — try again.",
-};
 
 /**
  * Speaking practice: hear the word, say it, and see how close it sounded.
@@ -82,7 +73,7 @@ export function SpeakRound({
       l = listen(engine, 5000, { record: true });
     } catch (e) {
       setPhase("idle");
-      setError(e instanceof SttError ? ERRORS[e.code] : ERRORS.failed);
+      setError(e instanceof SttError ? STT_ERROR_TEXT[e.code] : STT_ERROR_TEXT.failed);
       return;
     }
     live.current = l;
@@ -106,7 +97,7 @@ export function SpeakRound({
     } catch (e) {
       setPhase("idle");
       const code = e instanceof SttError ? e.code : "failed";
-      if (code !== "aborted") setError(ERRORS[code]);
+      if (code !== "aborted") setError(STT_ERROR_TEXT[code]);
     } finally {
       if (stopWatch) clearTimeout(stopWatch);
       live.current = null;

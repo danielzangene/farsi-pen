@@ -2,7 +2,7 @@
 // one new thing, use it — shaped by the learner's goal and whether they read
 // Persian script. One Continue button walks it; when it's done, the app says so.
 
-import { LETTERS } from "@/content/alphabet";
+import { LETTERS, TRACE_PASS } from "@/content/alphabet";
 import { GRAMMAR } from "@/content/grammar";
 import { LESSONS } from "@/content/lessons";
 import { MISSIONS } from "@/content/missions";
@@ -23,8 +23,6 @@ export interface TodayStep {
   done: boolean;
   emoji: string;
 }
-
-const TRACE_PASS = 60;
 
 function nextLetter(s: ProgressState) {
   return LETTERS.find((l) => (s.traced[l.id] ?? 0) < TRACE_PASS);

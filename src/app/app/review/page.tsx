@@ -7,7 +7,7 @@ import { allRecordingIds, blobToDataUrl, deleteRecording, getRecording, loadVerd
 import { speak, stopSpeaking } from "@/lib/speech";
 import { useHydrated } from "@/lib/store";
 import { cx } from "@/lib/util";
-import { Fa, PageHeader, ProgressBar } from "@/components/ui";
+import { PageHeader, ProgressBar } from "@/components/ui";
 
 type Filter = "todo" | "flagged" | "all";
 

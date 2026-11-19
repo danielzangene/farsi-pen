@@ -24,7 +24,7 @@ Source of truth in code:
 
 - Never copy another product's branding (logos, mascots, illustrations, fonts, exact brand colours).
 - Primary is **firuze** (turquoise); reward is **saffron**; error is **anar** (pomegranate); success **pista**; info/selection **sky**; grammar **plum**.
-- Brand mark: the "FA" monogram on a firuze tile (`<LogoMark />` / `<Logo />` in `AppNav.tsx`; icons via `scripts/make-icons.mjs`).
+- Brand mark: "FA" in Nunito Black, as outlines, on a firuze tile (`LOGO_PATH`, `<LogoMark />` / `<Logo />` in `AppNav.tsx`; source `docs/brand/logo.svg`; favicon and app icons via `scripts/make-icons.mjs`). Never re-type it as live text.
 
 ## 3. Tokens
 

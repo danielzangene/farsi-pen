@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Check, Info } from "lucide-react";
-import { BASE_LETTERS, formsOf, LETTERS, letterForms, SIGNS, type FormName, type Letter } from "@/content/alphabet";
-import { recordTrace, TRACE_PASS, useHydrated, useProgress } from "@/lib/store";
+import { BASE_LETTERS, formsOf, LETTERS, letterForms, SIGNS, TRACE_PASS, type FormName, type Letter } from "@/content/alphabet";
+import { recordTrace, useHydrated, useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { TraceCanvas } from "@/components/TraceCanvas";
 import { AudioButtons, Fa, PageHeader, ProgressBar, Segmented } from "@/components/ui";

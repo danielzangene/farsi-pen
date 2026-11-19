@@ -4,8 +4,8 @@ import { ChevronRight } from "lucide-react";
 import { SAMFA_FACTS } from "@/content/samfa";
 import { useHydrated, useProgress } from "@/lib/store";
 import { Fa, PageHeader, ProgressBar } from "@/components/ui";
+import { LEVEL_NAME } from "@/lib/placement";
 
-const LEVEL_NAME = { A0: "Beginner", A1: "A1 · Basic", A2: "A2 · Elementary", B1: "B1 · Intermediate", B2: "B2 · Upper intermediate" } as const;
 
 export default function ExamsPage() {
   const s = useProgress();
