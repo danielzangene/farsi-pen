@@ -2,7 +2,7 @@
 
 Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1, built from the *Farsi Pen — V1 Product & Technical Spec* and the *learnfarsi.app feature audit*.
 
-**Live demo:** https://danielzangene.github.io/farsi-pen/ · **Dev branch:** https://danielzangene.github.io/farsi-pen/dev/
+**Live demo:** https://danielzangene.github.io/farsi-pen-prototype/ · **Dev branch:** https://danielzangene.github.io/farsi-pen-prototype/dev/
 
 ## What the demo includes
 
@@ -73,8 +73,8 @@ One GitHub Pages site serves two branches (`.github/workflows/deploy.yml`):
 
 | Branch | URL | Built with |
 | --- | --- | --- |
-| `main` | `/farsi-pen/` | `NEXT_PUBLIC_BASE_PATH=/farsi-pen` |
-| `dev` | `/farsi-pen/dev/` | `NEXT_PUBLIC_BASE_PATH=/farsi-pen/dev`, `NEXT_PUBLIC_CHANNEL=dev` |
+| `main` | `/farsi-pen-prototype/` | `NEXT_PUBLIC_BASE_PATH=/farsi-pen-prototype` |
+| `dev` | `/farsi-pen-prototype/dev/` | `NEXT_PUBLIC_BASE_PATH=/farsi-pen-prototype/dev`, `NEXT_PUBLIC_CHANNEL=dev` |
 
 Every push to `main` runs the tests and publishes both builds. Pages only deploys from `main`, so a push to `dev` runs its tests and then re-runs the `main` deploy, which picks up the new `dev`. The dev site shows a **DEV** badge, is hidden from search engines, and keeps its progress under its own `localStorage` key, so testing there never touches real progress.
 

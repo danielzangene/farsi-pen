@@ -12,7 +12,7 @@ function commit(): string {
 }
 
 // Static export so the demo can be hosted on GitHub Pages (or any static host).
-// NEXT_PUBLIC_BASE_PATH is set to "/farsi-pen" by the Pages workflow.
+// NEXT_PUBLIC_BASE_PATH is set to "/<repo name>" (here "/farsi-pen-prototype") by the Pages workflow.
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const nextConfig: NextConfig = {
