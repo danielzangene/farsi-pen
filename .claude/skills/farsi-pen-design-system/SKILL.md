@@ -101,7 +101,7 @@ Borders are hairlines: use `border` (1px), not `border-2`. No `shadow-[0_Npx_0_�
 
 - Persian text only through `<Fa>`; never set `dir` on a whole LTR layout. Reading blocks are `dir="rtl"` blocks.
 - Show transliteration per `settings.script`; respect `scriptOnly`.
-- Persian digits come from the FaNum font.
+- Write Persian numbers with Persian digits (۰–۹) in the content itself; the font draws 0–9 as Latin digits.
 
 ## 10. Accessibility checklist
 

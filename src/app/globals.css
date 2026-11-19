@@ -355,6 +355,19 @@
   border-radius: 0.625rem;
   font-size: 0.875rem;
 }
+/* Third-party sign-in ("Continue with Google"): neutral surface with a hairline edge, as the providers' guidelines ask. */
+@utility btn-provider {
+  @apply btn;
+  --btn-bg: var(--color-card);
+  --btn-fg: var(--color-ink);
+  border: 1px solid var(--color-field-edge);
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      filter: none;
+      background: color-mix(in srgb, var(--color-card) 94%, var(--color-ink));
+    }
+  }
+}
 @utility btn-lg {
   min-height: 3.25rem;
   padding: 0 1.75rem;

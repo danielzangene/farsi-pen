@@ -10,6 +10,7 @@ import { RecognitionSetup, VoiceSetup } from "@/components/SpeechSetup";
 import { ProgressTools } from "@/components/ProgressTools";
 import { SyncCard } from "@/components/SyncCard";
 import { FeedbackCard } from "@/components/FeedbackCard";
+import { AccountCard } from "@/components/AccountCard";
 
 /** The Profile screen's content: shown on /app/settings/ and in the phone Profile sheet. Renders siblings for a `space-y-*` parent. */
 export default function ProfileContent() {
@@ -185,6 +186,8 @@ export default function ProfileContent() {
       </section>
 
       <FeedbackCard />
+
+      <AccountCard />
 
       <section className="card p-5">
         <h2 className="eyebrow text-anar-ink">Reset progress</h2>

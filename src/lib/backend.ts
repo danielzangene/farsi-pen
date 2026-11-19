@@ -4,6 +4,12 @@
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 export const hasBackend = API_URL !== "";
 
+// Google sign-in through Supabase Auth (see lib/auth.ts). Both values are public (they ship to the browser).
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+export const SUPABASE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
+/** Sign-in is on when the build has a Supabase project; without one (local dev, PR builds) /app stays open. */
+export const AUTH_ENABLED = SUPABASE_URL !== "" && SUPABASE_PUBLISHABLE_KEY !== "";
+
 export class ApiError extends Error {
   constructor(
     public code: string,

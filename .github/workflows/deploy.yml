@@ -60,6 +60,8 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: ${{ env.BASE }}
           NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
 
       - uses: actions/checkout@v4
         if: env.DEPLOY == 'true'
@@ -73,6 +75,8 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: ${{ env.BASE }}/dev
           NEXT_PUBLIC_CHANNEL: dev
           NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
         run: |
           npm ci
           npm run build

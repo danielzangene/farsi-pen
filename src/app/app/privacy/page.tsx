@@ -1,18 +1,31 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/ui";
-import { hasBackend } from "@/lib/backend";
+import { AUTH_ENABLED, hasBackend } from "@/lib/backend";
 
 const SECTIONS: { title: string; body: string[] }[] = [
   {
     title: "Your progress stays on your device",
     body: [
-      hasBackend
-        ? "Lessons, cards, streaks, scores and settings are saved in this browser's local storage. There is no account. Nothing is sent to the Farsi Pen server unless you turn on sync, use the AI tutor or send feedback (below)."
-        : "Lessons, cards, streaks, scores and settings are saved in this browser's local storage. There is no account and nothing is sent to a Farsi Pen server.",
+      `Lessons, cards, streaks, scores and settings are saved in this browser's local storage.${AUTH_ENABLED ? " Signing in doesn't send them anywhere." : " There is no account."} ${
+        hasBackend
+          ? "Nothing is sent to the Farsi Pen server unless you turn on sync, use the AI tutor or send feedback (below)."
+          : "Nothing is sent to a Farsi Pen server."
+      }`,
       "Clearing your browser's site data deletes your progress. Use Save backup on your Profile to keep a copy, or to move to another device.",
     ],
   },
+  ...(AUTH_ENABLED
+    ? [
+        {
+          title: "Signing in",
+          body: [
+            "You sign in with Google. Google shares your name, email address and profile picture with Farsi Pen, and Supabase, the service that runs sign-in for us, keeps them with the times you signed in, so it can recognise you next time. Google's and Supabase's privacy policies apply to their part.",
+            "Your sign-in is kept in this browser until you sign out on your Profile. Deleting your account from the app is coming soon.",
+          ],
+        },
+      ]
+    : []),
   {
     title: "Your voice",
     body: [
