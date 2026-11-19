@@ -2,7 +2,7 @@
 
 Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1, built from the *Farsi Pen — V1 Product & Technical Spec* and the *learnfarsi.app feature audit*.
 
-**Live demo:** https://danielzangene.github.io/farsi-pen-prototype/ · **Dev branch:** https://danielzangene.github.io/farsi-pen-prototype/dev/
+**Live demo:** https://danielzangene.github.io/farsi-pen-prototype/ (the `main` branch)
 
 ## What the demo includes
 
@@ -68,7 +68,7 @@ Transliteration style (proposed in the spec): `â` long a, `kh` خ, `gh` غ/ق, 
 3. **Supabase → Authentication → Sign In / Providers → Google:** turn it on and paste the client ID and secret.
 4. **Supabase → Authentication → URL Configuration:**
    - Site URL: `https://danielzangene.github.io/farsi-pen-prototype/`
-   - Redirect URLs: `https://danielzangene.github.io/farsi-pen-prototype/login/`, `https://danielzangene.github.io/farsi-pen-prototype/dev/login/`, `http://localhost:3000/login/`
+   - Redirect URLs: `https://danielzangene.github.io/farsi-pen-prototype/login/`, `http://localhost:3000/login/`
 5. **Builds:** set the repository variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (GitHub → Settings → Variables). Locally, copy `.env.example` to `.env.local` and fill them in.
 
 ## Run it locally
@@ -83,13 +83,8 @@ npm run build        # static site in ./out
 
 ## Deploy
 
-One GitHub Pages site serves two branches (`.github/workflows/deploy.yml`):
+`main` is the only branch. Every push to it runs the tests and publishes the site to GitHub Pages at `/farsi-pen-prototype/` (`.github/workflows/deploy.yml`, built with `NEXT_PUBLIC_BASE_PATH=/farsi-pen-prototype` and the repository variables above). Pull requests run the tests and a build without deploying.
 
-| Branch | URL | Built with |
-| --- | --- | --- |
-| `main` | `/farsi-pen-prototype/` | `NEXT_PUBLIC_BASE_PATH=/farsi-pen-prototype` |
-| `dev` | `/farsi-pen-prototype/dev/` | `NEXT_PUBLIC_BASE_PATH=/farsi-pen-prototype/dev`, `NEXT_PUBLIC_CHANNEL=dev` |
-
-Every push to `main` runs the tests and publishes both builds. Pages only deploys from `main`, so a push to `dev` runs its tests and then re-runs the `main` deploy, which picks up the new `dev`. The dev site shows a **DEV** badge, is hidden from search engines, and keeps its progress under its own `localStorage` key, so testing there never touches real progress.
+A build made with `NEXT_PUBLIC_CHANNEL=dev` shows a **DEV** badge, is hidden from search engines and keeps its progress and sign-in under separate `localStorage` keys, for a separate test site if one is ever needed.
 
 Moving to Vercel later needs no code changes — just drop the base path.
