@@ -17,6 +17,7 @@ import { LESSONS } from "@/content/lessons";
 import { WORDS } from "@/content/words";
 import { MISSIONS } from "@/content/missions";
 import { GRAMMAR } from "@/content/grammar";
+import { AUTH_ENABLED } from "@/lib/backend";
 
 /** Wraps each run of Persian in <Fa> (lang="fa", right-to-left) inside an English string. */
 function markPersian(text: string): React.ReactNode {
@@ -157,7 +158,7 @@ export default function Home() {
         <section className="mx-auto grid max-w-5xl items-center gap-10 px-4 py-12 md:grid-cols-[1.15fr_1fr] md:py-20">
           <div>
             <span className="chip bg-saffron-soft text-saffron-ink">
-              MVP demo · free · no sign-up
+              MVP demo · free · {AUTH_ENABLED ? "sign in with Google" : "no sign-up"}
             </span>
             <h1 className="mt-4 text-[2.75rem] font-extrabold leading-[1.05] tracking-tight text-ink md:text-6xl">
               Learn to read, write and speak{" "}
@@ -244,7 +245,7 @@ export default function Home() {
       </main>
       <footer className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-t border-line px-4 py-6 text-center text-sm font-semibold text-muted">
         <LogoMark className="size-7 rounded-lg" />
-        Farsi Pen · free, no sign-up · Spotted a mistake? Every word and
+        Farsi Pen · free{AUTH_ENABLED ? "" : ", no sign-up"} · Spotted a mistake? Every word and
         exercise has a report button.
       </footer>
     </div>

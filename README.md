@@ -2,7 +2,7 @@
 
 Learn to read, write and speak Persian. This is the **MVP demo** of Farsi Pen V1, built from the *Farsi Pen — V1 Product & Technical Spec* and the *learnfarsi.app feature audit*.
 
-**Live demo:** https://danielzangene.github.io/farsi-pen-prototype/ (the `main` branch)
+**Live:** https://farsipen.vercel.app (the `main` branch, deployed by Vercel)
 
 ## What the demo includes
 
@@ -61,15 +61,17 @@ Transliteration style (proposed in the spec): `â` long a, `kh` خ, `gh` غ/ق, 
 
 ## Sign-in setup (Supabase + Google)
 
+Current setup: Supabase project `farsi-pen` (`ehrmohvijzskyxpcdjab`, organisation *dosome*) and Google Cloud project `farsi-pen`.
+
 1. **Supabase project:** note the *Project URL* and *Publishable key* (Project Settings → API). Both are public; never use the secret / `service_role` key in the app.
-2. **Google Cloud:** create an OAuth client of type *Web application*, with the `openid`, `email` and `profile` scopes on the consent screen.
-   - Authorized JavaScript origins: `https://danielzangene.github.io`, `http://localhost:3000`
+2. **Google Cloud (Google Auth Platform):** External audience, *In production*, with the `openid`, `email` and `profile` scopes; an OAuth client of type *Web application*:
+   - Authorized JavaScript origins: `https://farsipen.vercel.app`, `http://localhost:3000`
    - Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`
 3. **Supabase → Authentication → Sign In / Providers → Google:** turn it on and paste the client ID and secret.
 4. **Supabase → Authentication → URL Configuration:**
-   - Site URL: `https://danielzangene.github.io/farsi-pen-prototype/`
-   - Redirect URLs: `https://danielzangene.github.io/farsi-pen-prototype/login/`, `http://localhost:3000/login/`
-5. **Builds:** set the repository variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (GitHub → Settings → Variables). Locally, copy `.env.example` to `.env.local` and fill them in.
+   - Site URL: `https://farsipen.vercel.app/`
+   - Redirect URLs: `https://farsipen.vercel.app/login/`, `https://*-danielzangenes-projects.vercel.app/login/` (Vercel previews), `http://localhost:3000/login/`
+5. **Builds:** set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the Vercel project's environment variables (Production and Preview). Locally, copy `.env.example` to `.env.local` and fill them in.
 
 ## Run it locally
 
@@ -83,8 +85,6 @@ npm run build        # static site in ./out
 
 ## Deploy
 
-`main` is the only branch. Every push to it runs the tests and publishes the site to GitHub Pages at `/farsi-pen-prototype/` (`.github/workflows/deploy.yml`, built with `NEXT_PUBLIC_BASE_PATH=/farsi-pen-prototype` and the repository variables above). Pull requests run the tests and a build without deploying.
+`main` is the only branch. **Vercel** deploys every push to it to https://farsipen.vercel.app and builds a preview for every pull request (static export, served from the domain root, so no base path). GitHub Actions (`.github/workflows/ci.yml`) runs the tests and a build on the same pushes and pull requests.
 
 A build made with `NEXT_PUBLIC_CHANNEL=dev` shows a **DEV** badge, is hidden from search engines and keeps its progress and sign-in under separate `localStorage` keys, for a separate test site if one is ever needed.
-
-Moving to Vercel later needs no code changes — just drop the base path.

@@ -11,6 +11,7 @@ import { ProgressTools } from "@/components/ProgressTools";
 import { SyncCard } from "@/components/SyncCard";
 import { FeedbackCard } from "@/components/FeedbackCard";
 import { AccountCard } from "@/components/AccountCard";
+import { AUTH_ENABLED } from "@/lib/backend";
 
 /** The Profile screen's content: shown on /app/settings/ and in the phone Profile sheet. Renders siblings for a `space-y-*` parent. */
 export default function ProfileContent() {
@@ -68,7 +69,7 @@ export default function ProfileContent() {
         <p className="flex gap-2.5 rounded-2xl bg-sky-soft p-3 text-sm font-semibold text-sky-ink">
           <Info className="size-5 shrink-0" strokeWidth={2.5} />
           <span>
-            <strong className="font-extrabold">No sign-up needed.</strong> Your progress is saved in this browser. Use “Save backup” below to keep it safe or
+            {!AUTH_ENABLED && <strong className="font-extrabold">No sign-up needed. </strong>}Your progress is saved in this browser. Use “Save backup” below to keep it safe or
             move it to another device.
           </span>
         </p>

@@ -36,7 +36,7 @@ const SECTIONS: { title: string; body: string[] }[] = [
   {
     title: "Files the app loads",
     body: [
-      "The app, its recorded audio and the dictionary are served from GitHub Pages. Poems are loaded from Ganjoor's open data on jsDelivr. The optional natural voice and Whisper models download from Hugging Face and jsDelivr. These services see a normal web request (your IP address and browser), as any website does.",
+      "The app, its recorded audio and the dictionary are served from Vercel. Poems are loaded from Ganjoor's open data on jsDelivr. The optional natural voice and Whisper models download from Hugging Face and jsDelivr. These services see a normal web request (your IP address and browser), as any website does.",
       "Real-world video clips (Hear it in real videos) load YouGlish and YouTube only when you open them.",
     ],
   },

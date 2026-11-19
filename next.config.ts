@@ -11,8 +11,8 @@ function commit(): string {
   }
 }
 
-// Static export so the demo can be hosted on GitHub Pages (or any static host).
-// NEXT_PUBLIC_BASE_PATH is set to "/<repo name>" (here "/farsi-pen-prototype") by the Pages workflow.
+// Static export, served by Vercel (https://farsipen.vercel.app) or any static host.
+// NEXT_PUBLIC_BASE_PATH is empty at the domain root; set it only when hosting under a sub-path.
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const nextConfig: NextConfig = {

@@ -21,7 +21,7 @@ export const IS_DEV_SITE = process.env.NEXT_PUBLIC_CHANNEL === "dev";
  */
 export const STORAGE_KEY = IS_DEV_SITE ? "farsipen:v1:dev" : "farsipen:v1";
 
-/** Prefix a public asset path with the deploy base path (GitHub Pages). */
+/** Prefix a public asset path with the build's base path (empty on Vercel; set when hosted under a sub-path). */
 export function asset(path: string): string {
   return (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + path;
 }

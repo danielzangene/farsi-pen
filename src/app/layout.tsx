@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { AUTH_ENABLED } from "@/lib/backend";
 import { asset, IS_DEV_SITE, STORAGE_KEY } from "@/lib/util";
 
 // The page is served dark (the default). This runs before first paint and
@@ -28,12 +29,12 @@ export const metadata: Metadata = {
     apple: asset(`/apple-touch-icon.png?v=${ICON_VERSION}`),
   },
   // Share previews (Telegram, WhatsApp, X…) need absolute image URLs.
-  metadataBase: new URL("https://danielzangene.github.io"),
+  metadataBase: new URL("https://farsipen.vercel.app"),
   openGraph: {
     type: "website",
     siteName: "Farsi Pen",
     title: "Farsi Pen — learn to read, write and speak Persian",
-    description: "Short vocabulary lessons, smart review, the alphabet with letter tracing, and grammar. Free, no sign-up.",
+    description: `Short vocabulary lessons, smart review, the alphabet with letter tracing, and grammar. ${AUTH_ENABLED ? "Free." : "Free, no sign-up."}`,
     images: [{ url: asset("/og.png"), width: 1200, height: 630, alt: "Farsi Pen" }],
   },
   twitter: { card: "summary_large_image" },

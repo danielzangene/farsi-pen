@@ -20,7 +20,7 @@ function supabase(): SupabaseClient {
         detectSessionInUrl: true,
         persistSession: true,
         autoRefreshToken: true,
-        // The dev site shares the github.io origin with the live one; keep their sessions apart, like progress.
+        // A dev-channel build on the same origin keeps its session apart from the live one, like progress.
         storageKey: IS_DEV_SITE ? "farsipen:auth:dev" : "farsipen:auth",
       },
     });
