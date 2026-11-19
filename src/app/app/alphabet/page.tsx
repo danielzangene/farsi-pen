@@ -1,13 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Check, Info } from "lucide-react";
-import { BASE_LETTERS, LETTERS, letterForms, SIGNS, type Letter } from "@/content/alphabet";
+import { BASE_LETTERS, formsOf, LETTERS, letterForms, SIGNS, type FormName, type Letter } from "@/content/alphabet";
 import { recordTrace, TRACE_PASS, useHydrated, useProgress } from "@/lib/store";
 import { cx } from "@/lib/util";
 import { TraceCanvas } from "@/components/TraceCanvas";
 import { AudioButtons, Fa, PageHeader, ProgressBar, Segmented } from "@/components/ui";
 
-type FormName = "isolated" | "initial" | "medial" | "final";
 const FORM_LABELS: Record<FormName, string> = { isolated: "Alone", initial: "Start", medial: "Middle", final: "End" };
 
 export default function AlphabetPage() {
@@ -28,7 +27,7 @@ export default function AlphabetPage() {
 
   return (
     <div>
-      <PageHeader title="Alphabet" subtitle={<>{BASE_LETTERS.length} letters plus آ and ء, written right to left. Tap one to hear it, see its forms — then trace it.</>}>
+      <PageHeader title="Alphabet" subtitle={<>{BASE_LETTERS.length} letters plus آ, written right to left. Tap one to hear it, see its forms — then trace it.</>}>
         <Segmented
           label="Filter"
           value={filter}
@@ -36,7 +35,7 @@ export default function AlphabetPage() {
           options={[
             { value: "all", label: `All ${LETTERS.length}` },
             { value: "persian", label: "Unique to Persian (4)" },
-            { value: "extra", label: "آ and ء" },
+            { value: "extra", label: "آ" },
           ]}
         />
       </PageHeader>
@@ -132,14 +131,14 @@ function LetterDetail({ letter }: { letter: Letter }) {
           </p>
           <div className="mt-1.5 flex flex-wrap gap-1">
             {letter.persianOnly && <span className="chip bg-saffron-soft text-saffron-ink">Unique to Persian</span>}
-            {letter.extra && <span className="chip bg-plum-soft text-plum-ink">{letter.id === "hamze" ? "Sign" : "Form of alef"}</span>}
+            {letter.extra && <span className="chip bg-plum-soft text-plum-ink">Form of alef</span>}
             {!letter.connects && <span className="chip bg-paper text-muted">Doesn’t join to the next letter</span>}
           </div>
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-4 gap-2">
-        {(Object.keys(FORM_LABELS) as FormName[]).map((f) => (
+      <div className="mt-5 grid gap-2" style={{ gridTemplateColumns: `repeat(${formsOf(letter).length}, minmax(0, 1fr))` }}>
+        {formsOf(letter).map((f) => (
           <button
             key={f}
             type="button"

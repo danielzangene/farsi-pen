@@ -49,7 +49,7 @@ const FEATURES = [
     icon: PenLine,
     tone: "bg-saffron-soft text-saffron-ink",
     title: "Write the letters",
-    text: "Every letter plus آ and ء, vowel signs, and tracing in every form — the “pen” in Farsi Pen.",
+    text: "Every letter plus آ, vowel signs, and tracing in every form — the “pen” in Farsi Pen.",
   },
   {
     icon: BookOpen,
