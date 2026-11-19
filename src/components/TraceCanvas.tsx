@@ -6,7 +6,7 @@ import { cx } from "@/lib/util";
 const SIZE = 300; // CSS pixels
 const GRID = 60; // scoring resolution: 5px cells
 const REACH = 2; // cells of slack around strokes (~10px)
-const FONT = '"Yekan Bakh", Tahoma, sans-serif';
+const FONT = '"Vazirmatn", Tahoma, sans-serif';
 
 /** Read a colour token so the canvas follows the current theme. */
 const token = (name: string, fallback: string) =>
@@ -136,7 +136,7 @@ export function TraceCanvas({ text, onScore, passMark }: { text: string; onScore
       <div className="card relative aspect-square overflow-hidden" style={{ width: SIZE, maxWidth: "100%" }}>
         {/* writing guide lines, like ruled paper */}
         <div className="pointer-events-none absolute inset-x-3 top-1/4 border-t border-line" aria-hidden />
-        <div className="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-dashed border-line" aria-hidden />
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 border-t border-dashed border-line" aria-hidden />
         <div className="pointer-events-none absolute inset-x-3 top-3/4 border-t border-line" aria-hidden />
         <canvas ref={guideRef} className="absolute inset-0 size-full" aria-hidden />
         <canvas

@@ -230,7 +230,7 @@ function Context({ word }: { word: Word }) {
       {!settings.scriptOnly && <p className="text-sm font-semibold text-muted">{word.example.tr}</p>}
       <p className="font-semibold">{word.example.en}</p>
       {word.note && <p className="mt-2 text-sm text-muted">💡 {word.note}</p>}
-      <div className="mt-2 flex items-center justify-between gap-1 border-t-2 border-line pt-2">
+      <div className="mt-2 flex items-center justify-between gap-1 border-t border-line pt-2">
         <AudioButtons text={word.example.fa} />
         <div className="flex items-center gap-1">
           <BookmarkButton wordId={word.id} />
@@ -251,7 +251,7 @@ function Context({ word }: { word: Word }) {
 function RoundHeader({ exitHref, onExit, progress, right }: { exitHref: string; onExit?: () => void; progress: number; right?: React.ReactNode }) {
   if (!onExit) return <SessionHeader exitHref={exitHref} progress={progress} right={right} />;
   return (
-    <div className="sticky top-0 z-30 -mx-4 mb-6 bg-card/95 px-4 py-3 backdrop-blur">
+    <div className="sticky top-0 z-30 -mx-4 mb-6 material-canvas px-4 py-3">
       <FocusMode />
       <div className="mx-auto flex max-w-3xl items-center gap-3">
         <button type="button" onClick={onExit} className="btn-ghost btn-icon -ml-2" aria-label="Quit session">

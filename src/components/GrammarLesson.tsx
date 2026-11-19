@@ -5,6 +5,7 @@ import { ArrowLeft, Lightbulb, PartyPopper, RotateCcw, Star } from "lucide-react
 import type { Exercise, GrammarConcept } from "@/content/grammar";
 import { checkAnswer, type Verdict } from "@/lib/answer";
 import { completeGrammar } from "@/lib/store";
+import { ReportButton } from "./ReportButton";
 import { cx } from "@/lib/util";
 import { AudioButtons, Fa, FeedbackSheet, FocusMode, SessionHeader, StatCard } from "./ui";
 
@@ -71,7 +72,9 @@ export function GrammarLesson({ concept }: { concept: GrammarConcept }) {
         <ArrowLeft className="size-4" strokeWidth={3} /> Grammar
       </Link>
 
-      <p className="eyebrow text-plum-ink">Grammar · G{concept.order}</p>
+      <p className="eyebrow text-plum-ink">
+        Grammar · {concept.level} · G{concept.order} · {concept.unit}
+      </p>
       <h1 className="mt-1 text-3xl font-extrabold tracking-tight">
         {concept.title} <Fa className="ms-2 text-2xl font-bold text-muted">{concept.titleFa}</Fa>
       </h1>
@@ -81,7 +84,7 @@ export function GrammarLesson({ concept }: { concept: GrammarConcept }) {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b-2 border-line bg-paper">
+              <tr className="border-b border-line bg-paper">
                 {concept.table.columns.map((c) => (
                   <th key={c} className="eyebrow px-4 py-2.5 text-muted">
                     {c}
@@ -91,7 +94,7 @@ export function GrammarLesson({ concept }: { concept: GrammarConcept }) {
             </thead>
             <tbody>
               {concept.table.rows.map((row, i) => (
-                <tr key={i} className="border-b-2 border-line last:border-0">
+                <tr key={i} className="border-b border-line last:border-0">
                   {row.map((cell, j) => (
                     <td key={j} className="px-4 py-2.5 font-semibold">
                       {/[؀-ۿ]/.test(cell) ? <Fa className="text-lg">{cell}</Fa> : j === 1 ? <strong className="font-extrabold text-plum-ink">{cell}</strong> : cell}
@@ -239,6 +242,7 @@ function Exercises({ exercises, onDone }: { exercises: Exercise[]; onDone: (corr
       <div className="mx-auto max-w-2xl">
         <div className="flex flex-wrap items-center gap-2">
           <p className="eyebrow text-plum-ink">{LABELS[ex.kind]}</p>
+          <ReportButton itemId={`grammar:${idx}`} context={ex.prompt} className="ms-auto" />
           {missed.has(idx) && !verdict && (
             <span className="chip bg-saffron-soft text-saffron-ink">
               <RotateCcw className="size-3" strokeWidth={3} /> Let&apos;s try this one again
@@ -263,7 +267,7 @@ function Exercises({ exercises, onDone }: { exercises: Exercise[]; onDone: (corr
                   onClick={() => setSelected(o)}
                   className={cx("tile flex items-center gap-3 px-4 py-3.5 text-left font-bold", state === "wrong" && "animate-shake")}
                 >
-                  <span className={cx("grid size-7 shrink-0 place-items-center rounded-lg border-2 text-xs font-extrabold", BADGE[state ?? "idle"])}>{i + 1}</span>
+                  <span className={cx("grid size-7 shrink-0 place-items-center rounded-lg border text-xs font-extrabold", BADGE[state ?? "idle"])}>{i + 1}</span>
                   {o}
                 </button>
               );

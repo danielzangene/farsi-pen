@@ -8,6 +8,11 @@ export const XP = {
   practicePerCorrect: 1,
   grammarPerCorrect: 2,
   tracePass: 3,
+  speakPerCorrect: 2,
+  /** Once per skill, the first time it's proven in a mastery check. */
+  skillMastered: 5,
+  /** Once per mission, the first time every skill is mastered. */
+  missionMastered: 15,
 } as const;
 
 // Level names are Farsi Pen's own (pen and writing themed) — DRAFT for review.
@@ -79,6 +84,8 @@ export function liveStreak(s: Streak, today: string): number {
 export interface BadgeStats {
   lessonsDone: number;
   totalLessons: number;
+  level1Done: number;
+  level1Total: number;
   wordsLearned: number;
   recordStreak: number;
   xp: number;
@@ -98,7 +105,8 @@ export interface Badge {
 
 export const BADGES: Badge[] = [
   { id: "first-lesson", emoji: "🌱", name: "First Words", description: "Finish your first lesson", progress: (s) => [Math.min(s.lessonsDone, 1), 1] },
-  { id: "level-1", emoji: "📗", name: "Level 1 Done", description: "Finish every Level 1 lesson", progress: (s) => [s.lessonsDone, s.totalLessons] },
+  { id: "level-1", emoji: "📗", name: "Level 1 Done", description: "Finish every Level 1 lesson", progress: (s) => [s.level1Done, s.level1Total] },
+  { id: "all-lessons", emoji: "🎓", name: "Every Lesson", description: "Finish every lesson, Levels 1 to 4", progress: (s) => [s.lessonsDone, s.totalLessons] },
   { id: "streak-3", emoji: "🔥", name: "Warm Ink", description: "Reach a 3-day streak", progress: (s) => [Math.min(s.recordStreak, 3), 3] },
   { id: "streak-7", emoji: "🔥", name: "One Week", description: "Reach a 7-day streak", progress: (s) => [Math.min(s.recordStreak, 7), 7] },
   { id: "streak-30", emoji: "🌙", name: "A Month of Farsi", description: "Reach a 30-day streak", progress: (s) => [Math.min(s.recordStreak, 30), 30] },
@@ -107,8 +115,9 @@ export const BADGES: Badge[] = [
   { id: "xp-100", emoji: "⭐", name: "100 XP", description: "Earn 100 XP", progress: (s) => [Math.min(s.xp, 100), 100] },
   { id: "xp-1000", emoji: "🌟", name: "1,000 XP", description: "Earn 1,000 XP", progress: (s) => [Math.min(s.xp, 1000), 1000] },
   { id: "first-trace", emoji: "✍️", name: "First Stroke", description: "Trace your first letter", progress: (s) => [Math.min(s.lettersTraced, 1), 1] },
-  { id: "all-letters", emoji: "🖋️", name: "Full Alphabet", description: "Trace all 32 letters", progress: (s) => [s.lettersTraced, s.totalLetters] },
-  { id: "grammar", emoji: "🧩", name: "Grammar Starter", description: "Pass every grammar lesson", progress: (s) => [s.grammarDone, s.totalGrammar] },
+  { id: "all-letters", emoji: "🖋️", name: "Full Alphabet", description: "Trace every letter", progress: (s) => [s.lettersTraced, s.totalLetters] },
+  { id: "grammar", emoji: "🧩", name: "Grammar Starter", description: "Pass 5 grammar concepts", progress: (s) => [Math.min(s.grammarDone, 5), Math.min(5, s.totalGrammar)] },
+  { id: "grammar-all", emoji: "🏛️", name: "Grammar Master", description: "Pass every grammar concept", progress: (s) => [s.grammarDone, s.totalGrammar] },
 ];
 
 export function earnedBadges(stats: BadgeStats): Set<string> {

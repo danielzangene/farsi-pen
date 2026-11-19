@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Bookmark, Eye, EyeOff, Play, RotateCcw, Target, ThumbsUp, Trophy, Zap } from "lucide-react";
 import { WORD_BY_ID } from "@/content/words";
+import { getWord } from "@/lib/words";
 import { completePractice, toggleHidden, useHydrated, useProgress, type SessionSummary } from "@/lib/store";
 import { shuffle } from "@/lib/util";
 import { CardControls } from "@/components/CardControls";
@@ -19,11 +20,12 @@ export default function BookmarksPage() {
   const [round, setRound] = useState(0);
 
   const ids = tab === "bookmarks" ? s.bookmarks : s.hidden;
-  const words = ids.map((id) => WORD_BY_ID[id]).filter(Boolean);
+  const words = ids.map((id) => getWord(id, s.customWords)).filter((w): w is NonNullable<typeof w> => !!w);
 
   const startPractice = () => {
     setResult(null);
-    setPractising(shuffle(s.bookmarks).slice(0, 15));
+    // Typed recall needs a transliteration, so it uses course words; flashcards cover your own words too.
+    setPractising(shuffle(s.bookmarks.filter((id) => WORD_BY_ID[id])).slice(0, 15));
     setRound((n) => n + 1);
   };
 
@@ -34,7 +36,7 @@ export default function BookmarksPage() {
           <RecallRound
             key={round}
             words={practising.map((id) => WORD_BY_ID[id])}
-            label="Bookmarks"
+            label="My cards"
             onExit={() => setPractising(null)}
             toolbar={<CardControls />}
             onDone={(r) => setResult({ r, xp: completePractice(r) })}
@@ -47,7 +49,7 @@ export default function BookmarksPage() {
         <span className="grid size-24 animate-pop place-items-center rounded-full bg-saffron text-on-accent">
           <Trophy className="size-12" />
         </span>
-        <h1 className="mt-5 text-3xl font-extrabold text-saffron-ink sm:text-4xl">Bookmarks practised!</h1>
+        <h1 className="mt-5 text-3xl font-extrabold text-saffron-ink sm:text-4xl">My cards practised!</h1>
         <p className="mt-2 font-semibold text-muted">
           {result.r.correct}/{result.r.total} right first time
         </p>
@@ -59,7 +61,7 @@ export default function BookmarksPage() {
         </div>
         <div className="mt-8 flex w-full max-w-md flex-col gap-3 sm:flex-row-reverse">
           <button type="button" className="btn-primary btn-lg flex-1" onClick={() => setPractising(null)} autoFocus>
-            Back to bookmarks
+            Back to my cards
           </button>
           <button type="button" className="btn-secondary btn-lg flex-1" onClick={startPractice}>
             Practise again
@@ -71,13 +73,13 @@ export default function BookmarksPage() {
 
   return (
     <div>
-      <PageHeader title="Bookmarks" subtitle="Your personal flashcard set.">
+      <PageHeader title="My cards" subtitle="Words you saved — your personal flashcard set.">
         <Segmented
           label="List"
           value={tab}
           onChange={setTab}
           options={[
-            { value: "bookmarks", label: `Bookmarked (${s.bookmarks.length})` },
+            { value: "bookmarks", label: `Saved (${s.bookmarks.length})` },
             { value: "hidden", label: `Hidden (${s.hidden.length})` },
           ]}
         />
@@ -85,7 +87,7 @@ export default function BookmarksPage() {
 
       {tab === "bookmarks" && words.length > 0 && (
         <button type="button" className="btn-primary btn-lg mb-6 w-full sm:w-auto" onClick={startPractice}>
-          <Play className="size-5 fill-current" /> Practise bookmarks
+          <Play className="size-5 fill-current" /> Practise my cards
         </button>
       )}
 
@@ -100,15 +102,15 @@ export default function BookmarksPage() {
           >
             {tab === "bookmarks" ? <Bookmark className="size-10" /> : <EyeOff className="size-10" />}
           </span>
-          <h2 className="mt-5 text-2xl font-extrabold">{tab === "bookmarks" ? "No bookmarks yet" : "No hidden words"}</h2>
+          <h2 className="mt-5 text-2xl font-extrabold">{tab === "bookmarks" ? "No cards saved yet" : "No hidden words"}</h2>
           <p className="mt-2 max-w-sm font-semibold text-muted">
             {tab === "bookmarks"
-              ? "Tap the bookmark icon on any word — in lessons, practice or the Word Library — to collect it here."
+              ? "Tap the bookmark icon (Add to my cards) on any word, in flashcards, lessons or the word list, to collect it here."
               : "Words you hide during practice appear here. They won't come up in Daily Practice."}
           </p>
           {tab === "bookmarks" && (
             <Link href="/app/words/" className="btn-secondary mt-6">
-              Browse the Word Library
+              Go to flashcards
             </Link>
           )}
         </div>

@@ -31,19 +31,18 @@ export function Fa({ children, className }: { children: React.ReactNode; classNa
 }
 
 /** Thick rounded bar with a highlight sheen on the fill. */
-export function ProgressBar({ value, tone = "firuze", size = "md", className }: { value: number; tone?: Tone; size?: "sm" | "md"; className?: string }) {
+export function ProgressBar({ value, tone = "firuze", size = "md", className, label = "Progress" }: { value: number; tone?: Tone; size?: "sm" | "md"; className?: string; label?: string }) {
   const pct = Math.round(Math.max(0, Math.min(1, value)) * 100);
   return (
     <div
       role="progressbar"
+      aria-label={label}
       aria-valuenow={pct}
       aria-valuemin={0}
       aria-valuemax={100}
-      className={cx("relative overflow-hidden rounded-full bg-line", size === "sm" ? "h-2.5" : "h-4", className)}
+      className={cx("relative overflow-hidden rounded-full bg-paper", size === "sm" ? "h-1.5" : "h-2.5", className)}
     >
-      <div className={cx("relative h-full rounded-full transition-[width] duration-500 ease-out", TONE[tone].bg)} style={{ width: `${pct}%`, minWidth: pct ? (size === "sm" ? "0.625rem" : "1rem") : 0 }}>
-        {size === "md" && pct > 0 && <span className="absolute inset-x-2 top-1 h-1 rounded-full bg-white/30" />}
-      </div>
+      <div className={cx("h-full rounded-full transition-[width] duration-500 ease-[var(--ease-spring)]", TONE[tone].bg)} style={{ width: `${pct}%`, minWidth: pct ? (size === "sm" ? "0.375rem" : "0.625rem") : 0 }} />
     </div>
   );
 }
@@ -89,27 +88,42 @@ function useCanSpeak() {
 /** Audio controls. `big` renders the prominent sky speaker button used on prompts. */
 export function AudioButtons({ text, compact, big }: { text: string; compact?: boolean; big?: boolean }) {
   const ok = useCanSpeak();
-  const title = ok ? undefined : "No Persian voice on this device yet — recorded audio is coming";
+  const [state, setState] = useState<"idle" | "playing" | "failed">("idle");
+  const title = state === "failed" ? "Couldn't play audio — check your connection, or download the natural voice in Settings" : ok ? undefined : "You're offline — download the natural voice in Settings to hear words offline";
+  const play = async (slow: boolean) => {
+    setState("playing");
+    const played = await speak(text, slow);
+    setState(played ? "idle" : "failed");
+  };
   if (big)
     return (
-      <span className="inline-flex items-center gap-2" title={title}>
-        <button type="button" className="btn-sky btn-icon !size-14 !rounded-2xl" disabled={!ok} onClick={() => speak(text)} aria-label="Play audio">
-          <Volume2 className="size-7" />
-        </button>
-        {!compact && (
-          <button type="button" className="btn-sky btn-icon !size-11" disabled={!ok} onClick={() => speak(text, true)} aria-label="Play slowly">
-            <Snail className="size-5" />
+      <span className="inline-flex flex-col items-center gap-1" title={title}>
+        <span className="inline-flex items-center gap-2">
+          <button type="button" className={cx("btn-sky btn-icon !size-14 !rounded-2xl", state === "playing" && "animate-pulse")} disabled={!ok} onClick={() => play(false)} aria-label="Play audio">
+            <Volume2 className="size-7" />
           </button>
-        )}
+          {!compact && (
+            <button type="button" className="btn-sky btn-icon !size-11" disabled={!ok} onClick={() => play(true)} aria-label="Play slowly">
+              <Snail className="size-5" />
+            </button>
+          )}
+        </span>
+        {state === "failed" && <span className="text-xs font-bold text-anar-ink">Audio unavailable</span>}
       </span>
     );
   return (
     <span className="inline-flex items-center" title={title}>
-      <button type="button" className="btn-ghost btn-icon !text-sky-ink disabled:!text-line-strong" disabled={!ok} onClick={() => speak(text)} aria-label="Play audio">
+      <button
+        type="button"
+        className={cx("btn-ghost btn-icon disabled:!text-line-strong", state === "failed" ? "!text-anar-ink" : "!text-sky-ink", state === "playing" && "animate-pulse")}
+        disabled={!ok}
+        onClick={() => play(false)}
+        aria-label={state === "failed" ? "Audio unavailable — try again" : "Play audio"}
+      >
         <Volume2 className="size-5" />
       </button>
       {!compact && (
-        <button type="button" className="btn-ghost btn-icon !text-sky-ink disabled:!text-line-strong" disabled={!ok} onClick={() => speak(text, true)} aria-label="Play slowly">
+        <button type="button" className="btn-ghost btn-icon !text-sky-ink disabled:!text-line-strong" disabled={!ok} onClick={() => play(true)} aria-label="Play slowly">
           <Snail className="size-5" />
         </button>
       )}
@@ -126,7 +140,8 @@ export function BookmarkButton({ wordId }: { wordId: string }) {
       className={cx("btn-ghost btn-icon", on && "!text-saffron")}
       onClick={() => toggleBookmark(wordId)}
       aria-pressed={on}
-      aria-label={on ? "Remove bookmark" : "Bookmark this word"}
+      aria-label={on ? "Remove from my cards" : "Add to my cards"}
+      title={on ? "In my cards" : "Add to my cards"}
     >
       <Bookmark className={cx("size-5", on && "fill-current")} />
     </button>
@@ -146,7 +161,7 @@ export function Segmented<T extends string>({
   label: string;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex rounded-2xl border-2 border-line bg-paper p-1 text-xs font-extrabold">
+    <div role="radiogroup" aria-label={label} className="inline-flex max-w-full overflow-x-auto rounded-xl bg-paper p-0.5 text-[13px] font-semibold">
       {options.map((o) => (
         <button
           key={o.value}
@@ -155,8 +170,8 @@ export function Segmented<T extends string>({
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
           className={cx(
-            "rounded-xl px-3 py-1.5 transition",
-            value === o.value ? "bg-card text-sky-ink shadow-[0_2px_0_var(--color-line)]" : "text-muted hover:text-ink",
+            "min-h-10 shrink-0 whitespace-nowrap rounded-[0.625rem] px-3.5 py-1.5 transition-[background-color,color,box-shadow] duration-200",
+            value === o.value ? "bg-raised text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12),0_0_0_0.5px_rgb(0_0_0/0.04)]" : "text-muted hover:text-ink",
           )}
         >
           {o.label}
@@ -193,14 +208,20 @@ export function FocusMode() {
 }
 
 /** Session header: close (X), progress bar, optional right-hand slot. */
-export function SessionHeader({ exitHref, progress, right }: { exitHref: string; progress: number; right?: React.ReactNode }) {
+export function SessionHeader({ exitHref, onExit, progress, right }: { exitHref: string; onExit?: () => void; progress: number; right?: React.ReactNode }) {
   return (
-    <div className="sticky top-0 z-30 -mx-4 mb-6 bg-card/95 px-4 py-3 backdrop-blur">
+    <div className="sticky top-0 z-30 -mx-4 mb-6 material-canvas px-4 py-3">
       <FocusMode />
       <div className="mx-auto flex max-w-3xl items-center gap-3">
-        <Link href={exitHref} className="btn-ghost btn-icon -ml-2" aria-label="Quit session">
-          <X className="size-6" strokeWidth={3} />
-        </Link>
+        {onExit ? (
+          <button type="button" onClick={onExit} className="btn-ghost btn-icon -ml-2" aria-label="Quit session">
+            <X className="size-6" strokeWidth={3} />
+          </button>
+        ) : (
+          <Link href={exitHref} className="btn-ghost btn-icon -ml-2" aria-label="Quit session">
+            <X className="size-6" strokeWidth={3} />
+          </Link>
+        )}
         <ProgressBar value={progress} className="flex-1" />
         {right}
       </div>
@@ -240,15 +261,16 @@ export function FeedbackSheet({
       <div
         role={answered ? "status" : undefined}
         className={cx(
-          "fixed inset-x-0 bottom-0 z-40 border-t-2 pb-[env(safe-area-inset-bottom)]",
-          answered ? cx(TONE[tone].soft, "animate-slide-up border-transparent") : "border-line bg-card",
+          "fixed inset-x-0 bottom-0 z-40 pb-[env(safe-area-inset-bottom)]",
+          answered ? "animate-slide-up rounded-t-[1.75rem] shadow-[0_-12px_40px_rgb(0_0_0/0.14)]" : "material border-t border-line",
         )}
+        style={answered ? { background: `color-mix(in srgb, var(--color-${tone}) 14%, var(--color-card))` } : undefined}
       >
         <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:py-7">
           {answered ? (
             <>
               <div className={cx("flex min-w-0 items-start gap-3", TONE[tone].ink)}>
-                <span className="grid size-12 shrink-0 animate-pop place-items-center rounded-full bg-card">
+                <span className="grid size-11 shrink-0 animate-pop place-items-center rounded-full bg-card">
                   {good ? <CheckCircle2 className="size-8" /> : <XCircle className="size-8" />}
                 </span>
                 <div className="min-w-0">
@@ -269,12 +291,12 @@ export function FeedbackSheet({
   );
 }
 
-/** Result card: coloured frame with an uppercase label and a white value box. */
+/** Result tile: a small label over a large value, tinted by tone. */
 export function StatCard({ label, value, tone = "saffron", icon }: { label: string; value: React.ReactNode; tone?: Tone; icon?: React.ReactNode }) {
   return (
-    <div className={cx("animate-pop overflow-hidden rounded-2xl border-2", TONE[tone].border, TONE[tone].bg)}>
-      <p className="eyebrow py-1 text-center text-on-accent">{label}</p>
-      <div className={cx("m-0.5 mt-0 flex items-center justify-center gap-1.5 rounded-[0.8rem] bg-card px-3 py-3 text-xl font-extrabold", TONE[tone].ink)}>
+    <div className="card animate-pop px-3 py-3.5 text-center">
+      <p className="text-xs font-semibold text-muted">{label}</p>
+      <div className={cx("mt-1 flex items-center justify-center gap-1.5 text-2xl font-bold tracking-tight", TONE[tone].ink)}>
         {icon}
         {value}
       </div>
@@ -287,8 +309,8 @@ export function Bubble({ children, className }: { children: React.ReactNode; cla
   return (
     <span
       className={cx(
-        "eyebrow relative inline-block rounded-xl border-2 border-line bg-card px-3 py-1.5 text-firuze-ink",
-        "after:absolute after:left-1/2 after:top-full after:-mt-[5px] after:size-2.5 after:-translate-x-1/2 after:rotate-45 after:border-b-2 after:border-r-2 after:border-line after:bg-card",
+        "eyebrow relative inline-block rounded-xl border border-line bg-card px-3 py-1.5 text-firuze-ink",
+        "after:absolute after:left-1/2 after:top-full after:-mt-[5px] after:size-2.5 after:-translate-x-1/2 after:rotate-45 after:border-b after:border-r after:border-line after:bg-card",
         className,
       )}
     >

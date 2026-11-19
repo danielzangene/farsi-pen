@@ -5,11 +5,15 @@
 
 import { useSyncExternalStore } from "react";
 import { LESSONS } from "@/content/lessons";
-import { LETTERS } from "@/content/alphabet";
+import { LETTERS, TRACE_PASS } from "@/content/alphabet";
 import { GRAMMAR } from "@/content/grammar";
 import { dayKey, earnedBadges, extendStreak, liveStreak, XP, type BadgeStats, type Streak } from "./gamification";
 import { STORAGE_KEY } from "./util";
 import { gradeFor, isLearned, review, type StoredCard } from "./srs";
+import { DEFAULT_PIPER_VOICE, type PiperVoiceId } from "./tts";
+import type { EnginePref } from "./stt";
+import { applyEvidence, isMastered, type SkillRecord } from "./mastery";
+import type { Evidence, MissionStatus } from "./missions";
 
 export type Direction = "fa-en" | "en-fa";
 export type Outcome = "good" | "hard" | "again";
@@ -27,7 +31,26 @@ export interface Settings {
   checklistHidden: boolean;
   /** Dark by default; "system" follows the device setting. */
   theme: Theme;
+  /** Natural (Piper) Persian voice used once downloaded. */
+  voice: PiperVoiceId;
+  /** Speech recognition engine for speaking practice. */
+  speechEngine: EnginePref;
+  /** Onboarding answers: why they're learning and whether they read Persian script. */
+  goal: Goal | null;
+  reads: Reads | null;
+  onboarded: boolean;
+  /** Last day (dayKey) we suggested backing up progress, so it's asked once. */
+  backupNudge: string | null;
+  /** Daily reminder time ("HH:MM"), or null when off. */
+  reminder: string | null;
+  /** Last day a reminder notification was shown, so it fires once a day. */
+  remindedOn: string | null;
 }
+
+export type Goal = "travel" | "family" | "heritage" | "curious";
+export type Reads = "yes" | "some" | "no";
+/** Kinds of practice logged per day, for the Today plan. */
+export type ActivityKind = "review" | "lesson" | "mission" | "grammar" | "alphabet" | "speak" | "reading";
 
 export interface ProgressState {
   version: 1;
@@ -36,13 +59,91 @@ export interface ProgressState {
   cards: Record<string, StoredCard>;
   bookmarks: string[];
   hidden: string[];
-  daily: Record<string, { words: number; xp: number }>;
+  daily: Record<string, DayRecord>;
   streak: Streak;
   grammar: Record<string, { best: number; passed: boolean }>;
   traced: Record<string, number>;
   practiceSessions: number;
   earnedBadges: string[];
   settings: Settings;
+  /** Real-world skills (missions) and their mastery state. */
+  skills: Record<string, SkillRecord>;
+  missions: Record<string, MissionRecord>;
+  /** What was practised each day (dayKey → kinds), last 30 days. */
+  activity: Record<string, ActivityKind[]>;
+  /** Words the learner added from the dictionary (id → entry). */
+  customWords: Record<string, CustomWord>;
+  /** How each Persian sound has gone when speaking (sound id → running score). */
+  soundStats: Record<string, SoundStat>;
+  /** Scenes played (scene id → parts played and best score). */
+  scenes: Record<string, SceneRecord>;
+  /** Reading lessons (id → best comprehension score and when finished). */
+  readings: Record<string, { best: number; doneAt: string }>;
+  /** The sound path (unit id → stars per stage, tested out). */
+  soundPath: Record<string, SoundPathRecord>;
+  /** Each sound's running score at the end of each day (dayKey → sound → score), last 120 days. */
+  soundHistory: Record<string, Record<string, number>>;
+  /** Result of the placement test, if taken. */
+  placement: { level: "A0" | "A1" | "A2" | "B1" | "B2"; at: string; correct: number; total: number } | null;
+  /** SAMFA practice: mini mock results (newest last) and practice counts per skill. */
+  samfa: { mocks: SamfaMock[]; practised: Record<string, number> };
+}
+
+export interface SamfaMock {
+  at: string;
+  scores: { listening: number; reading: number; writing: number; speaking: number };
+  total: number;
+}
+
+export interface DayRecord {
+  words: number;
+  xp: number;
+  /** Takes spoken into the mic today. */
+  spoken?: number;
+  /** Daily quests collected today. */
+  quests?: string[];
+}
+
+export interface SoundPathRecord {
+  /** Stars (1–3) per stage played, in order; the last stage is the review. */
+  stars: number[];
+  testedOut?: boolean;
+  /** 0–100 per word, from its latest take, for the review. */
+  wordScores?: Record<string, number>;
+}
+
+export interface SceneRecord {
+  /** Characters played at least once. */
+  parts: string[];
+  /** Best share of your lines said well, 0–100. */
+  best: number;
+  plays: number;
+  last: string;
+}
+
+export interface SoundStat {
+  /** Times scored. */
+  n: number;
+  /** Running score 0–100, recent takes weigh most. */
+  avg: number;
+  last: string;
+}
+
+export interface CustomWord {
+  fa: string;
+  en: string;
+  tr?: string;
+  /** [english, persian] */
+  example?: [string, string];
+  addedAt: string;
+}
+
+export interface MissionRecord {
+  status: MissionStatus;
+  attempts: number;
+  best: number;
+  lastPlayed: string;
+  masteredAt?: string;
 }
 
 const KEY = STORAGE_KEY;
@@ -60,6 +161,17 @@ export const DEFAULT_STATE: ProgressState = {
   traced: {},
   practiceSessions: 0,
   earnedBadges: [],
+  skills: {},
+  missions: {},
+  activity: {},
+  customWords: {},
+  soundStats: {},
+  scenes: {},
+  readings: {},
+  soundPath: {},
+  soundHistory: {},
+  placement: null,
+  samfa: { mocks: [], practised: {} },
   settings: {
     name: "",
     dailyGoal: 10,
@@ -69,6 +181,14 @@ export const DEFAULT_STATE: ProgressState = {
     showKeyboard: true,
     checklistHidden: false,
     theme: "dark",
+    voice: DEFAULT_PIPER_VOICE,
+    speechEngine: "auto",
+    goal: null,
+    reads: null,
+    onboarded: false,
+    backupNudge: null,
+    reminder: null,
+    remindedOn: null,
   },
 };
 
@@ -104,6 +224,17 @@ export function applyTheme(theme: Theme) {
   const root = document.documentElement;
   if (theme === "system") delete root.dataset.theme;
   else root.dataset.theme = theme;
+}
+
+/** Called after every local save (used by device sync). */
+export function onSave(cb: () => void): () => void {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+}
+
+/** The current saved progress. */
+export function currentProgress(): ProgressState {
+  return load();
 }
 
 function update(fn: (s: ProgressState) => ProgressState) {
@@ -153,6 +284,8 @@ export function badgeStats(s: ProgressState): BadgeStats {
   return {
     lessonsDone: LESSONS.filter((l) => s.lessons[l.id]?.completedAt).length,
     totalLessons: LESSONS.length,
+    level1Done: LESSONS.filter((l) => l.level === 1 && s.lessons[l.id]?.completedAt).length,
+    level1Total: LESSONS.filter((l) => l.level === 1).length,
     wordsLearned: wordsLearned(s),
     recordStreak: s.streak.record,
     xp: s.xp,
@@ -163,7 +296,6 @@ export function badgeStats(s: ProgressState): BadgeStats {
   };
 }
 
-export const TRACE_PASS = 60;
 
 function withBadges(s: ProgressState): ProgressState {
   const earned = earnedBadges(badgeStats(s));
@@ -174,10 +306,26 @@ function withBadges(s: ProgressState): ProgressState {
 
 // ── Actions ────────────────────────────────────────────────────────────────
 
+/** Logs a kind of practice for today (kept for 30 days). */
+function logActivity(s: ProgressState, kind: ActivityKind): ProgressState {
+  const key = dayKey();
+  const day = s.activity?.[key] ?? [];
+  if (day.includes(kind)) return s;
+  const keep = Object.keys(s.activity ?? {}).sort().slice(-29);
+  const activity: Record<string, ActivityKind[]> = {};
+  for (const k of keep) activity[k] = s.activity[k];
+  activity[key] = [...day, kind];
+  return { ...s, activity };
+}
+
+export function markActivity(kind: ActivityKind) {
+  update((s) => logActivity(s, kind));
+}
+
 function addActivity(s: ProgressState, words: number, xp: number): ProgressState {
   const key = dayKey();
   const day = s.daily[key] ?? { words: 0, xp: 0 };
-  const nextDay = { words: day.words + words, xp: day.xp + xp };
+  const nextDay = { ...day, words: day.words + words, xp: day.xp + xp };
   const goalMet = nextDay.words >= s.settings.dailyGoal;
   return {
     ...s,
@@ -217,7 +365,7 @@ export function completeLesson(lessonId: string, r: SessionSummary): number {
         },
       },
     };
-    return addActivity(next, Object.keys(r.outcomes).length, xp);
+    return logActivity(addActivity(next, Object.keys(r.outcomes).length, xp), "lesson");
   });
   return xp;
 }
@@ -225,12 +373,173 @@ export function completeLesson(lessonId: string, r: SessionSummary): number {
 export function completePractice(r: SessionSummary): number {
   const xp = r.correct * XP.practicePerCorrect;
   update((s) =>
-    addActivity(
-      { ...s, cards: reviewAll(s.cards, r.outcomes), practiceSessions: s.practiceSessions + 1 },
-      Object.keys(r.outcomes).length,
-      xp,
+    logActivity(
+      addActivity(
+        { ...s, cards: reviewAll(s.cards, r.outcomes), practiceSessions: s.practiceSessions + 1 },
+        Object.keys(r.outcomes).length,
+        xp,
+      ),
+      "review",
     ),
   );
+  return xp;
+}
+
+/**
+ * Records a mission session. Every answer is evidence for its skill; XP is
+ * given only when a skill becomes mastered for the first time, so replaying
+ * an easy mission earns nothing. When the whole mission is mastered its
+ * vocabulary joins spaced review.
+ */
+export function completeMission(
+  missionId: string,
+  evidence: Evidence[],
+  result: { status: MissionStatus; score: number } | null,
+  wordIds: string[] = [],
+): number {
+  let xp = 0;
+  update((s) => {
+    const now = new Date();
+    const skills = { ...s.skills };
+    for (const e of evidence) {
+      const before = skills[e.skill];
+      const after = applyEvidence(before, e.context, e.ok, now);
+      if (!before?.masteredAt && after.state === "mastered") xp += XP.skillMastered;
+      skills[e.skill] = after;
+    }
+    let next: ProgressState = { ...s, skills };
+    if (result) {
+      const prev = s.missions[missionId];
+      const mastered = result.status === "mastered";
+      next.missions = {
+        ...s.missions,
+        [missionId]: {
+          status: result.status,
+          attempts: (prev?.attempts ?? 0) + 1,
+          best: Math.max(prev?.best ?? 0, result.score),
+          lastPlayed: now.toISOString(),
+          masteredAt: prev?.masteredAt ?? (mastered ? now.toISOString() : undefined),
+        },
+      };
+      if (mastered && !prev?.masteredAt) {
+        xp += XP.missionMastered;
+        const cards = { ...next.cards };
+        for (const id of wordIds) if (!cards[id]) cards[id] = review(undefined, gradeFor("good"), now);
+        next = { ...next, cards };
+      }
+    }
+    return logActivity(addActivity(next, 0, xp), "mission");
+  });
+  return xp;
+}
+
+export function skillMastered(s: ProgressState, skillId: string): boolean {
+  return isMastered(s.skills[skillId]);
+}
+
+/**
+ * Flashcard session: every first rating updates the word's FSRS card. XP only
+ * for words that were due or new, so re-running a deck can't farm points.
+ */
+export function completeFlashcards(outcomes: Record<string, Outcome>, eligible: Set<string>): number {
+  const xp = Object.entries(outcomes).filter(([id, o]) => o !== "again" && eligible.has(id)).length * XP.practicePerCorrect;
+  update((s) => logActivity(addActivity({ ...s, cards: reviewAll(s.cards, outcomes) }, Object.keys(outcomes).filter((id) => eligible.has(id)).length, xp), "review"));
+  return xp;
+}
+
+/** Speaking practice: XP per word said right (or nearly); counts toward the daily goal. */
+export function completeSpeaking(r: SessionSummary): number {
+  const xp = r.correct * XP.speakPerCorrect;
+  update((s) => logActivity(addActivity(s, Object.keys(r.outcomes).length, xp), "speak"));
+  return xp;
+}
+
+/** A scene played as `part` (or just listened to, part = null). XP: 2 per line said well, +5 for a new part. */
+export function completeScene(sceneId: string, part: string | null, good: number, total: number): number {
+  let xp = 0;
+  update((s) => {
+    const prev = s.scenes?.[sceneId];
+    const parts = prev?.parts ?? [];
+    const newPart = !!part && !parts.includes(part);
+    xp = part ? good * XP.speakPerCorrect + (newPart ? 5 : 0) : 0;
+    const score = total ? Math.round((good / total) * 100) : 0;
+    const rec: SceneRecord = { parts: newPart ? [...parts, part!] : parts, best: Math.max(prev?.best ?? 0, part ? score : 0), plays: (prev?.plays ?? 0) + 1, last: dayKey() };
+    const next = { ...s, scenes: { ...(s.scenes ?? {}), [sceneId]: rec } };
+    return part ? logActivity(addActivity(next, 0, xp), "speak") : next;
+  });
+  return xp;
+}
+
+/** A hands-free session: 1 XP per two items heard and repeated. */
+export function completeHandsFree(items: number): number {
+  const xp = Math.ceil(items / 2);
+  if (items > 0) update((s) => logActivity(addActivity(s, 0, xp), "speak"));
+  return xp;
+}
+
+/** A finished reading lesson: 2 XP per question right, +10 the first time. */
+export function completeReading(id: string, correct: number, total: number): number {
+  let xp = 0;
+  update((s) => {
+    const prev = s.readings?.[id];
+    xp = correct * XP.perCorrect + (prev ? 0 : 10);
+    const best = Math.max(prev?.best ?? 0, total ? Math.round((correct / total) * 100) : 0);
+    return logActivity(addActivity({ ...s, readings: { ...(s.readings ?? {}), [id]: { best, doneAt: prev?.doneAt ?? dayKey() } } }, 0, xp), "reading");
+  });
+  return xp;
+}
+
+/**
+ * A stage of the sound path (or its test-out). `stage` is the stage index,
+ * or "test". Returns XP and, for the test, whether you tested out.
+ */
+export function completeSoundStage(unitId: string, stage: number | "test", outcomes: Record<string, Outcome>, stars: number, passed = false): number {
+  let xp = 0;
+  update((s) => {
+    const prev = s.soundPath?.[unitId] ?? { stars: [] };
+    const good = Object.values(outcomes).filter((o) => o !== "again").length;
+    const wordScores = { ...(prev.wordScores ?? {}) };
+    for (const [id, o] of Object.entries(outcomes)) wordScores[id] = o === "good" ? 100 : o === "hard" ? 60 : 20;
+    let rec: SoundPathRecord = { ...prev, wordScores };
+    if (stage === "test") {
+      xp = passed && !prev.testedOut ? 15 : good;
+      if (passed) rec = { ...rec, testedOut: true };
+    } else {
+      const starsList = [...prev.stars];
+      const first = starsList[stage] === undefined;
+      starsList[stage] = Math.max(starsList[stage] ?? 0, stars);
+      rec = { ...rec, stars: starsList };
+      xp = good * XP.speakPerCorrect + (first ? 3 : 0);
+    }
+    return logActivity(addActivity({ ...s, soundPath: { ...(s.soundPath ?? {}), [unitId]: rec } }, 0, xp), "speak");
+  });
+  return xp;
+}
+
+export function savePlacement(level: NonNullable<ProgressState["placement"]>["level"], correct: number, total: number): number {
+  const xp = correct;
+  update((s) => logActivity(addActivity({ ...s, placement: { level, at: dayKey(), correct, total } }, 0, xp), "lesson"));
+  return xp;
+}
+
+/** One SAMFA practice task (skill = listening/reading/writing/speaking); XP from its 0–60 score. */
+export function completeSamfaPractice(skill: string, score60: number): number {
+  const xp = Math.round(score60 / 6);
+  update((s) => {
+    const prev = s.samfa ?? { mocks: [], practised: {} };
+    const next = { ...s, samfa: { ...prev, practised: { ...prev.practised, [skill]: (prev.practised[skill] ?? 0) + 1 } } };
+    return logActivity(addActivity(next, 0, xp), "reading");
+  });
+  return xp;
+}
+
+export function saveSamfaMock(scores: SamfaMock["scores"]): number {
+  const total = scores.listening + scores.reading + scores.writing + scores.speaking;
+  const xp = Math.round(total / 8);
+  update((s) => {
+    const prev = s.samfa ?? { mocks: [], practised: {} };
+    return logActivity(addActivity({ ...s, samfa: { ...prev, mocks: [...prev.mocks, { at: dayKey(), scores, total }].slice(-20) } }, 0, xp), "reading");
+  });
   return xp;
 }
 
@@ -239,10 +548,9 @@ export function completeGrammar(id: string, correct: number, total: number): num
   const xp = correct * XP.grammarPerCorrect;
   update((s) => {
     const prev = s.grammar[id];
-    return addActivity(
-      { ...s, grammar: { ...s.grammar, [id]: { best: Math.max(prev?.best ?? 0, pct), passed: !!prev?.passed || pct >= 80 } } },
-      0,
-      xp,
+    return logActivity(
+      addActivity({ ...s, grammar: { ...s.grammar, [id]: { best: Math.max(prev?.best ?? 0, pct), passed: !!prev?.passed || pct >= 80 } } }, 0, xp),
+      "grammar",
     );
   });
   return xp;
@@ -254,13 +562,64 @@ export function recordTrace(letterId: string, score: number): number {
   update((s) => {
     const prev = s.traced[letterId] ?? 0;
     xp = prev < TRACE_PASS && score >= TRACE_PASS ? XP.tracePass : 0;
-    return addActivity({ ...s, traced: { ...s.traced, [letterId]: Math.max(prev, score) } }, 0, xp);
+    return logActivity(addActivity({ ...s, traced: { ...s.traced, [letterId]: Math.max(prev, score) } }, 0, xp), "alphabet");
   });
   return xp;
 }
 
 function toggle(list: string[], id: string) {
   return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
+}
+
+/** Folds one spoken take's per-sound scores into the learner's sound stats. */
+export function recordSounds(scores: { sound: string; score: number }[]) {
+  if (!scores.length) return;
+  update((s) => {
+    const stats = { ...(s.soundStats ?? {}) };
+    const at = dayKey();
+    // One update per sound per take (average its letters).
+    const take = new Map<string, number[]>();
+    for (const { sound, score } of scores) take.set(sound, [...(take.get(sound) ?? []), score]);
+    take.forEach((xs, id) => {
+      const score = xs.reduce((a, b) => a + b, 0) / xs.length;
+      const prev = stats[id];
+      stats[id] = prev ? { n: prev.n + 1, avg: Math.round(prev.avg * 0.7 + score * 0.3), last: at } : { n: 1, avg: Math.round(score), last: at };
+    });
+    const key = dayKey();
+    const day = s.daily[key] ?? { words: 0, xp: 0 };
+    const history: Record<string, Record<string, number>> = {};
+    for (const k of Object.keys(s.soundHistory ?? {}).sort().slice(-119)) history[k] = s.soundHistory[k];
+    const todayScores = { ...(history[key] ?? {}) };
+    take.forEach((_, id) => (todayScores[id] = stats[id].avg));
+    history[key] = todayScores;
+    return { ...s, soundStats: stats, soundHistory: history, daily: { ...s.daily, [key]: { ...day, spoken: (day.spoken ?? 0) + 1 } } };
+  });
+}
+
+/** Collects a finished daily quest's bonus XP (once per quest per day). */
+export function claimQuest(id: string, xp: number): boolean {
+  let ok = false;
+  update((s) => {
+    const key = dayKey();
+    const day = s.daily[key] ?? { words: 0, xp: 0 };
+    if (day.quests?.includes(id)) return s;
+    ok = true;
+    const next = addActivity(s, 0, xp);
+    const d = next.daily[key];
+    return { ...next, daily: { ...next.daily, [key]: { ...d, quests: [...(d.quests ?? []), id] } } };
+  });
+  return ok;
+}
+
+/** Adds a dictionary word to My cards (and returns its id). */
+export function addCustomWord(w: Omit<CustomWord, "addedAt">): string {
+  const id = `custom:${w.fa.replace(/\s+/g, "-")}`;
+  update((s) => ({
+    ...s,
+    customWords: { ...s.customWords, [id]: { ...w, addedAt: s.customWords?.[id]?.addedAt ?? new Date().toISOString() } },
+    bookmarks: s.bookmarks.includes(id) ? s.bookmarks : [...s.bookmarks, id],
+  }));
+  return id;
 }
 
 export function toggleBookmark(wordId: string) {
@@ -271,8 +630,31 @@ export function toggleHidden(wordId: string) {
   update((s) => ({ ...s, hidden: toggle(s.hidden, wordId) }));
 }
 
+/** Current settings outside React (falls back to defaults on the server). */
+export function getSettings(): Settings {
+  return typeof window === "undefined" ? DEFAULT_STATE.settings : load().settings;
+}
+
 export function updateSettings(patch: Partial<Settings>) {
   update((s) => ({ ...s, settings: { ...s.settings, ...patch } }));
+}
+
+/** The whole progress as a JSON file's contents, for backup or moving devices. */
+export function exportProgress(): string {
+  return JSON.stringify({ app: "farsi-pen", exportedAt: new Date().toISOString(), progress: load() }, null, 2);
+}
+
+/** Replaces progress with an exported file. Returns false if the file isn't a Farsi Pen backup. */
+export function importProgress(text: string): boolean {
+  try {
+    const data = JSON.parse(text) as { app?: string; progress?: Partial<ProgressState> };
+    const p = data.app === "farsi-pen" ? data.progress : (data as Partial<ProgressState>);
+    if (!p || p.version !== 1 || typeof p.xp !== "number" || typeof p.cards !== "object") return false;
+    save(withBadges({ ...DEFAULT_STATE, ...p, settings: { ...DEFAULT_STATE.settings, ...p.settings } } as ProgressState));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function resetProgress() {

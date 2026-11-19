@@ -1,7 +1,23 @@
 "use client";
-// Audio via the browser's speech synthesis. The spec calls for pre-generated
-// fa-IR neural TTS files; until a provider is chosen, this plays the device's
-// own Persian voice when it has one.
+// Audio, tried in order until one works:
+//  1. a recorded clip — every Persian string in the course is pre-recorded
+//     with the open Piper "amir" voice (scripts/make-audio.py) and served
+//     from /audio, so it plays instantly on every device;
+//  2. the natural Piper voice running in the browser (tts.ts), once the
+//     learner has downloaded it — for anything else (dictionary words…);
+//  3. the device's own Persian voice, if it has one.
+import { audioKey } from "./audio-key";
+import { getSettings } from "./store";
+import { onVoiceStatus, refreshVoice, speakNatural, stopNatural, voiceStatus } from "./tts";
+import { asset } from "./util";
+let checkedNatural = false;
+function natural(): boolean {
+  if (!checkedNatural && typeof window !== "undefined") {
+    checkedNatural = true;
+    void refreshVoice(getSettings().voice);
+  }
+  return voiceStatus().state === "ready";
+}
 
 let cachedVoice: SpeechSynthesisVoice | null | undefined;
 
@@ -13,27 +29,177 @@ function persianVoice(): SpeechSynthesisVoice | null {
   return cachedVoice;
 }
 
+/** Speaker buttons stay enabled: course text is recorded, and anything else can use a voice. */
 export function canSpeak(): boolean {
+  return natural() || persianVoice() !== null || (typeof navigator !== "undefined" && navigator.onLine !== false);
+}
+
+// ── Recorded clips ───────────────────────────────────────────────────────
+
+// Recordings by native speakers (scripts/apply-review.mjs) win over the synthetic clips.
+let humanIndex: Promise<Set<string>> | null = null;
+function humanClips(): Promise<Set<string>> {
+  if (!humanIndex)
+    humanIndex = fetch(asset("/audio/human/index.json"))
+      .then((r) => (r.ok ? r.json() : []))
+      .then((keys: string[]) => new Set(keys))
+      .catch(() => {
+        humanIndex = null;
+        return new Set<string>();
+      });
+  return humanIndex;
+}
+
+let clipIndex: Promise<Set<string>> | null = null;
+function clips(): Promise<Set<string>> {
+  if (!clipIndex)
+    clipIndex = fetch(asset("/audio/index.json"))
+      .then((r) => (r.ok ? r.json() : []))
+      .then((keys: string[]) => new Set(keys))
+      .catch(() => {
+        clipIndex = null; // try again next time (e.g. back online)
+        return new Set<string>();
+      });
+  return clipIndex;
+}
+
+// One shared element: phones only let a page play sound on an element that
+// was first started by a tap, so it is unlocked on the first touch and reused.
+let player: HTMLAudioElement | null = null;
+const SILENCE = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//NwwAAAAAAAAAAAAEluZm8AAAAPAAAABAAAAlgAenp6enp6enp6enp6enp6enp6enp6enp6pqampqampqampqampqampqampqampqamptPT09PT09PT09PT09PT09PT09PT09PT09P/////////////////////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQCcQAAAAAAAAJY+/rsqgAAAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NCxKMAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
+function getPlayer(): HTMLAudioElement {
+  if (!player) {
+    player = new Audio();
+    player.preload = "auto";
+  }
+  return player;
+}
+if (typeof window !== "undefined") {
+  const unlock = () => {
+    const p = getPlayer();
+    if (!p.src || p.src === SILENCE) {
+      p.src = SILENCE;
+      p.play().catch(() => {});
+    }
+    window.removeEventListener("pointerdown", unlock, true);
+    window.removeEventListener("keydown", unlock, true);
+  };
+  window.addEventListener("pointerdown", unlock, true);
+  window.addEventListener("keydown", unlock, true);
+}
+
+// Settles the clip that is playing now, so a new one never leaves an earlier caller waiting.
+let settle: ((ok: boolean) => void) | null = null;
+
+function playClip(key: string, slow: boolean, human = false): Promise<boolean> {
+  const p = getPlayer();
+  settle?.(false);
+  p.pause();
+  p.src = asset(human ? `/audio/human/${key}.mp3` : `/audio/${key}.mp3`);
+  p.playbackRate = slow ? 0.75 : 1;
+  (p as HTMLAudioElement & { webkitPreservesPitch?: boolean }).webkitPreservesPitch = true;
+  p.preservesPitch = true;
+  return new Promise((resolve) => {
+    const done = (ok: boolean) => {
+      if (settle !== done) return;
+      settle = null;
+      p.onended = p.onerror = null;
+      resolve(ok);
+    };
+    settle = done;
+    p.onended = () => done(true);
+    p.onerror = () => done(false);
+    p.play().catch(() => done(false));
+  });
+}
+
+/** Stops whatever is playing. */
+export function stopSpeaking() {
+  settle?.(true);
+  player?.pause();
+  stopNatural();
+  if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+}
+
+/** True when the device itself has a Persian voice (no download needed). */
+export function hasDeviceVoice(): boolean {
   return persianVoice() !== null;
 }
 
 export function onVoicesChanged(cb: () => void): () => void {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return () => {};
+  if (typeof window === "undefined") return () => {};
+  natural();
+  const offNatural = onVoiceStatus(cb);
+  if (!("speechSynthesis" in window)) return offNatural;
   const handler = () => {
     cachedVoice = undefined;
     cb();
   };
   window.speechSynthesis.addEventListener("voiceschanged", handler);
-  return () => window.speechSynthesis.removeEventListener("voiceschanged", handler);
+  return () => {
+    offNatural();
+    window.speechSynthesis.removeEventListener("voiceschanged", handler);
+  };
 }
 
-export function speak(text: string, slow = false) {
+/** Speaks `text`; resolves true once it has played. */
+export async function speak(text: string, slow = false): Promise<boolean> {
+  const t = text.trim();
+  if (!t) return false;
+  const key = audioKey(t);
+  if ((await humanClips()).has(key) && (await playClip(key, slow, true))) return true;
+  if ((await clips()).has(key) && (await playClip(key, slow))) return true;
+  if (natural()) {
+    try {
+      await speakNatural(t, slow ? 0.7 : 1);
+      return true;
+    } catch {
+      // fall through
+    }
+  }
   const voice = persianVoice();
-  if (!voice) return;
+  if (voice) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t);
+    u.voice = voice;
+    u.lang = voice.lang;
+    u.rate = slow ? 0.6 : 0.9;
+    // Resolve when it finishes (so "back to back" can follow it), with a
+    // safety timeout: some engines never fire onend.
+    return new Promise<boolean>((resolve) => {
+      const timer = setTimeout(() => resolve(true), 1500 + t.length * (slow ? 220 : 140));
+      const done = () => {
+        clearTimeout(timer);
+        resolve(true);
+      };
+      u.onend = done;
+      u.onerror = done;
+      window.speechSynthesis.speak(u);
+    });
+  }
+  return false;
+}
+
+let enVoice: SpeechSynthesisVoice | null | undefined;
+/** Speaks English with the device's own voice (most devices have one). Resolves false if there is none. */
+export function speakEnglish(text: string): Promise<boolean> {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return Promise.resolve(false);
+  if (!enVoice) {
+    const voices = window.speechSynthesis.getVoices();
+    enVoice = voices.find((v) => v.lang === "en-US" && v.localService) ?? voices.find((v) => v.lang.startsWith("en")) ?? null;
+  }
+  if (!enVoice) return Promise.resolve(false);
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.voice = voice;
-  u.lang = voice.lang;
-  u.rate = slow ? 0.6 : 0.9;
-  window.speechSynthesis.speak(u);
+  u.voice = enVoice;
+  u.lang = enVoice.lang;
+  u.rate = 0.95;
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(true), 1500 + text.length * 120);
+    u.onend = u.onerror = () => {
+      clearTimeout(timer);
+      resolve(true);
+    };
+    window.speechSynthesis.speak(u);
+  });
 }

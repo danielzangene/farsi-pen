@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/nunito";
 import "./globals.css";
 import { asset, IS_DEV_SITE, STORAGE_KEY } from "@/lib/util";
 
@@ -7,8 +6,11 @@ import { asset, IS_DEV_SITE, STORAGE_KEY } from "@/lib/util";
 // switches to a saved Light or Auto choice, so the wrong theme never flashes.
 const themeScript = `try{var t=JSON.parse(localStorage.getItem(${JSON.stringify(STORAGE_KEY)})||"{}").settings?.theme,d=document.documentElement;if(t==="light")d.dataset.theme=t;else if(t==="system")delete d.dataset.theme}catch(e){}`;
 
+// Focus rings show only for keyboard navigation (see globals.css).
+const inputScript = `(function(d){d.dataset.input="pointer";addEventListener("keydown",function(e){if(e.key==="Tab"||e.key.indexOf("Arrow")===0)d.dataset.input="keyboard"},true);addEventListener("pointerdown",function(){d.dataset.input="pointer"},true)})(document.documentElement)`;
+
 /** Icon cache version; see scripts/make-icons.mjs. */
-const ICON_VERSION = 2;
+const ICON_VERSION = 3;
 
 export const metadata: Metadata = {
   title: { default: "Farsi Pen — learn to read, write and speak Persian", template: "%s · Farsi Pen" },
@@ -38,7 +40,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#131f24",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f2f2f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -48,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: inputScript }} />
       </head>
       <body className="min-h-dvh antialiased">{children}</body>
     </html>

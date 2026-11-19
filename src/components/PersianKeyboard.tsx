@@ -13,7 +13,7 @@ const ROWS = [
 
 // Tile-style key: 2px border plus a 3px bottom edge it sinks into when pressed.
 const KEY =
-  "flex h-11 min-w-0 flex-1 touch-manipulation items-center justify-center rounded-xl border-2 border-line bg-card text-xl font-bold text-ink shadow-[0_3px_0_var(--color-line)] transition-transform duration-75 hover:bg-paper active:translate-y-[3px] active:shadow-none";
+  "flex h-11 min-w-0 flex-1 touch-manipulation items-center justify-center rounded-xl border border-line bg-card text-xl font-bold text-ink transition-transform duration-75 hover:bg-paper active:translate-y-[3px] active:shadow-none";
 
 export function PersianKeyboard({ onKey, onBackspace }: { onKey: (s: string) => void; onBackspace: () => void }) {
   return (

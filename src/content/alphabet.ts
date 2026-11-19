@@ -1,4 +1,5 @@
-// The 32 letters of the Persian alphabet. Letter forms are produced by the
+// The Persian alphabet: 32 letters, plus آ (alef with madde) taught as its own
+// letter because it's so common at the start of words. Letter forms are produced by the
 // browser's text shaping: a zero-width joiner (U+200D) on one or both sides
 // makes the letter render in its initial, medial or final form.
 
@@ -11,11 +12,21 @@ export interface Letter {
   connects: boolean;
   /** One of the four letters added for Persian (not in Arabic). */
   persianOnly?: boolean;
+  /** Not one of the 32 base letters (آ is a form of alef). */
+  extra?: boolean;
+  /** The forms this letter is shown in, when not all four (آ only starts a word; ا never starts one). */
+  forms?: FormName[];
   example: { fa: string; tr: string; en: string };
   note?: string;
 }
 
 const ZWJ = "\u200d";
+
+/** Tracing score (0–100) a letter needs to count as traced. */
+export const TRACE_PASS = 60;
+
+export type FormName = "isolated" | "initial" | "medial" | "final";
+export const FORM_NAMES: FormName[] = ["isolated", "initial", "medial", "final"];
 
 export function letterForms(l: Letter) {
   return {
@@ -26,8 +37,14 @@ export function letterForms(l: Letter) {
   };
 }
 
+/** The forms to show for a letter, in reading order. */
+export function formsOf(l: Letter): FormName[] {
+  return l.forms ?? FORM_NAMES;
+}
+
 export const LETTERS: Letter[] = [
-  { id: "alef", char: "ا", name: "alef", sound: "â / a", connects: false, example: { fa: "آب", tr: "âb", en: "water" }, note: "With a hat (آ) at the start of a word it says â." },
+  { id: "alef-madde", char: "آ", name: "alef madde", sound: "â (long a)", connects: false, extra: true, forms: ["isolated", "initial"], example: { fa: "آب", tr: "âb", en: "water" }, note: "Alef with a \"hat\" (madde). It's how a word starts with a long â: آب âb, آسمان âsemân (sky). Inside a word, long â is written with plain ا." },
+  { id: "alef", char: "ا", name: "alef", sound: "â / a, e, o", connects: false, forms: ["isolated", "final"], example: { fa: "بابا", tr: "bâbâ", en: "dad" }, note: "In the middle or at the end of a word it says â. At the start it carries a short vowel: اسب asb (horse), امروز emruz (today), اردک ordak (duck)." },
   { id: "be", char: "ب", name: "be", sound: "b", connects: true, example: { fa: "بابا", tr: "bâbâ", en: "dad" } },
   { id: "pe", char: "پ", name: "pe", sound: "p", connects: true, persianOnly: true, example: { fa: "پدر", tr: "pedar", en: "father" } },
   { id: "te", char: "ت", name: "te", sound: "t", connects: true, example: { fa: "توت", tr: "tut", en: "mulberry" } },
@@ -47,7 +64,7 @@ export const LETTERS: Letter[] = [
   { id: "zad", char: "ض", name: "zâd", sound: "z", connects: true, example: { fa: "ضعیف", tr: "za'if", en: "weak" } },
   { id: "ta", char: "ط", name: "tâ", sound: "t", connects: true, example: { fa: "طلا", tr: "talâ", en: "gold" } },
   { id: "za", char: "ظ", name: "zâ", sound: "z", connects: true, example: { fa: "ظهر", tr: "zohr", en: "noon" } },
-  { id: "eyn", char: "ع", name: "eyn", sound: "' (glottal stop)", connects: true, example: { fa: "عسل", tr: "asal", en: "honey" } },
+  { id: "eyn", char: "ع", name: "eyn", sound: "' (glottal stop)", connects: true, example: { fa: "عسل", tr: "'asal", en: "honey" }, note: "In everyday speech it's very light or silent at the start of a word." },
   { id: "gheyn", char: "غ", name: "gheyn", sound: "gh", connects: true, example: { fa: "غذا", tr: "ghazâ", en: "food" } },
   { id: "fe", char: "ف", name: "fe", sound: "f", connects: true, example: { fa: "فردا", tr: "fardâ", en: "tomorrow" } },
   { id: "ghaf", char: "ق", name: "ghâf", sound: "gh", connects: true, example: { fa: "قهوه", tr: "ghahve", en: "coffee" } },
@@ -58,7 +75,19 @@ export const LETTERS: Letter[] = [
   { id: "nun", char: "ن", name: "nun", sound: "n", connects: true, example: { fa: "نان", tr: "nân", en: "bread" } },
   { id: "vav", char: "و", name: "vâv", sound: "v / u / o", connects: false, example: { fa: "ورزش", tr: "varzesh", en: "sport" } },
   { id: "he2", char: "ه", name: "he (do-cheshm)", sound: "h / e", connects: true, example: { fa: "هفت", tr: "haft", en: "seven" }, note: "At the end of a word it often just says e, as in خانه khâne." },
-  { id: "ye", char: "ی", name: "ye", sound: "y / i", connects: true, example: { fa: "یک", tr: "yek", en: "one" } },
+  { id: "ye", char: "ی", name: "ye", sound: "y / i", connects: true, example: { fa: "یک", tr: "yek", en: "one" }, note: "Persian ی has no dots at the end of a word (ی), unlike Arabic ي." },
 ];
 
-export const LETTER_BY_ID: Record<string, Letter> = Object.fromEntries(LETTERS.map((l) => [l.id, l]));
+/** The 32 base letters of the Persian alphabet. */
+export const BASE_LETTERS = LETTERS.filter((l) => !l.extra);
+
+/** Short-vowel marks and other signs, usually left out in everyday writing. */
+export const SIGNS: { char: string; name: string; sound: string; example: { fa: string; tr: string; en: string } }[] = [
+  { char: "َ", name: "zabar (fathe)", sound: "short a", example: { fa: "بَد", tr: "bad", en: "bad" } },
+  { char: "ِ", name: "zir (kasre)", sound: "short e", example: { fa: "دِل", tr: "del", en: "heart" } },
+  { char: "ُ", name: "pish (zamme)", sound: "short o", example: { fa: "گُل", tr: "gol", en: "flower" } },
+  { char: "ّ", name: "tashdid", sound: "doubles the letter", example: { fa: "بچّه", tr: "bachche", en: "child" } },
+  { char: "ْ", name: "sokun", sound: "no vowel", example: { fa: "سَبْز", tr: "sabz", en: "green" } },
+  { char: "ً", name: "tanvin", sound: "-an (on alef)", example: { fa: "لطفاً", tr: "lotfan", en: "please" } },
+];
+

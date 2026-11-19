@@ -1,0 +1,168 @@
+// Mission: at the pharmacy — original Farsi Pen content (DRAFT, pending native review).
+import type { Mission } from "./types";
+
+const have = ["dârid", "darid", "dârin", "darin", "دارید", "دارین"];
+
+export const PHARMACY: Mission = {
+  id: "pharmacy",
+  title: "At the pharmacy",
+  titleFa: "در داروخانه",
+  emoji: "💊",
+  level: "A2",
+  world: "Health",
+  scene: "You've had a headache since last night. You walk into a pharmacy near your hotel.",
+  npc: { name: "Khânom-e Ahmadi", role: "pharmacist" },
+  skills: [
+    { id: "ph-symptom", canDo: "Say what hurts" },
+    { id: "ph-ask", canDo: "Ask for something for a cold, fever or pain" },
+    { id: "ph-dose", canDo: "Ask how to take a medicine" },
+  ],
+  dialogue: [
+    { who: "you", fa: "سلام. سرم خیلی درد می‌کنه.", tr: "salâm. saram kheyli dard mikone.", en: "Hello. I have a bad headache.", register: "colloquial" },
+    { who: "npc", fa: "از کی؟", tr: "az key?", en: "Since when?" },
+    { who: "you", fa: "از دیشب.", tr: "az dishab.", en: "Since last night." },
+    { who: "npc", fa: "تب هم دارید؟", tr: "tab ham dârid?", en: "Do you have a fever too?" },
+    { who: "you", fa: "نه، تب ندارم.", tr: "na, tab nadâram.", en: "No, I don't have a fever." },
+    { who: "npc", fa: "این قرص‌ها رو بخورید.", tr: "in ghorshâ ro bokhorid.", en: "Take these tablets.", register: "colloquial" },
+    { who: "you", fa: "روزی چند بار بخورم؟", tr: "ruzi chand bâr bokhoram?", en: "How many times a day should I take them?" },
+    { who: "npc", fa: "روزی سه بار، بعد از غذا.", tr: "ruzi se bâr, ba'd az ghazâ.", en: "Three times a day, after food." },
+    { who: "you", fa: "ممنون. چقدر می‌شه؟", tr: "mamnun. cheghadr mishe?", en: "Thanks. How much is it?", register: "colloquial" },
+    { who: "npc", fa: "هشتاد تومن.", tr: "hashtâd toman.", en: "Eighty (thousand) toman." },
+  ],
+  questions: [
+    { prompt: "What's wrong with the customer?", options: ["A headache", "A toothache", "A cough", "A fever"], answer: "A headache" },
+    { prompt: "Since when?", options: ["Since last night", "Since this morning", "For a week", "Since lunchtime"], answer: "Since last night" },
+    { prompt: "How should they take the tablets?", options: ["Three times a day, after food", "Once a day, before food", "Twice a day", "Only at night"], answer: "Three times a day, after food" },
+  ],
+  phrases: [
+    { skill: "ph-symptom", fa: "سرم درد می‌کنه.", tr: "saram dard mikone.", en: "I have a headache. (my head hurts)", register: "colloquial", note: "Body part + my (-am) + dard mikone: saram, dandunam, delam dard mikone." },
+    { skill: "ph-symptom", fa: "دندونم درد می‌کنه.", tr: "dandunam dard mikone.", en: "My tooth hurts.", register: "colloquial", note: "dandun is the spoken form of dandân." },
+    { skill: "ph-ask", fa: "برای سرماخوردگی چیزی دارید؟", tr: "barâ-ye sarmâkhordegi chizi dârid?", en: "Do you have something for a cold?" },
+    { skill: "ph-ask", fa: "مسکن دارید؟", tr: "mosakken dârid?", en: "Do you have painkillers?" },
+    { skill: "ph-dose", fa: "روزی چند بار بخورم؟", tr: "ruzi chand bâr bokhoram?", en: "How many times a day should I take it?", note: "In Persian you \"eat\" (khordan) medicine, whatever form it takes." },
+    { skill: "ph-dose", fa: "قبل از غذا یا بعد از غذا؟", tr: "ghabl az ghazâ yâ ba'd az ghazâ?", en: "Before or after food?" },
+  ],
+  grammar: {
+    points: [
+      "Pain is said with the body part, a possessive ending and dard kardan: sar-am dard mikone — literally \"my head does pain\".",
+      "bokhoram is the subjunctive of khordan (to eat): chand bâr bokhoram? — how many times should I take it?",
+      "ruzi chand bâr: ruz (day) + -i = \"a day\", so ruzi se bâr = three times a day.",
+      "In speech the object marker râ becomes ro: in ghorshâ ro bokhorid.",
+    ],
+    table: {
+      columns: ["Body part", "My … hurts", "Meaning"],
+      rows: [
+        ["sar (head)", "saram dard mikone", "I have a headache"],
+        ["dandun (tooth)", "dandunam dard mikone", "my tooth hurts"],
+        ["del (stomach)", "delam dard mikone", "I have a stomach ache"],
+        ["galu (throat)", "galum dard mikone", "I have a sore throat"],
+      ],
+    },
+    concepts: ["possessive-suffixes", "subjunctive", "spoken-persian"],
+  },
+  wordIds: ["darukhane", "sar", "dandan", "del", "dard", "tab", "sarmakhordegi", "daru", "ghors", "mamnun"],
+  culture:
+    "Pharmacists in Iran often advise on small problems like colds and headaches, so it's normal to describe how you feel and ask what they recommend. Prices are usually said without the thousands: hashtâd toman means 80,000 toman.",
+  tasks: [
+    // Say what hurts
+    {
+      skill: "ph-symptom",
+      stage: "practice",
+      prompt: "Say: I have a headache (my head hurts).",
+      must: [["saram", "sar", "سرم", "سر"], ["dard", "درد"]],
+      model: { fa: "سرم درد می‌کنه.", tr: "saram dard mikone.", en: "I have a headache." },
+      hint: "sar + am + dard mikone",
+    },
+    {
+      skill: "ph-symptom",
+      stage: "roleplay",
+      cue: { fa: "سلام، بفرمایید. چه مشکلی دارید؟", tr: "salâm, befarmâyid. che moshkeli dârid?", en: "Hello, go ahead. What's the problem?" },
+      prompt: "Tell her your head hurts.",
+      must: [["saram", "sar", "سرم", "سر"], ["dard", "درد"]],
+      model: { fa: "سرم خیلی درد می‌کنه.", tr: "saram kheyli dard mikone.", en: "I have a bad headache." },
+      hint: "saram … dard mikone",
+    },
+    {
+      skill: "ph-symptom",
+      stage: "check",
+      cue: { fa: "چی شده؟", tr: "chi shode?", en: "What's happened?", register: "colloquial" },
+      prompt: "Your tooth hurts.",
+      must: [["dandun", "dandân", "dandan", "دندون", "دندان"], ["dard", "درد"]],
+      model: { fa: "دندونم درد می‌کنه.", tr: "dandunam dard mikone.", en: "My tooth hurts." },
+    },
+    {
+      skill: "ph-symptom",
+      stage: "recheck",
+      cue: { fa: "مشکلتون چیه؟", tr: "moshkeletun chiye?", en: "What's your problem?", register: "colloquial" },
+      prompt: "You have a stomach ache (del).",
+      must: [["delam", "del", "دلم", "دل"], ["dard", "درد"]],
+      model: { fa: "دلم درد می‌کنه.", tr: "delam dard mikone.", en: "I have a stomach ache." },
+    },
+    // Ask for something
+    {
+      skill: "ph-ask",
+      stage: "practice",
+      prompt: "Ask: Do you have something for a cold?",
+      must: [["sarmâkhordegi", "sarmakhordegi", "سرماخوردگی"], have],
+      model: { fa: "برای سرماخوردگی چیزی دارید؟", tr: "barâ-ye sarmâkhordegi chizi dârid?", en: "Do you have something for a cold?" },
+      hint: "barâ-ye … chizi dârid?",
+    },
+    {
+      skill: "ph-ask",
+      stage: "roleplay",
+      cue: { fa: "بفرمایید، چی لازم دارید؟", tr: "befarmâyid, chi lâzem dârid?", en: "Go ahead — what do you need?" },
+      prompt: "Ask if she has something for a cold.",
+      must: [["sarmâkhordegi", "sarmakhordegi", "سرماخوردگی"], have],
+      model: { fa: "برای سرماخوردگی چیزی دارید؟", tr: "barâ-ye sarmâkhordegi chizi dârid?", en: "Do you have something for a cold?" },
+    },
+    {
+      skill: "ph-ask",
+      stage: "check",
+      cue: { fa: "بله؟ در خدمتم.", tr: "bale? dar khedmatam.", en: "Yes? How can I help?", register: "formal" },
+      prompt: "Ask if she has something for a fever (tab).",
+      must: [["tab", "تب"], have],
+      model: { fa: "برای تب چیزی دارید؟", tr: "barâ-ye tab chizi dârid?", en: "Do you have something for a fever?" },
+    },
+    {
+      skill: "ph-ask",
+      stage: "recheck",
+      cue: { fa: "سلام، چه کمکی از دستم برمیاد؟", tr: "salâm, che komaki az dastam barmiyâd?", en: "Hello, how can I help?", register: "colloquial" },
+      prompt: "Ask if they have painkillers (mosakken).",
+      must: [["mosakken", "mosaken", "مسکن"], have],
+      model: { fa: "مسکن دارید؟", tr: "mosakken dârid?", en: "Do you have painkillers?" },
+    },
+    // How to take it
+    {
+      skill: "ph-dose",
+      stage: "practice",
+      prompt: "Ask: How many times a day should I take it?",
+      must: [["chand", "چند"], ["bâr", "bar", "بار"]],
+      model: { fa: "روزی چند بار بخورم؟", tr: "ruzi chand bâr bokhoram?", en: "How many times a day should I take it?" },
+      hint: "ruzi chand bâr …?",
+    },
+    {
+      skill: "ph-dose",
+      stage: "roleplay",
+      cue: { fa: "این قرص‌ها رو بخورید.", tr: "in ghorshâ ro bokhorid.", en: "Take these tablets.", register: "colloquial" },
+      prompt: "Ask how many times a day you should take them.",
+      must: [["chand", "چند"], ["bâr", "bar", "بار"]],
+      model: { fa: "روزی چند بار بخورم؟", tr: "ruzi chand bâr bokhoram?", en: "How many times a day should I take them?" },
+    },
+    {
+      skill: "ph-dose",
+      stage: "check",
+      cue: { fa: "این شربت برای سرفه است.", tr: "in sharbat barâ-ye sorfe ast.", en: "This syrup is for a cough." },
+      prompt: "Ask how many spoons (ghâshogh) you should take.",
+      must: [["chand", "چند"], ["ghâshogh", "ghashogh", "ghashoq", "قاشق"]],
+      model: { fa: "چند قاشق بخورم؟", tr: "chand ghâshogh bokhoram?", en: "How many spoons should I take?" },
+    },
+    {
+      skill: "ph-dose",
+      stage: "recheck",
+      cue: { fa: "این شربت رو روزی سه بار بخورید.", tr: "in sharbat ro ruzi se bâr bokhorid.", en: "Take this syrup three times a day.", register: "colloquial" },
+      prompt: "Ask whether you take it before or after food.",
+      must: [["ghabl", "قبل"], ["ba'd", "bad", "بعد"]],
+      model: { fa: "قبل از غذا یا بعد از غذا؟", tr: "ghabl az ghazâ yâ ba'd az ghazâ?", en: "Before or after food?" },
+    },
+  ],
+};
