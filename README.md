@@ -43,7 +43,7 @@ Accounts (Supabase), community (leaderboards, feed, Talk, friends), donations/pr
 - **Speech recognition:** `src/lib/stt.ts` (the browser's Web Speech API, fa-IR, or Whisper on-device via transformers.js); scoring in `src/lib/pronounce.ts`, where sound-alike letters (س/ص/ث, ز/ذ/ض/ظ, ت/ط, ه/ح, ق/غ) count as the same sound.
 - **Missions:** content in `src/content/missions/` (one file per situation, typed by `types.ts`); planning in `src/lib/missions.ts`, answer checking in `src/lib/mission-check.ts`, mastery in `src/lib/mastery.ts`; UI in `src/components/mission/`. A new mission is content only — `src/content/missions.test.ts` checks it.
 - **Open data:** `public/data/dict/` is built by `scripts/build-dictionary.mjs` from [VahidN/EnglishToPersianDictionaries](https://github.com/VahidN/EnglishToPersianDictionaries) (Apache-2.0); `public/data/fa-words.txt` by `scripts/build-lexicon.mjs` from [shahind/Persian-Words-Database](https://github.com/shahind/Persian-Words-Database). Poems come from [ganjoor/ganjoor-data](https://github.com/ganjoor/ganjoor-data) via jsDelivr, pinned to a commit (`src/content/poems.ts`).
-- **Type and brand:** the system font for Latin and Yekan Bakh (`src/fonts/`) for Persian. The logo is "FA" in Nunito Black as outlines (`docs/brand/logo.svg`). Design rules: `.claude/skills/farsi-pen-design-system/SKILL.md`, background in `docs/design-system.md`.
+- **Type and brand:** the system font for Latin and Vazirmatn (Fontsource, OFL) for all Persian. The logo is "FA" in Nunito Black as outlines (`docs/brand/logo.svg`). Design rules: `.claude/skills/farsi-pen-design-system/SKILL.md`, background in `docs/design-system.md`.
 
 ```
 src/

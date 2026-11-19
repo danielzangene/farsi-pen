@@ -18,6 +18,11 @@ import { WORDS } from "@/content/words";
 import { MISSIONS } from "@/content/missions";
 import { GRAMMAR } from "@/content/grammar";
 
+/** Wraps each run of Persian in <Fa> (lang="fa", right-to-left) inside an English string. */
+function markPersian(text: string): React.ReactNode {
+  return text.split(/([\u0600-\u06FF\u200C]+(?:\s+[\u0600-\u06FF\u200C]+)*)/).map((part, i) => (i % 2 ? <Fa key={i}>{part}</Fa> : part));
+}
+
 // Literal tone classes (same values as TONE in ui.tsx): this is a server
 // component, and a plain object exported from a "use client" module can't be read here.
 const FEATURES = [
@@ -208,9 +213,9 @@ export default function Home() {
                 >
                   <f.icon className="size-6" strokeWidth={2.5} />
                 </span>
-                <h3 className="mt-4 text-lg font-extrabold">{f.title}</h3>
+                <h3 className="mt-4 text-lg font-extrabold">{markPersian(f.title)}</h3>
                 <p className="mt-1 text-sm font-semibold text-muted">
-                  {f.text}
+                  {markPersian(f.text)}
                 </p>
               </div>
             ))}

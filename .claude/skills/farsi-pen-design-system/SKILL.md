@@ -1,6 +1,6 @@
 ---
 name: farsi-pen-design-system
-description: Farsi Pen's UI design system — Apple-style interface principles on the web (grouped surfaces, translucent materials, system font with Yekan Bakh for Persian, weight-based hierarchy, instant press feedback, critically damped motion), with Farsi Pen's own brand colours. Use before building, changing or reviewing any screen or component in this project (src/app, src/components, globals.css).
+description: Farsi Pen's UI design system — Apple-style interface principles on the web (grouped surfaces, translucent materials, system font with Vazirmatn for Persian, weight-based hierarchy, instant press feedback, critically damped motion), with Farsi Pen's own brand colours. Use before building, changing or reviewing any screen or component in this project (src/app, src/components, globals.css).
 ---
 
 # Farsi Pen design system
@@ -49,7 +49,7 @@ Rules:
 
 ## 4. Typography
 
-- **Latin:** the system font (`--font-sans`: -apple-system / SF Pro, Segoe UI Variable, Roboto…). **Persian:** Yekan Bakh (variable, DOTS 1 in text, 0 in headings) via `<Fa>` / `[lang="fa"]` — keep it.
+- **Latin:** the system font (`--font-sans`: -apple-system / SF Pro, Segoe UI Variable, Roboto…). **Persian:** Vazirmatn (variable, OFL) via `<Fa>` / `[lang="fa"]`. Its `@font-face` covers only the Arabic script and is first in every stack, so any Persian character renders in Vazirmatn even outside `<Fa>` — still wrap Persian in `<Fa>` for `lang` and direction.
 - **Hierarchy from weight + size + leading.** Weights are remapped in the theme: `font-extrabold` = 700 (titles), `font-bold` = 600 (headlines, emphasised Persian), `font-semibold` = 500 (labels, light emphasis), body = 400. Prefer the lighter step when in doubt.
 - **Tracking is size-specific:** h1 −0.022em, h2 −0.012em, body 0. `eyebrow` (13px, 500, uppercase, +0.02em) is only for grouped-list section headers. Buttons are sentence case. Never letter-space or uppercase Persian (`[lang="fa"]` resets both).
 - **Leading:** tight on large headings (1.12–1.2), 1.5 for body, loose for Persian running text (`leading-loose` / 2.2 in reading blocks).

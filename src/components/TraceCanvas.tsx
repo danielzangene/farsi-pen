@@ -6,7 +6,7 @@ import { cx } from "@/lib/util";
 const SIZE = 300; // CSS pixels
 const GRID = 60; // scoring resolution: 5px cells
 const REACH = 2; // cells of slack around strokes (~10px)
-const FONT = '"Yekan Bakh", Tahoma, sans-serif';
+const FONT = '"Vazirmatn", Tahoma, sans-serif';
 
 /** Read a colour token so the canvas follows the current theme. */
 const token = (name: string, fallback: string) =>

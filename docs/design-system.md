@@ -4,7 +4,7 @@ The working rules live in the project skill `.claude/skills/farsi-pen-design-sys
 
 ## Brief (Nov 2026)
 
-Redesign Farsi Pen on Apple's interface principles, using the `apple-design` skill (github.com/emilkowalski/skills, `skills/apple-design`), which distils Apple's WWDC design talks (*Designing Fluid Interfaces* 2018, *The Details of UI Typography* 2020, *Principles of Great Design*) for the web. Keep the Persian font (Yekan Bakh); weights may change. Keep Farsi Pen's own brand colours.
+Redesign Farsi Pen on Apple's interface principles, using the `apple-design` skill (github.com/emilkowalski/skills, `skills/apple-design`), which distils Apple's WWDC design talks (*Designing Fluid Interfaces* 2018, *The Details of UI Typography* 2020, *Principles of Great Design*) for the web. Keep Farsi Pen's own brand colours.
 
 This replaces the earlier playful, gamified look (3D buttons with a darker bottom lip, 2px borders, uppercase heavy labels, Nunito, overshooting motion).
 
@@ -27,7 +27,7 @@ Neutrals follow iOS's grouped palette (canvas #f2f2f7, cards white; dark: black 
 
 ## Persian
 
-Yekan Bakh stays, DOTS axis 1 for text and 0 for headings. With the remapped weights Persian headings render at 600–700 instead of 800, closer to the lighter system Latin. Persian never gets letter-spacing or uppercase.
+Persian is set in **Vazirmatn**: open-licensed (OFL), variable weight, and small to load. It is declared for the Arabic script only and listed first in every font stack, so Persian renders in Vazirmatn wherever it appears while Latin stays on the system font. With the remapped weights Persian headings render at 600–700 instead of 800, closer to the lighter system Latin. Persian never gets letter-spacing or uppercase.
 
 ## What we deliberately don't do
 

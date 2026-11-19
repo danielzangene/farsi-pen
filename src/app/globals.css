@@ -1,19 +1,21 @@
 @import "tailwindcss";
 
-/* Yekan Bakh (FaNum variant: Persian digits). Variable axes: wght 1–1000,
-   DOTS 0–1 — dotted style for running text, plain for headings. */
+/* Vazirmatn (OFL, variable wght 100–900) for all Persian text. Arabic-script
+   range only: listed first in every font stack, it draws any Persian
+   character on the page while Latin text falls through to the system font. */
 @font-face {
-  font-family: "Yekan Bakh";
-  src: url("../fonts/YekanBakhFaNum-VF.woff") format("woff-variations"), url("../fonts/YekanBakhFaNum-VF.woff") format("woff");
-  font-weight: 100 1000;
+  font-family: "Vazirmatn";
+  src: url("../../node_modules/@fontsource-variable/vazirmatn/files/vazirmatn-arabic-wght-normal.woff2") format("woff2-variations");
+  font-weight: 100 900;
   font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
 }
 
 /*
  * Farsi Pen design tokens — see .claude/skills/farsi-pen-design-system.
  * Style: Apple's interface principles on the web. Grouped surfaces on a
  * soft canvas, hairline separators, translucent materials for floating
- * chrome, the system font for Latin text (Yekan Bakh for Persian), weight
+ * chrome, the system font for Latin text (Vazirmatn for Persian), weight
  * and size for hierarchy, instant press feedback and critically damped
  * motion. Brand colours stay Farsi Pen's own: firuze, saffron, anar.
  *
@@ -82,10 +84,10 @@
   /* Text and icons on a solid colour fill (buttons, banners, badges). */
   --color-on-accent: #ffffff;
 
-  /* Latin text: the platform's system font (SF on Apple devices). */
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
-  --font-fa: "Yekan Bakh", Tahoma, sans-serif;
+  /* Latin text: the platform's system font (SF on Apple devices); Persian characters anywhere: Vazirmatn. */
+  --font-sans: "Vazirmatn", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-display: "Vazirmatn", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-fa: "Vazirmatn", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Tahoma, sans-serif;
 
   /* Hierarchy from weight: titles 700, headlines 600, emphasis 500, body 400. */
   --font-weight-semibold: 500;
@@ -154,14 +156,9 @@
   }
   [lang="fa"] {
     font-family: var(--font-fa);
-    font-variation-settings: "DOTS" 1;
     /* Letter-spacing breaks Persian letter joining; uppercase is meaningless. */
     letter-spacing: 0;
     text-transform: none;
-  }
-  :is(h1, h2, h3) [lang="fa"],
-  :is(h1, h2, h3)[lang="fa"] {
-    font-variation-settings: "DOTS" 0;
   }
   @media (prefers-reduced-motion: reduce) {
     *,
